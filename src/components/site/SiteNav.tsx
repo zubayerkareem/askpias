@@ -1,19 +1,16 @@
 import { Calendar, Menu, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
-import logoAsset from "@/assets/pias-islam.jpg.asset.json";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 
 const hashLinks = [
   { href: "/#home", label: "Home" },
-  { href: "/#story", label: "My story" },
   { href: "/#services", label: "Services" },
 ];
 
 const routeLinks = [
   { to: "/case-studies", label: "Case studies" },
-  { to: "/blog", label: "Blog" },
-  { to: "/faqs", label: "FAQ" },
+  { to: "/notes", label: "Notes" },
 ] as const;
 
 export function SiteNav() {
@@ -24,7 +21,7 @@ export function SiteNav() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4">
         <Link to="/" className="flex min-w-0 items-center gap-2.5 text-lg font-bold tracking-tight">
           <img
-            src={logoAsset.url}
+            src="/pias-islam.jpg"
             alt="Pias Ahmed"
             width={36}
             height={36}

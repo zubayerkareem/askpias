@@ -1,5 +1,4 @@
-import { ArrowDown, Calendar, Facebook, Linkedin, Mail, Sparkles, Youtube, BarChart3 } from "lucide-react";
-import portraitAsset from "@/assets/pias-islam.jpg.asset.json";
+import { ArrowDown, Calendar, Facebook, Linkedin, Mail, Youtube } from "lucide-react";
 
 const socials = [
   { icon: Linkedin, label: "LinkedIn" },
@@ -61,7 +60,6 @@ export function Hero() {
         </div>
 
         <div className="relative order-1 lg:order-2">
-          <Sparkles className="absolute -top-4 right-2 hidden size-5 text-accent lg:block" />
           <div
             aria-hidden
             className="absolute inset-x-[-6%] top-1/3 hidden h-56 rounded-[50%] border border-border/70 lg:block"
@@ -69,22 +67,12 @@ export function Hero() {
           />
           <div className="relative overflow-hidden rounded-3xl border border-border bg-surface">
             <img
-              src={portraitAsset.url}
+              src="/pias-islam.jpg"
               alt="Pias Ahmed, brand builder and marketing consultant"
               width={960}
               height={960}
               className="h-full w-full object-cover"
             />
-          </div>
-          <div className="panel mt-[-3rem] ml-auto hidden w-[min(20rem,100%)] items-center gap-3 p-4 backdrop-blur lg:flex">
-            <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-accent">
-              <BarChart3 className="size-5" />
-            </span>
-            <p className="text-sm leading-snug">
-              Focused on <span className="text-mint">business growth</span>,
-              <br />
-              not vanity metrics.
-            </p>
           </div>
         </div>
       </div>

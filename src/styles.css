@@ -52,7 +52,7 @@
 /* Light theme (default) */
 :root {
   color-scheme: light;
-  --radius: 0.75rem;
+  --radius: 0.5rem;
 
   --background: oklch(0.99 0.004 285);
   --foreground: oklch(0.18 0.012 285);
