@@ -1,5 +1,4 @@
 import { Facebook, Linkedin, Mail, Youtube } from "lucide-react";
-import logoAsset from "@/assets/pias-islam.jpg.asset.json";
 
 const columns = [
   {
@@ -15,7 +14,7 @@ const columns = [
     title: "Resources",
     items: [
       { label: "Case studies", href: "/case-studies" },
-      { label: "Blog", href: "/blog" },
+      { label: "Notes", href: "/notes" },
       { label: "FAQ", href: "/faqs" },
     ],
   },
@@ -29,7 +28,7 @@ export function SiteFooter() {
         <div>
           <p className="flex items-center gap-2.5 text-lg font-bold">
             <img
-              src={logoAsset.url}
+              src="/pias-islam.jpg"
               alt="Pias Ahmed"
               width={40}
               height={40}

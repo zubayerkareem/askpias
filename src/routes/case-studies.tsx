@@ -1,8 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ArrowRight, ArrowUpRight, TrendingUp } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Testimonials } from "@/components/site/Testimonials";
+import { dummyImage } from "@/lib/notes-data";
 
 const title = "Case Studies — Pias Ahmed | Marketing Consultant";
 const description =
@@ -24,48 +25,32 @@ export const Route = createFileRoute("/case-studies")({
 
 const cases = [
   {
-    tag: "E-commerce · Fashion",
+    slug: "zarin-lifestyle",
     name: "Zarin Lifestyle",
+    tags: ["E-commerce", "Fashion", "Meta Ads"],
     summary:
       "Meta Ads spend kept climbing while sales stayed flat. We redid the audience research, repositioned the offer and completely rebuilt the landing page and checkout funnel.",
-    headline: { label: "ROAS", before: "1.8x", after: "4.3x" },
-    stats: [
-      { label: "Monthly sales", value: "+190%" },
-      { label: "CPA", value: "−42%" },
-    ],
   },
   {
-    tag: "Service · Healthcare",
+    slug: "dhaka-dental-studio",
     name: "Dhaka Dental Studio",
+    tags: ["Service", "Healthcare", "Lead Generation"],
     summary:
       "Leads were coming in but rarely converted into appointments. We built a full lead system with call scripts, follow-up automation and local search campaigns.",
-    headline: { label: "Monthly appointments", before: "46", after: "175" },
-    stats: [
-      { label: "Cost per lead", value: "−37%" },
-      { label: "Show-up rate", value: "81%" },
-    ],
   },
   {
-    tag: "B2B · SaaS",
+    slug: "ledgerly",
     name: "Ledgerly",
+    tags: ["B2B", "SaaS", "Brand Positioning"],
     summary:
       "Brand positioning was unclear. We rebuilt the messaging framework, launched a content funnel and Google Ads, and optimised the trial-to-paid journey.",
-    headline: { label: "Trial → paid", before: "9%", after: "23%" },
-    stats: [
-      { label: "Qualified demos", value: "+210%" },
-      { label: "Pipeline", value: "$2.6M" },
-    ],
   },
   {
-    tag: "Retail · FMCG",
+    slug: "green-basket",
     name: "Green Basket",
+    tags: ["Retail", "FMCG", "Retention"],
     summary:
       "Repeat purchases were low. We increased customer lifetime value with a retention system, bundle offers and retargeting sequences.",
-    headline: { label: "Customer LTV", before: "1x", after: "1.9x" },
-    stats: [
-      { label: "Repeat orders", value: "+134%" },
-      { label: "Ad cost share", value: "−28%" },
-    ],
   },
 ];
 
@@ -93,49 +78,34 @@ function CaseStudies() {
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {cases.map((c) => (
               <article
-                key={c.name}
-                className="group flex flex-col rounded-2xl border border-border panel-card p-6 transition-colors hover:border-primary/50"
+                key={c.slug}
+                className="group flex flex-col overflow-hidden rounded-xl border border-border panel-card transition-colors hover:border-primary/50"
               >
-                <p className="eyebrow text-accent">{c.tag}</p>
-                <h2 className="mt-3 text-lg leading-snug">{c.name}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-muted-foreground line-clamp-3">
-                  {c.summary}
-                </p>
-
-                <div className="mt-5 flex items-center gap-3 rounded-xl border border-border bg-surface-2 p-3.5">
-                  <div className="flex-1 text-center">
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-muted-foreground">
-                      Before
-                    </p>
-                    <p className="mt-1 text-base font-bold text-muted-foreground line-through decoration-muted-foreground/50">
-                      {c.headline.before}
-                    </p>
+                <img
+                  src={dummyImage(c.slug)}
+                  alt=""
+                  width={400}
+                  height={225}
+                  className="aspect-video w-full object-cover"
+                />
+                <div className="flex flex-1 flex-col p-6">
+                  <h2 className="text-lg leading-snug">{c.name}</h2>
+                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-3">
+                    {c.summary}
+                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {c.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="rounded-full bg-secondary px-2 py-0.5 text-[0.7rem] font-medium text-secondary-foreground"
+                      >
+                        {tag}
+                      </span>
+                    ))}
                   </div>
-                  <ArrowRight className="size-4 shrink-0 text-accent" />
-                  <div className="flex-1 text-center">
-                    <p className="text-[0.65rem] font-semibold uppercase tracking-wide text-accent">
-                      After
-                    </p>
-                    <p className="mt-1 text-base font-bold text-foreground">{c.headline.after}</p>
-                  </div>
-                </div>
-                <p className="mt-2 text-center text-[0.7rem] text-muted-foreground">
-                  {c.headline.label}
-                </p>
-
-                <div className="mt-4 grid flex-1 grid-cols-2 items-end gap-2">
-                  {c.stats.map((s) => (
-                    <div key={s.label} className="rounded-lg border border-border bg-surface-2 px-3 py-2">
-                      <p className="text-[0.65rem] text-muted-foreground">{s.label}</p>
-                      <p className="mt-0.5 flex items-center gap-1 text-sm font-bold text-accent">
-                        <TrendingUp className="size-3.5 shrink-0" />
-                        {s.value}
-                      </p>
-                    </div>
-                  ))}
                 </div>
               </article>
             ))}
