@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 
-// Verbatim Cal.com inline embed snippet (namespace "15min", calLink "zubayer/15min").
-// Injected as a real <script> element on mount so it executes (React's
-// dangerouslySetInnerHTML would not run a <script> tag).
+// Verbatim Cal.com inline embed snippet (namespace "askpias", calLink
+// "pias-ahmed-2wfutv/askpias"). Injected as a real <script> element on mount
+// so it executes (React's dangerouslySetInnerHTML would not run a <script> tag).
 const CAL_EMBED_SCRIPT = `
 (function (C, A, L) {
   let p = function (a, ar) { a.q.push(ar); };
@@ -30,16 +30,19 @@ const CAL_EMBED_SCRIPT = `
     p(cal, ar);
   };
 })(window, "https://app.cal.com/embed/embed.js", "init");
-Cal("init", "15min", { origin: "https://app.cal.com" });
+Cal("init", "askpias", { origin: "https://app.cal.com" });
 Cal.config = Cal.config || {};
 Cal.config.forwardQueryParams = true;
-Cal.ns["15min"]("inline", {
-  elementOrSelector: "#my-cal-inline-15min",
-  config: { layout: "month_view", useSlotsViewOnSmallScreen: "true", theme: "auto" },
-  calLink: "zubayer/15min",
+Cal.ns.askpias("inline", {
+  elementOrSelector: "#my-cal-inline-askpias",
+  config: { layout: "month_view", useSlotsViewOnSmallScreen: "true" },
+  calLink: "pias-ahmed-2wfutv/askpias",
 });
-Cal.ns["15min"]("ui", {
-  cssVarsPerTheme: { light: { "cal-brand": "#8355E0" } },
+Cal.ns.askpias("ui", {
+  cssVarsPerTheme: {
+    light: { "cal-brand": "#7543DD" },
+    dark: { "cal-brand": "#7543DD" },
+  },
   hideEventTypeDetails: false,
   layout: "month_view",
 });
@@ -60,7 +63,7 @@ export function CalBooking() {
 
   return (
     <div
-      id="my-cal-inline-15min"
+      id="my-cal-inline-askpias"
       style={{ width: "100%", height: "100%", overflow: "scroll" }}
     />
   );
