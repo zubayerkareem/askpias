@@ -37,6 +37,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { useCreateNote, useDeleteNote, useNotes, useUpdateNote } from "@/hooks/use-notes";
 import { dummyImage, type Note } from "@/lib/notes-data";
 import { uploadMedia } from "@/lib/storage";
@@ -337,7 +338,7 @@ function NotesAdminPage() {
                 />
               </div>
               <div className="space-y-2">
-                <FormLabel>Image</FormLabel>
+                <Label>Image</Label>
                 <Input
                   type="file"
                   accept="image/*"
