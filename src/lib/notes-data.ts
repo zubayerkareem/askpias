@@ -7,6 +7,7 @@ export type Note = {
   slug: string;
   title: string;
   excerpt: string;
+  content: string; // Tiptap HTML output; "" when not yet written
   category: string;
   image_url: string | null;
   featured: boolean;
@@ -23,6 +24,7 @@ export type NoteInput = Pick<
   | "slug"
   | "title"
   | "excerpt"
+  | "content"
   | "category"
   | "featured"
   | "locked"

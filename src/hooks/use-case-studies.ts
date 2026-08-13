@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
 export type CaseStudy = {
@@ -6,6 +6,7 @@ export type CaseStudy = {
   slug: string;
   name: string;
   summary: string;
+  content: string; // Tiptap HTML output; "" when not yet written
   tags: string[];
   image_url: string | null;
   sort_order: number;
@@ -15,7 +16,7 @@ export type CaseStudy = {
 
 export type CaseStudyInput = Pick<
   CaseStudy,
-  "slug" | "name" | "summary" | "tags" | "sort_order"
+  "slug" | "name" | "summary" | "content" | "tags" | "sort_order"
 > & {
   image_url?: string | null;
 };
@@ -35,6 +36,38 @@ export function useCaseStudies() {
     },
     staleTime: 60_000,
   });
+}
+
+export const caseStudyByIdQueryOptions = (id: string) =>
+  queryOptions({
+    queryKey: [...CASE_STUDIES_KEY, id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("case_studies").select("*").eq("id", id).single();
+      if (error) throw error;
+      return data as CaseStudy;
+    },
+  });
+
+export function useCaseStudy(id: string | undefined) {
+  return useQuery({ ...caseStudyByIdQueryOptions(id ?? ""), enabled: !!id });
+}
+
+export const caseStudyBySlugQueryOptions = (slug: string) =>
+  queryOptions({
+    queryKey: [...CASE_STUDIES_KEY, "slug", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("case_studies")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (error) throw error;
+      return data as CaseStudy | null;
+    },
+  });
+
+export function useCaseStudyBySlug(slug: string) {
+  return useQuery(caseStudyBySlugQueryOptions(slug));
 }
 
 export function useCreateCaseStudy() {

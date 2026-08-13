@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -11,7 +11,7 @@ const title = "Case Studies — Pias Ahmed | Marketing Consultant";
 const description =
   "Case studies from marketing work with local and international brands — the problem, the system I built, the results and client reviews.";
 
-export const Route = createFileRoute("/case-studies")({
+export const Route = createFileRoute("/case-studies/")({
   head: () => ({
     meta: [
       { title },
@@ -84,7 +84,9 @@ function CaseStudies() {
               Array.from({ length: 3 }).map((_, i) => <CaseStudyCardSkeleton key={i} />)
             ) : cases && cases.length > 0 ? (
               cases.map((c) => (
-                <article
+                <Link
+                  to="/case-studies/$slug"
+                  params={{ slug: c.slug }}
                   key={c.slug}
                   className="group flex flex-col overflow-hidden rounded-xl border border-border panel-card transition-colors hover:border-primary/50"
                 >
@@ -111,7 +113,7 @@ function CaseStudies() {
                       ))}
                     </div>
                   </div>
-                </article>
+                </Link>
               ))
             ) : (
               <p className="text-sm text-muted-foreground">
