@@ -74,6 +74,18 @@ function CaseStudies() {
               A few brand stories below — what the problem was, the system I
               built, and the results that followed.
             </p>
+            <div className="mx-auto mt-10 aspect-square w-full max-w-[476px] overflow-hidden rounded-2xl border border-border">
+              <iframe
+                src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F2409934066138901%2F&show_text=false&width=476&t=0"
+                className="h-full w-full"
+                style={{ border: "none", overflow: "hidden" }}
+                scrolling="no"
+                frameBorder="0"
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                title="Pias Ahmed — featured video"
+              />
+            </div>
           </div>
         </section>
 
