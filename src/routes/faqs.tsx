@@ -101,9 +101,7 @@ function Faqs() {
         <section className="mx-auto max-w-3xl px-5 pb-16">
           <div className="panel flex flex-col items-center gap-4 p-8 text-center">
             <h2 className="text-xl">Didn't find your answer?</h2>
-            <p className="text-sm text-muted-foreground">
-              A quick call is always the easiest way.
-            </p>
+            <p className="text-sm text-muted-foreground">A quick call is always the easiest way.</p>
             <a
               href="/booking"
               className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-opacity hover:opacity-90"

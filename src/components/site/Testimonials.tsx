@@ -93,14 +93,10 @@ export function Testimonials({
 
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
-      {title && (
-        <h2 className="text-center text-2xl sm:text-3xl">{title}</h2>
-      )}
+      {title && <h2 className="text-center text-2xl sm:text-3xl">{title}</h2>}
 
       {/* Desktop / tablet: static grid */}
-      <div
-        className={`hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3 ${title ? "mt-10" : ""}`}
-      >
+      <div className={`hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3 ${title ? "mt-10" : ""}`}>
         {items.map((t) => (
           <TestimonialCard key={t.name} t={t} />
         ))}

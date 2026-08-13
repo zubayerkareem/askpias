@@ -4,6 +4,8 @@ import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Testimonials } from "@/components/site/Testimonials";
 import { dummyImage } from "@/lib/notes-data";
+import { useCaseStudies } from "@/hooks/use-case-studies";
+import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const title = "Case Studies — Pias Ahmed | Marketing Consultant";
 const description =
@@ -23,38 +25,23 @@ export const Route = createFileRoute("/case-studies")({
   component: CaseStudies,
 });
 
-const cases = [
-  {
-    slug: "zarin-lifestyle",
-    name: "Zarin Lifestyle",
-    tags: ["E-commerce", "Fashion", "Meta Ads"],
-    summary:
-      "Meta Ads spend kept climbing while sales stayed flat. We redid the audience research, repositioned the offer and completely rebuilt the landing page and checkout funnel.",
-  },
-  {
-    slug: "dhaka-dental-studio",
-    name: "Dhaka Dental Studio",
-    tags: ["Service", "Healthcare", "Lead Generation"],
-    summary:
-      "Leads were coming in but rarely converted into appointments. We built a full lead system with call scripts, follow-up automation and local search campaigns.",
-  },
-  {
-    slug: "ledgerly",
-    name: "Ledgerly",
-    tags: ["B2B", "SaaS", "Brand Positioning"],
-    summary:
-      "Brand positioning was unclear. We rebuilt the messaging framework, launched a content funnel and Google Ads, and optimised the trial-to-paid journey.",
-  },
-  {
-    slug: "green-basket",
-    name: "Green Basket",
-    tags: ["Retail", "FMCG", "Retention"],
-    summary:
-      "Repeat purchases were low. We increased customer lifetime value with a retention system, bundle offers and retargeting sequences.",
-  },
-];
+function CaseStudyCardSkeleton() {
+  return (
+    <div className="flex flex-col overflow-hidden rounded-xl border border-border panel-card">
+      <div className="skeleton-shimmer aspect-video w-full" />
+      <div className="flex flex-1 flex-col gap-2 p-6">
+        <div className="skeleton-shimmer h-5 w-2/3 rounded-md" />
+        <div className="skeleton-shimmer h-4 w-full rounded-md" />
+        <div className="skeleton-shimmer h-4 w-4/5 rounded-md" />
+      </div>
+    </div>
+  );
+}
 
 function CaseStudies() {
+  const { data: cases, isPending: casesPending } = useCaseStudies();
+  const { data: settings } = useSiteSettings();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
@@ -67,60 +54,70 @@ function CaseStudies() {
           />
           <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-24">
             <p className="eyebrow text-mint">Case studies</p>
-            <div className="mx-auto mt-6 aspect-square w-full max-w-[476px] overflow-hidden rounded-2xl border border-border">
-              <iframe
-                src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F2409934066138901%2F&show_text=false&width=476&t=0"
-                className="h-full w-full"
-                style={{ border: "none", overflow: "hidden" }}
-                scrolling="no"
-                frameBorder="0"
-                allowFullScreen
-                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                title="Pias Ahmed — featured video"
-              />
-            </div>
+            {settings?.case_studies_iframe_url && (
+              <div className="mx-auto mt-6 aspect-square w-full max-w-[476px] overflow-hidden rounded-2xl border border-border">
+                <iframe
+                  src={settings.case_studies_iframe_url}
+                  className="h-full w-full"
+                  style={{ border: "none", overflow: "hidden" }}
+                  scrolling="no"
+                  frameBorder="0"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                  title="Pias Ahmed — featured video"
+                />
+              </div>
+            )}
             <h1 className="mx-auto mt-10 max-w-2xl text-3xl sm:text-4xl lg:text-5xl">
               I let the results do the talking
             </h1>
             <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
-              A few brand stories below — what the problem was, the system I
-              built, and the results that followed.
+              A few brand stories below — what the problem was, the system I built, and the results
+              that followed.
             </p>
           </div>
         </section>
 
         <section className="mx-auto max-w-6xl px-5 py-16">
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {cases.map((c) => (
-              <article
-                key={c.slug}
-                className="group flex flex-col overflow-hidden rounded-xl border border-border panel-card transition-colors hover:border-primary/50"
-              >
-                <img
-                  src={dummyImage(c.slug)}
-                  alt=""
-                  width={400}
-                  height={225}
-                  className="aspect-video w-full object-cover"
-                />
-                <div className="flex flex-1 flex-col p-6">
-                  <h2 className="text-lg leading-snug">{c.name}</h2>
-                  <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-3">
-                    {c.summary}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {c.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="rounded-full bg-secondary px-2 py-0.5 text-[0.7rem] font-medium text-secondary-foreground"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+            {casesPending ? (
+              Array.from({ length: 3 }).map((_, i) => <CaseStudyCardSkeleton key={i} />)
+            ) : cases && cases.length > 0 ? (
+              cases.map((c) => (
+                <article
+                  key={c.slug}
+                  className="group flex flex-col overflow-hidden rounded-xl border border-border panel-card transition-colors hover:border-primary/50"
+                >
+                  <img
+                    src={c.image_url ?? dummyImage(c.slug)}
+                    alt=""
+                    width={400}
+                    height={225}
+                    className="aspect-video w-full object-cover"
+                  />
+                  <div className="flex flex-1 flex-col p-6">
+                    <h2 className="text-lg leading-snug">{c.name}</h2>
+                    <p className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground line-clamp-3">
+                      {c.summary}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {c.tags.map((tag) => (
+                        <span
+                          key={tag}
+                          className="rounded-full bg-secondary px-2 py-0.5 text-[0.7rem] font-medium text-secondary-foreground"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                No case studies yet — check back soon.
+              </p>
+            )}
           </div>
         </section>
 

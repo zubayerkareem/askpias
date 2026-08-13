@@ -30,21 +30,17 @@ export function Story() {
             <span className="size-1.5 rounded-full bg-accent" />
             My story
           </p>
-          <h2 className="mt-4 text-3xl sm:text-[2.1rem]">
-            From curiosity to real impact.
-          </h2>
+          <h2 className="mt-4 text-3xl sm:text-[2.1rem]">From curiosity to real impact.</h2>
           <p className="mt-5 text-muted-foreground">
-            I wasn't born into a business family and luck wasn't on my side. It
-            all started with curiosity — a stubborn need to understand what
-            actually makes a business grow.
+            I wasn't born into a business family and luck wasn't on my side. It all started with
+            curiosity — a stubborn need to understand what actually makes a business grow.
           </p>
           {open && (
             <p className="mt-4 text-muted-foreground">
-              My first few years were hands-on: running ads for small brands,
-              breaking and rebuilding funnels, reading data every single day.
-              Then it clicked — great marketing isn't just creative work, it's a
-              system. Today I build exactly that for brands: systems that keep
-              working even when the owner is asleep.
+              My first few years were hands-on: running ads for small brands, breaking and
+              rebuilding funnels, reading data every single day. Then it clicked — great marketing
+              isn't just creative work, it's a system. Today I build exactly that for brands:
+              systems that keep working even when the owner is asleep.
             </p>
           )}
           <button
@@ -53,9 +49,7 @@ export function Story() {
             className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-accent"
           >
             {open ? "Show less" : "Read the full story"}
-            <ChevronDown
-              className={`size-4 transition-transform ${open ? "rotate-180" : ""}`}
-            />
+            <ChevronDown className={`size-4 transition-transform ${open ? "rotate-180" : ""}`} />
           </button>
         </div>
 

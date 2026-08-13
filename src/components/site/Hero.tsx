@@ -1,4 +1,5 @@
 import { ArrowDown, Calendar, Facebook, Linkedin, Mail, Youtube } from "lucide-react";
+import { SiteAvatar } from "@/components/site/SiteAvatar";
 
 const socials = [
   { icon: Linkedin, label: "LinkedIn" },
@@ -19,12 +20,11 @@ export function Hero() {
         <div className="order-2 lg:order-1">
           <p className="eyebrow text-mint">Hi, I'm Pias Ahmed</p>
           <h1 className="mt-4 text-4xl leading-[1.2] sm:text-5xl lg:text-[3.4rem]">
-            I build marketing systems that{" "}
-            <span className="text-gradient">grow businesses.</span>
+            I build marketing systems that <span className="text-gradient">grow businesses.</span>
           </h1>
           <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
-            I don't just run ads. I combine strategy, consumer psychology and
-            performance data to build predictable growth systems for brands.
+            I don't just run ads. I combine strategy, consumer psychology and performance data to
+            build predictable growth systems for brands.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -66,8 +66,7 @@ export function Hero() {
             style={{ transform: "rotate(-12deg)" }}
           />
           <div className="relative overflow-hidden rounded-3xl border border-border bg-surface">
-            <img
-              src="/pias-islam.jpg"
+            <SiteAvatar
               alt="Pias Ahmed, brand builder and marketing consultant"
               width={960}
               height={960}
