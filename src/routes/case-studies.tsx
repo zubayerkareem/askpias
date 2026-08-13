@@ -67,14 +67,7 @@ function CaseStudies() {
           />
           <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-24">
             <p className="eyebrow text-mint">Case studies</p>
-            <h1 className="mx-auto mt-4 max-w-2xl text-3xl sm:text-4xl lg:text-5xl">
-              I let the results do the talking
-            </h1>
-            <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
-              A few brand stories below — what the problem was, the system I
-              built, and the results that followed.
-            </p>
-            <div className="mx-auto mt-10 aspect-square w-full max-w-[476px] overflow-hidden rounded-2xl border border-border">
+            <div className="mx-auto mt-6 aspect-square w-full max-w-[476px] overflow-hidden rounded-2xl border border-border">
               <iframe
                 src="https://www.facebook.com/plugins/video.php?height=476&href=https%3A%2F%2Fwww.facebook.com%2Freel%2F2409934066138901%2F&show_text=false&width=476&t=0"
                 className="h-full w-full"
@@ -86,6 +79,13 @@ function CaseStudies() {
                 title="Pias Ahmed — featured video"
               />
             </div>
+            <h1 className="mx-auto mt-10 max-w-2xl text-3xl sm:text-4xl lg:text-5xl">
+              I let the results do the talking
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
+              A few brand stories below — what the problem was, the system I
+              built, and the results that followed.
+            </p>
           </div>
         </section>
 
