@@ -3,7 +3,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { SiteNav } from "@/components/site/SiteNav";
 import { Hero } from "@/components/site/Hero";
 import { Story } from "@/components/site/Story";
-import { Services } from "@/components/site/Services";
 import { Testimonials } from "@/components/site/Testimonials";
 import { NotesSection } from "@/components/site/NotesSection";
 import { Booking } from "@/components/site/Booking";
@@ -35,7 +34,6 @@ function Index() {
       <main className="page-enter">
         <Hero />
         <Story />
-        <Services />
         <Testimonials />
         <NotesSection />
         <Booking />
