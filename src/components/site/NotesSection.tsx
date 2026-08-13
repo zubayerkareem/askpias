@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { NoteRow } from "@/components/site/NoteRow";
 import { notes } from "@/lib/notes-data";
 
-const PREVIEW_COUNT = 4;
+const PREVIEW_COUNT = 3;
 
 export function NotesSection() {
   const preview = notes.slice(0, PREVIEW_COUNT);
