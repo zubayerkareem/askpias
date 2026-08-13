@@ -3,10 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 
-const hashLinks = [
-  { href: "/#home", label: "Home" },
-  { href: "/#services", label: "Services" },
-];
+const hashLinks = [{ href: "/#home", label: "Home" }];
 
 const routeLinks = [
   { to: "/case-studies", label: "Case studies" },
