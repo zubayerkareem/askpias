@@ -1,12 +1,13 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { NoteRow } from "@/components/site/NoteRow";
-import { notes } from "@/lib/notes-data";
+import { NoteRow, NoteRowSkeleton } from "@/components/site/NoteRow";
+import { useNotes } from "@/hooks/use-notes";
 
 const PREVIEW_COUNT = 3;
 
 export function NotesSection() {
-  const preview = notes.slice(0, PREVIEW_COUNT);
+  const { data: notes, isPending } = useNotes();
+  const preview = notes?.slice(0, PREVIEW_COUNT) ?? [];
 
   return (
     <section className="mx-auto max-w-6xl px-5 py-16">
@@ -27,9 +28,13 @@ export function NotesSection() {
       </div>
 
       <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-10">
-        {preview.map((n) => (
-          <NoteRow key={n.slug} note={n} />
-        ))}
+        {isPending ? (
+          Array.from({ length: PREVIEW_COUNT }).map((_, i) => <NoteRowSkeleton key={i} />)
+        ) : preview.length > 0 ? (
+          preview.map((n) => <NoteRow key={n.slug} note={n} />)
+        ) : (
+          <p className="text-sm text-muted-foreground">No notes yet — check back soon.</p>
+        )}
       </div>
     </section>
   );

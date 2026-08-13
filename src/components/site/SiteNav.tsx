@@ -2,6 +2,7 @@ import { Calendar, Menu, X } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
+import { SiteAvatar } from "@/components/site/SiteAvatar";
 
 const hashLinks = [{ href: "/#home", label: "Home" }];
 
@@ -17,8 +18,7 @@ export function SiteNav() {
     <header className="sticky top-0 z-50 border-b border-border bg-background/85 backdrop-blur-xl">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-4">
         <Link to="/" className="flex min-w-0 items-center gap-2.5 text-lg font-bold tracking-tight">
-          <img
-            src="/pias-islam.jpg"
+          <SiteAvatar
             alt="Pias Ahmed"
             width={36}
             height={36}

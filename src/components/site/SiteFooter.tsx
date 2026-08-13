@@ -1,4 +1,5 @@
 import { Facebook, Linkedin, Mail, Youtube } from "lucide-react";
+import { SiteAvatar } from "@/components/site/SiteAvatar";
 
 const columns = [
   {
@@ -19,15 +20,13 @@ const columns = [
   },
 ];
 
-
 export function SiteFooter() {
   return (
     <footer className="border-t border-border">
       <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4">
         <div>
           <p className="flex items-center gap-2.5 text-lg font-bold">
-            <img
-              src="/pias-islam.jpg"
+            <SiteAvatar
               alt="Pias Ahmed"
               width={40}
               height={40}

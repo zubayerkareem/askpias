@@ -40,8 +40,8 @@ function BookingPage() {
             Let's build your <span className="text-gradient">growth plan</span> together
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground">
-            Pick a day and time that works for you from the calendar below. The
-            call happens on Google Meet.
+            Pick a day and time that works for you from the calendar below. The call happens on
+            Google Meet.
           </p>
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">

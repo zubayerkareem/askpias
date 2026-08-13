@@ -62,9 +62,6 @@ export function CalBooking() {
   }, []);
 
   return (
-    <div
-      id="my-cal-inline-askpias"
-      style={{ width: "100%", height: "100%", overflow: "scroll" }}
-    />
+    <div id="my-cal-inline-askpias" style={{ width: "100%", height: "100%", overflow: "scroll" }} />
   );
 }

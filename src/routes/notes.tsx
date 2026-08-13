@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Testimonials } from "@/components/site/Testimonials";
-import { NoteRow } from "@/components/site/NoteRow";
-import { notes } from "@/lib/notes-data";
+import { NoteRow, NoteRowSkeleton } from "@/components/site/NoteRow";
+import { useNotes } from "@/hooks/use-notes";
 
 const title = "Notes — Marketing & Growth | Pias Ahmed";
 const description =
@@ -24,6 +24,8 @@ export const Route = createFileRoute("/notes")({
 });
 
 function Notes() {
+  const { data: notes, isPending } = useNotes();
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
@@ -31,9 +33,7 @@ function Notes() {
         <section className="border-b border-border">
           <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-20">
             <p className="eyebrow text-mint">Notes</p>
-            <h1 className="mt-4 text-3xl sm:text-4xl">
-              My notes on marketing and growth
-            </h1>
+            <h1 className="mt-4 text-3xl sm:text-4xl">My notes on marketing and growth</h1>
             <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
               Practical lessons pulled straight from real client work.
             </p>
@@ -42,9 +42,13 @@ function Notes() {
 
         <section className="mx-auto max-w-6xl px-5 py-16">
           <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-10">
-            {notes.map((n) => (
-              <NoteRow key={n.slug} note={n} />
-            ))}
+            {isPending ? (
+              Array.from({ length: 6 }).map((_, i) => <NoteRowSkeleton key={i} />)
+            ) : notes && notes.length > 0 ? (
+              notes.map((n) => <NoteRow key={n.slug} note={n} />)
+            ) : (
+              <p className="text-sm text-muted-foreground">No notes yet — check back soon.</p>
+            )}
           </div>
         </section>
 
