@@ -1,11 +1,16 @@
 import { Forward, Lock, MessageCircle, Zap } from "lucide-react";
 import { format } from "date-fns";
+import { Link } from "@tanstack/react-router";
 import { dummyImage, type Note } from "@/lib/notes-data";
 
 /** One row in the Notes list — shared between the /notes page and the homepage preview. */
 export function NoteRow({ note }: { note: Note }) {
   return (
-    <article className="group flex items-start gap-4 border-b border-border py-5 first:pt-0">
+    <Link
+      to="/notes/$slug"
+      params={{ slug: note.slug }}
+      className="group flex items-start gap-4 border-b border-border py-5 first:pt-0"
+    >
       <img
         src={note.image_url ?? dummyImage(note.slug)}
         alt=""
@@ -40,7 +45,7 @@ export function NoteRow({ note }: { note: Note }) {
         className="mt-1 hidden size-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100 sm:block"
         aria-hidden
       />
-    </article>
+    </Link>
   );
 }
 

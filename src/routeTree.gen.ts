@@ -11,15 +11,21 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BookingRouteImport } from './routes/booking'
-import { Route as CaseStudiesRouteImport } from './routes/case-studies'
 import { Route as FaqsRouteImport } from './routes/faqs'
-import { Route as NotesRouteImport } from './routes/notes'
 import { Route as AdminAuthenticatedRouteImport } from './routes/admin/_authenticated'
+import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies/index'
+import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies/$slug'
+import { Route as NotesIndexRouteImport } from './routes/notes/index'
+import { Route as NotesSlugRouteImport } from './routes/notes/$slug'
 import { Route as AdminAuthenticatedIndexRouteImport } from './routes/admin/_authenticated/index'
-import { Route as AdminAuthenticatedCaseStudiesRouteImport } from './routes/admin/_authenticated/case-studies'
 import { Route as AdminAuthenticatedMessagesRouteImport } from './routes/admin/_authenticated/messages'
-import { Route as AdminAuthenticatedNotesRouteImport } from './routes/admin/_authenticated/notes'
 import { Route as AdminAuthenticatedSettingsRouteImport } from './routes/admin/_authenticated/settings'
+import { Route as AdminAuthenticatedCaseStudiesIndexRouteImport } from './routes/admin/_authenticated/case-studies/index'
+import { Route as AdminAuthenticatedCaseStudiesIdRouteImport } from './routes/admin/_authenticated/case-studies/$id'
+import { Route as AdminAuthenticatedCaseStudiesNewRouteImport } from './routes/admin/_authenticated/case-studies/new'
+import { Route as AdminAuthenticatedNotesIndexRouteImport } from './routes/admin/_authenticated/notes/index'
+import { Route as AdminAuthenticatedNotesIdRouteImport } from './routes/admin/_authenticated/notes/$id'
+import { Route as AdminAuthenticatedNotesNewRouteImport } from './routes/admin/_authenticated/notes/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -31,19 +37,9 @@ const BookingRoute = BookingRouteImport.update({
   path: '/booking',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CaseStudiesRoute = CaseStudiesRouteImport.update({
-  id: '/case-studies',
-  path: '/case-studies',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const FaqsRoute = FaqsRouteImport.update({
   id: '/faqs',
   path: '/faqs',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NotesRoute = NotesRouteImport.update({
-  id: '/notes',
-  path: '/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAuthenticatedRoute = AdminAuthenticatedRouteImport.update({
@@ -51,122 +47,205 @@ const AdminAuthenticatedRoute = AdminAuthenticatedRouteImport.update({
   path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CaseStudiesIndexRoute = CaseStudiesIndexRouteImport.update({
+  id: '/case-studies/',
+  path: '/case-studies/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CaseStudiesSlugRoute = CaseStudiesSlugRouteImport.update({
+  id: '/case-studies/$slug',
+  path: '/case-studies/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesIndexRoute = NotesIndexRouteImport.update({
+  id: '/notes/',
+  path: '/notes/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesSlugRoute = NotesSlugRouteImport.update({
+  id: '/notes/$slug',
+  path: '/notes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAuthenticatedIndexRoute = AdminAuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminAuthenticatedRoute,
 } as any)
-const AdminAuthenticatedCaseStudiesRoute =
-  AdminAuthenticatedCaseStudiesRouteImport.update({
-    id: '/case-studies',
-    path: '/case-studies',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
 const AdminAuthenticatedMessagesRoute =
   AdminAuthenticatedMessagesRouteImport.update({
     id: '/messages',
     path: '/messages',
     getParentRoute: () => AdminAuthenticatedRoute,
   } as any)
-const AdminAuthenticatedNotesRoute = AdminAuthenticatedNotesRouteImport.update({
-  id: '/notes',
-  path: '/notes',
-  getParentRoute: () => AdminAuthenticatedRoute,
-} as any)
 const AdminAuthenticatedSettingsRoute =
   AdminAuthenticatedSettingsRouteImport.update({
     id: '/settings',
     path: '/settings',
     getParentRoute: () => AdminAuthenticatedRoute,
   } as any)
+const AdminAuthenticatedCaseStudiesIndexRoute =
+  AdminAuthenticatedCaseStudiesIndexRouteImport.update({
+    id: '/case-studies/',
+    path: '/case-studies/',
+    getParentRoute: () => AdminAuthenticatedRoute,
+  } as any)
+const AdminAuthenticatedCaseStudiesIdRoute =
+  AdminAuthenticatedCaseStudiesIdRouteImport.update({
+    id: '/case-studies/$id',
+    path: '/case-studies/$id',
+    getParentRoute: () => AdminAuthenticatedRoute,
+  } as any)
+const AdminAuthenticatedCaseStudiesNewRoute =
+  AdminAuthenticatedCaseStudiesNewRouteImport.update({
+    id: '/case-studies/new',
+    path: '/case-studies/new',
+    getParentRoute: () => AdminAuthenticatedRoute,
+  } as any)
+const AdminAuthenticatedNotesIndexRoute =
+  AdminAuthenticatedNotesIndexRouteImport.update({
+    id: '/notes/',
+    path: '/notes/',
+    getParentRoute: () => AdminAuthenticatedRoute,
+  } as any)
+const AdminAuthenticatedNotesIdRoute =
+  AdminAuthenticatedNotesIdRouteImport.update({
+    id: '/notes/$id',
+    path: '/notes/$id',
+    getParentRoute: () => AdminAuthenticatedRoute,
+  } as any)
+const AdminAuthenticatedNotesNewRoute =
+  AdminAuthenticatedNotesNewRouteImport.update({
+    id: '/notes/new',
+    path: '/notes/new',
+    getParentRoute: () => AdminAuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/booking': typeof BookingRoute
-  '/case-studies': typeof CaseStudiesRoute
   '/faqs': typeof FaqsRoute
-  '/notes': typeof NotesRoute
   '/admin': typeof AdminAuthenticatedRouteWithChildren
-  '/admin/case-studies': typeof AdminAuthenticatedCaseStudiesRoute
+  '/case-studies/$slug': typeof CaseStudiesSlugRoute
+  '/notes/$slug': typeof NotesSlugRoute
+  '/case-studies/': typeof CaseStudiesIndexRoute
+  '/notes/': typeof NotesIndexRoute
   '/admin/messages': typeof AdminAuthenticatedMessagesRoute
-  '/admin/notes': typeof AdminAuthenticatedNotesRoute
   '/admin/settings': typeof AdminAuthenticatedSettingsRoute
   '/admin/': typeof AdminAuthenticatedIndexRoute
+  '/admin/case-studies/$id': typeof AdminAuthenticatedCaseStudiesIdRoute
+  '/admin/case-studies/new': typeof AdminAuthenticatedCaseStudiesNewRoute
+  '/admin/notes/$id': typeof AdminAuthenticatedNotesIdRoute
+  '/admin/notes/new': typeof AdminAuthenticatedNotesNewRoute
+  '/admin/case-studies/': typeof AdminAuthenticatedCaseStudiesIndexRoute
+  '/admin/notes/': typeof AdminAuthenticatedNotesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/booking': typeof BookingRoute
-  '/case-studies': typeof CaseStudiesRoute
   '/faqs': typeof FaqsRoute
-  '/notes': typeof NotesRoute
-  '/admin/case-studies': typeof AdminAuthenticatedCaseStudiesRoute
+  '/case-studies/$slug': typeof CaseStudiesSlugRoute
+  '/notes/$slug': typeof NotesSlugRoute
+  '/case-studies': typeof CaseStudiesIndexRoute
+  '/notes': typeof NotesIndexRoute
   '/admin/messages': typeof AdminAuthenticatedMessagesRoute
-  '/admin/notes': typeof AdminAuthenticatedNotesRoute
   '/admin/settings': typeof AdminAuthenticatedSettingsRoute
   '/admin': typeof AdminAuthenticatedIndexRoute
+  '/admin/case-studies/$id': typeof AdminAuthenticatedCaseStudiesIdRoute
+  '/admin/case-studies/new': typeof AdminAuthenticatedCaseStudiesNewRoute
+  '/admin/notes/$id': typeof AdminAuthenticatedNotesIdRoute
+  '/admin/notes/new': typeof AdminAuthenticatedNotesNewRoute
+  '/admin/case-studies': typeof AdminAuthenticatedCaseStudiesIndexRoute
+  '/admin/notes': typeof AdminAuthenticatedNotesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/booking': typeof BookingRoute
-  '/case-studies': typeof CaseStudiesRoute
   '/faqs': typeof FaqsRoute
-  '/notes': typeof NotesRoute
   '/admin/_authenticated': typeof AdminAuthenticatedRouteWithChildren
-  '/admin/_authenticated/case-studies': typeof AdminAuthenticatedCaseStudiesRoute
+  '/case-studies/$slug': typeof CaseStudiesSlugRoute
+  '/notes/$slug': typeof NotesSlugRoute
+  '/case-studies/': typeof CaseStudiesIndexRoute
+  '/notes/': typeof NotesIndexRoute
   '/admin/_authenticated/messages': typeof AdminAuthenticatedMessagesRoute
-  '/admin/_authenticated/notes': typeof AdminAuthenticatedNotesRoute
   '/admin/_authenticated/settings': typeof AdminAuthenticatedSettingsRoute
   '/admin/_authenticated/': typeof AdminAuthenticatedIndexRoute
+  '/admin/_authenticated/case-studies/$id': typeof AdminAuthenticatedCaseStudiesIdRoute
+  '/admin/_authenticated/case-studies/new': typeof AdminAuthenticatedCaseStudiesNewRoute
+  '/admin/_authenticated/notes/$id': typeof AdminAuthenticatedNotesIdRoute
+  '/admin/_authenticated/notes/new': typeof AdminAuthenticatedNotesNewRoute
+  '/admin/_authenticated/case-studies/': typeof AdminAuthenticatedCaseStudiesIndexRoute
+  '/admin/_authenticated/notes/': typeof AdminAuthenticatedNotesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/booking'
-    | '/case-studies'
     | '/faqs'
-    | '/notes'
     | '/admin'
-    | '/admin/case-studies'
+    | '/case-studies/$slug'
+    | '/notes/$slug'
+    | '/case-studies/'
+    | '/notes/'
     | '/admin/messages'
-    | '/admin/notes'
     | '/admin/settings'
     | '/admin/'
+    | '/admin/case-studies/$id'
+    | '/admin/case-studies/new'
+    | '/admin/notes/$id'
+    | '/admin/notes/new'
+    | '/admin/case-studies/'
+    | '/admin/notes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/booking'
-    | '/case-studies'
     | '/faqs'
+    | '/case-studies/$slug'
+    | '/notes/$slug'
+    | '/case-studies'
     | '/notes'
-    | '/admin/case-studies'
     | '/admin/messages'
-    | '/admin/notes'
     | '/admin/settings'
     | '/admin'
+    | '/admin/case-studies/$id'
+    | '/admin/case-studies/new'
+    | '/admin/notes/$id'
+    | '/admin/notes/new'
+    | '/admin/case-studies'
+    | '/admin/notes'
   id:
     | '__root__'
     | '/'
     | '/booking'
-    | '/case-studies'
     | '/faqs'
-    | '/notes'
     | '/admin/_authenticated'
-    | '/admin/_authenticated/case-studies'
+    | '/case-studies/$slug'
+    | '/notes/$slug'
+    | '/case-studies/'
+    | '/notes/'
     | '/admin/_authenticated/messages'
-    | '/admin/_authenticated/notes'
     | '/admin/_authenticated/settings'
     | '/admin/_authenticated/'
+    | '/admin/_authenticated/case-studies/$id'
+    | '/admin/_authenticated/case-studies/new'
+    | '/admin/_authenticated/notes/$id'
+    | '/admin/_authenticated/notes/new'
+    | '/admin/_authenticated/case-studies/'
+    | '/admin/_authenticated/notes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BookingRoute: typeof BookingRoute
-  CaseStudiesRoute: typeof CaseStudiesRoute
   FaqsRoute: typeof FaqsRoute
-  NotesRoute: typeof NotesRoute
   AdminAuthenticatedRoute: typeof AdminAuthenticatedRouteWithChildren
+  CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
+  NotesSlugRoute: typeof NotesSlugRoute
+  CaseStudiesIndexRoute: typeof CaseStudiesIndexRoute
+  NotesIndexRoute: typeof NotesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -185,25 +264,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BookingRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/case-studies': {
-      id: '/case-studies'
-      path: '/case-studies'
-      fullPath: '/case-studies'
-      preLoaderRoute: typeof CaseStudiesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/faqs': {
       id: '/faqs'
       path: '/faqs'
       fullPath: '/faqs'
       preLoaderRoute: typeof FaqsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/notes': {
-      id: '/notes'
-      path: '/notes'
-      fullPath: '/notes'
-      preLoaderRoute: typeof NotesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/_authenticated': {
@@ -213,18 +278,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthenticatedRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/case-studies/': {
+      id: '/case-studies/'
+      path: '/case-studies'
+      fullPath: '/case-studies/'
+      preLoaderRoute: typeof CaseStudiesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/case-studies/$slug': {
+      id: '/case-studies/$slug'
+      path: '/case-studies/$slug'
+      fullPath: '/case-studies/$slug'
+      preLoaderRoute: typeof CaseStudiesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes/': {
+      id: '/notes/'
+      path: '/notes'
+      fullPath: '/notes/'
+      preLoaderRoute: typeof NotesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes/$slug': {
+      id: '/notes/$slug'
+      path: '/notes/$slug'
+      fullPath: '/notes/$slug'
+      preLoaderRoute: typeof NotesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/_authenticated/': {
       id: '/admin/_authenticated/'
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminAuthenticatedIndexRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/case-studies': {
-      id: '/admin/_authenticated/case-studies'
-      path: '/case-studies'
-      fullPath: '/admin/case-studies'
-      preLoaderRoute: typeof AdminAuthenticatedCaseStudiesRouteImport
       parentRoute: typeof AdminAuthenticatedRoute
     }
     '/admin/_authenticated/messages': {
@@ -234,13 +320,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthenticatedMessagesRouteImport
       parentRoute: typeof AdminAuthenticatedRoute
     }
-    '/admin/_authenticated/notes': {
-      id: '/admin/_authenticated/notes'
-      path: '/notes'
-      fullPath: '/admin/notes'
-      preLoaderRoute: typeof AdminAuthenticatedNotesRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
     '/admin/_authenticated/settings': {
       id: '/admin/_authenticated/settings'
       path: '/settings'
@@ -248,23 +327,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthenticatedSettingsRouteImport
       parentRoute: typeof AdminAuthenticatedRoute
     }
+    '/admin/_authenticated/case-studies/': {
+      id: '/admin/_authenticated/case-studies/'
+      path: '/case-studies'
+      fullPath: '/admin/case-studies/'
+      preLoaderRoute: typeof AdminAuthenticatedCaseStudiesIndexRouteImport
+      parentRoute: typeof AdminAuthenticatedRoute
+    }
+    '/admin/_authenticated/case-studies/$id': {
+      id: '/admin/_authenticated/case-studies/$id'
+      path: '/case-studies/$id'
+      fullPath: '/admin/case-studies/$id'
+      preLoaderRoute: typeof AdminAuthenticatedCaseStudiesIdRouteImport
+      parentRoute: typeof AdminAuthenticatedRoute
+    }
+    '/admin/_authenticated/case-studies/new': {
+      id: '/admin/_authenticated/case-studies/new'
+      path: '/case-studies/new'
+      fullPath: '/admin/case-studies/new'
+      preLoaderRoute: typeof AdminAuthenticatedCaseStudiesNewRouteImport
+      parentRoute: typeof AdminAuthenticatedRoute
+    }
+    '/admin/_authenticated/notes/': {
+      id: '/admin/_authenticated/notes/'
+      path: '/notes'
+      fullPath: '/admin/notes/'
+      preLoaderRoute: typeof AdminAuthenticatedNotesIndexRouteImport
+      parentRoute: typeof AdminAuthenticatedRoute
+    }
+    '/admin/_authenticated/notes/$id': {
+      id: '/admin/_authenticated/notes/$id'
+      path: '/notes/$id'
+      fullPath: '/admin/notes/$id'
+      preLoaderRoute: typeof AdminAuthenticatedNotesIdRouteImport
+      parentRoute: typeof AdminAuthenticatedRoute
+    }
+    '/admin/_authenticated/notes/new': {
+      id: '/admin/_authenticated/notes/new'
+      path: '/notes/new'
+      fullPath: '/admin/notes/new'
+      preLoaderRoute: typeof AdminAuthenticatedNotesNewRouteImport
+      parentRoute: typeof AdminAuthenticatedRoute
+    }
   }
 }
 
 interface AdminAuthenticatedRouteChildren {
-  AdminAuthenticatedCaseStudiesRoute: typeof AdminAuthenticatedCaseStudiesRoute
   AdminAuthenticatedMessagesRoute: typeof AdminAuthenticatedMessagesRoute
-  AdminAuthenticatedNotesRoute: typeof AdminAuthenticatedNotesRoute
   AdminAuthenticatedSettingsRoute: typeof AdminAuthenticatedSettingsRoute
   AdminAuthenticatedIndexRoute: typeof AdminAuthenticatedIndexRoute
+  AdminAuthenticatedCaseStudiesIdRoute: typeof AdminAuthenticatedCaseStudiesIdRoute
+  AdminAuthenticatedCaseStudiesNewRoute: typeof AdminAuthenticatedCaseStudiesNewRoute
+  AdminAuthenticatedNotesIdRoute: typeof AdminAuthenticatedNotesIdRoute
+  AdminAuthenticatedNotesNewRoute: typeof AdminAuthenticatedNotesNewRoute
+  AdminAuthenticatedCaseStudiesIndexRoute: typeof AdminAuthenticatedCaseStudiesIndexRoute
+  AdminAuthenticatedNotesIndexRoute: typeof AdminAuthenticatedNotesIndexRoute
 }
 
 const AdminAuthenticatedRouteChildren: AdminAuthenticatedRouteChildren = {
-  AdminAuthenticatedCaseStudiesRoute: AdminAuthenticatedCaseStudiesRoute,
   AdminAuthenticatedMessagesRoute: AdminAuthenticatedMessagesRoute,
-  AdminAuthenticatedNotesRoute: AdminAuthenticatedNotesRoute,
   AdminAuthenticatedSettingsRoute: AdminAuthenticatedSettingsRoute,
   AdminAuthenticatedIndexRoute: AdminAuthenticatedIndexRoute,
+  AdminAuthenticatedCaseStudiesIdRoute: AdminAuthenticatedCaseStudiesIdRoute,
+  AdminAuthenticatedCaseStudiesNewRoute: AdminAuthenticatedCaseStudiesNewRoute,
+  AdminAuthenticatedNotesIdRoute: AdminAuthenticatedNotesIdRoute,
+  AdminAuthenticatedNotesNewRoute: AdminAuthenticatedNotesNewRoute,
+  AdminAuthenticatedCaseStudiesIndexRoute:
+    AdminAuthenticatedCaseStudiesIndexRoute,
+  AdminAuthenticatedNotesIndexRoute: AdminAuthenticatedNotesIndexRoute,
 }
 
 const AdminAuthenticatedRouteWithChildren =
@@ -273,10 +403,12 @@ const AdminAuthenticatedRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BookingRoute: BookingRoute,
-  CaseStudiesRoute: CaseStudiesRoute,
   FaqsRoute: FaqsRoute,
-  NotesRoute: NotesRoute,
   AdminAuthenticatedRoute: AdminAuthenticatedRouteWithChildren,
+  CaseStudiesSlugRoute: CaseStudiesSlugRoute,
+  NotesSlugRoute: NotesSlugRoute,
+  CaseStudiesIndexRoute: CaseStudiesIndexRoute,
+  NotesIndexRoute: NotesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

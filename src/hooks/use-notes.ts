@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryOptions, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import type { Note, NoteInput } from "@/lib/notes-data";
 
@@ -18,6 +18,38 @@ export function useNotes() {
     },
     staleTime: 60_000,
   });
+}
+
+export const noteByIdQueryOptions = (id: string) =>
+  queryOptions({
+    queryKey: [...NOTES_KEY, id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("notes").select("*").eq("id", id).single();
+      if (error) throw error;
+      return data as Note;
+    },
+  });
+
+export function useNote(id: string | undefined) {
+  return useQuery({ ...noteByIdQueryOptions(id ?? ""), enabled: !!id });
+}
+
+export const noteBySlugQueryOptions = (slug: string) =>
+  queryOptions({
+    queryKey: [...NOTES_KEY, "slug", slug],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("notes")
+        .select("*")
+        .eq("slug", slug)
+        .maybeSingle();
+      if (error) throw error;
+      return data as Note | null;
+    },
+  });
+
+export function useNoteBySlug(slug: string) {
+  return useQuery(noteBySlugQueryOptions(slug));
 }
 
 export function useCreateNote() {

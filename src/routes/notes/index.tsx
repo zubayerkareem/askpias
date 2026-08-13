@@ -9,7 +9,7 @@ const title = "Notes — Marketing & Growth | Pias Ahmed";
 const description =
   "Practical notes on marketing strategy, performance ads, conversion funnels and brand positioning, written from real client work.";
 
-export const Route = createFileRoute("/notes")({
+export const Route = createFileRoute("/notes/")({
   head: () => ({
     meta: [
       { title },
