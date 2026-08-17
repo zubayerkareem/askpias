@@ -64,6 +64,8 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
           <a
             href={fileUrl}
             download
+            target="_blank"
+            rel="noopener noreferrer"
             className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
           >
             <Download className="size-4" />
