@@ -136,10 +136,15 @@ export function NoteEditorForm({ note }: { note?: Note }) {
       }
       const lead_magnet_cta_label = values.lead_magnet_cta_label.trim() || null;
 
+      // lead_magnet_url is a transient UI-only field (the "paste a link" input) —
+      // there is no such column in `notes` (only lead_magnet_file_url), so it must
+      // never be spread into the Supabase payload or the request is rejected.
+      const { lead_magnet_url: _leadMagnetUrl, ...noteValues } = values;
+
       if (note) {
         await updateNote.mutateAsync({
           id: note.id,
-          ...values,
+          ...noteValues,
           sort_order: note.sort_order,
           image_url,
           lead_magnet_file_url,
@@ -148,7 +153,7 @@ export function NoteEditorForm({ note }: { note?: Note }) {
       } else {
         const nextSortOrder = (notes?.at(-1)?.sort_order ?? 0) + 10;
         await createNote.mutateAsync({
-          ...values,
+          ...noteValues,
           sort_order: nextSortOrder,
           image_url,
           lead_magnet_file_url,
