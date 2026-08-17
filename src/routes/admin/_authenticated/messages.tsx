@@ -9,7 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Switch } from "@/components/ui/switch";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { useMarkMessageRead, useMessages } from "@/hooks/use-messages";
+import { usePagedList } from "@/hooks/use-paged-list";
 
 export const Route = createFileRoute("/admin/_authenticated/messages")({
   component: MessagesPage,
@@ -18,6 +20,7 @@ export const Route = createFileRoute("/admin/_authenticated/messages")({
 function MessagesPage() {
   const { data: messages, isPending } = useMessages();
   const markRead = useMarkMessageRead();
+  const { pageItems, page, setPage, totalPages } = usePagedList(messages, 10);
 
   return (
     <div>
@@ -41,7 +44,7 @@ function MessagesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {messages.map((m) => (
+              {pageItems.map((m) => (
                 <TableRow key={m.id}>
                   <TableCell className="max-w-xs">{m.question}</TableCell>
                   <TableCell>{m.phone}</TableCell>
@@ -61,6 +64,9 @@ function MessagesPage() {
           </Table>
         ) : (
           <p className="p-6 text-sm text-muted-foreground">No messages yet.</p>
+        )}
+        {messages && messages.length > 0 && totalPages > 1 && (
+          <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         )}
       </div>
     </div>

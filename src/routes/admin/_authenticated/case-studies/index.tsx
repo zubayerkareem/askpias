@@ -21,7 +21,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { useCaseStudies, useDeleteCaseStudy, type CaseStudy } from "@/hooks/use-case-studies";
+import { usePagedList } from "@/hooks/use-paged-list";
 import { dummyImage } from "@/lib/notes-data";
 
 export const Route = createFileRoute("/admin/_authenticated/case-studies/")({
@@ -32,6 +34,7 @@ function CaseStudiesAdminPage() {
   const { data: cases, isPending } = useCaseStudies();
   const deleteCaseStudy = useDeleteCaseStudy();
   const [deleteTarget, setDeleteTarget] = useState<CaseStudy | null>(null);
+  const { pageItems, page, setPage, totalPages } = usePagedList(cases, 10);
 
   const onConfirmDelete = async () => {
     if (!deleteTarget) return;
@@ -73,7 +76,7 @@ function CaseStudiesAdminPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {cases.map((c) => (
+              {pageItems.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell className="flex items-center gap-3">
                     <img
@@ -105,6 +108,9 @@ function CaseStudiesAdminPage() {
           </Table>
         ) : (
           <p className="p-6 text-sm text-muted-foreground">No case studies yet.</p>
+        )}
+        {cases && cases.length > 0 && totalPages > 1 && (
+          <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         )}
       </div>
 

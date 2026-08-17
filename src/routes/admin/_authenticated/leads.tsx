@@ -8,7 +8,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { useLeadMagnetSubmissions } from "@/hooks/use-lead-magnets";
+import { usePagedList } from "@/hooks/use-paged-list";
 
 export const Route = createFileRoute("/admin/_authenticated/leads")({
   component: LeadsPage,
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/admin/_authenticated/leads")({
 
 function LeadsPage() {
   const { data: submissions, isPending } = useLeadMagnetSubmissions();
+  const { pageItems, page, setPage, totalPages } = usePagedList(submissions, 10);
 
   return (
     <div>
@@ -37,7 +40,7 @@ function LeadsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {submissions.map((s) => (
+              {pageItems.map((s) => (
                 <TableRow key={s.id}>
                   <TableCell>{s.name}</TableCell>
                   <TableCell>{s.email}</TableCell>
@@ -64,6 +67,9 @@ function LeadsPage() {
           </Table>
         ) : (
           <p className="p-6 text-sm text-muted-foreground">No leads yet.</p>
+        )}
+        {submissions && submissions.length > 0 && totalPages > 1 && (
+          <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         )}
       </div>
     </div>
