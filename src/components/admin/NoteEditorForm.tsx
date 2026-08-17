@@ -39,6 +39,13 @@ const noteSchema = z.object({
   featured: z.boolean(),
   locked: z.boolean(),
   lead_magnet_cta_label: z.string().trim(),
+  lead_magnet_url: z
+    .string()
+    .trim()
+    .refine(
+      (val) => val === "" || /^https?:\/\//i.test(val),
+      "Enter a valid URL starting with http:// or https://",
+    ),
 });
 
 type NoteForm = z.infer<typeof noteSchema>;
@@ -54,6 +61,7 @@ const emptyValues: NoteForm = {
   featured: false,
   locked: false,
   lead_magnet_cta_label: "",
+  lead_magnet_url: "",
 };
 
 /** Full-page create/edit form, shared by /admin/notes/new and /admin/notes/$id. */
@@ -88,6 +96,7 @@ export function NoteEditorForm({ note }: { note?: Note }) {
           featured: note.featured,
           locked: note.locked,
           lead_magnet_cta_label: note.lead_magnet_cta_label ?? "",
+          lead_magnet_url: "",
         }
       : emptyValues,
   });
@@ -122,6 +131,8 @@ export function NoteEditorForm({ note }: { note?: Note }) {
       let lead_magnet_file_url = existingLeadMagnetUrl;
       if (leadMagnetFile) {
         lead_magnet_file_url = await uploadMedia(leadMagnetFile, "lead-magnets", values.slug);
+      } else if (values.lead_magnet_url.trim()) {
+        lead_magnet_file_url = values.lead_magnet_url.trim();
       }
       const lead_magnet_cta_label = values.lead_magnet_cta_label.trim() || null;
 
@@ -346,6 +357,20 @@ export function NoteEditorForm({ note }: { note?: Note }) {
                 ) : null}
                 <Input type="file" onChange={onLeadMagnetFileChange} />
               </div>
+              <p className="text-center text-xs text-muted-foreground">or</p>
+              <FormField
+                control={form.control}
+                name="lead_magnet_url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Paste a direct download link</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com/file.pdf" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </aside>
         </div>
