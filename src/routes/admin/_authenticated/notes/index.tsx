@@ -22,7 +22,9 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { AdminPagination } from "@/components/admin/AdminPagination";
 import { useDeleteNote, useNotes } from "@/hooks/use-notes";
+import { usePagedList } from "@/hooks/use-paged-list";
 import { dummyImage, type Note } from "@/lib/notes-data";
 
 export const Route = createFileRoute("/admin/_authenticated/notes/")({
@@ -33,6 +35,7 @@ function NotesAdminPage() {
   const { data: notes, isPending } = useNotes();
   const deleteNote = useDeleteNote();
   const [deleteTarget, setDeleteTarget] = useState<Note | null>(null);
+  const { pageItems, page, setPage, totalPages } = usePagedList(notes, 10);
 
   const onConfirmDelete = async () => {
     if (!deleteTarget) return;
@@ -78,7 +81,7 @@ function NotesAdminPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {notes.map((n) => (
+              {pageItems.map((n) => (
                 <TableRow key={n.id}>
                   <TableCell className="flex items-center gap-3">
                     <img
@@ -117,6 +120,9 @@ function NotesAdminPage() {
           </Table>
         ) : (
           <p className="p-6 text-sm text-muted-foreground">No notes yet.</p>
+        )}
+        {notes && notes.length > 0 && totalPages > 1 && (
+          <AdminPagination page={page} totalPages={totalPages} onPageChange={setPage} />
         )}
       </div>
 

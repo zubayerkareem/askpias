@@ -3,7 +3,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Download } from "lucide-react";
+import { Download, Gift } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -13,6 +20,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { DEFAULT_LEAD_MAGNET_CTA_LABEL, useSubmitLeadMagnetLead } from "@/hooks/use-lead-magnets";
 
 const leadMagnetSchema = z.object({
@@ -33,6 +41,7 @@ type LeadMagnetFormProps = {
 };
 
 export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProps) {
+  const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const form = useForm<LeadMagnetFormValues>({
     resolver: zodResolver(leadMagnetSchema),
@@ -48,6 +57,7 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
         onSuccess: () => {
           toast.success("You're in — grab your download below.");
           setSubmitted(true);
+          setOpen(false);
         },
         onError: () => {
           toast.error("Something went wrong — please try again.");
@@ -56,42 +66,49 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
     );
   };
 
+  if (submitted) {
+    return (
+      <div className="mt-10 rounded-2xl border border-border panel-card p-6 text-center sm:p-8">
+        <p className="font-medium">Your download is ready.</p>
+        <a
+          href={fileUrl}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          <Download className="size-4" />
+          {label}
+        </a>
+      </div>
+    );
+  }
+
   return (
-    <div className="mt-10 rounded-2xl border border-border panel-card p-6 sm:p-8">
-      {submitted ? (
-        <div className="text-center">
-          <p className="font-medium">Your download is ready.</p>
-          <a
-            href={fileUrl}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
-          >
+    <div className="mt-10">
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button size="lg" className="gap-1.5">
             <Download className="size-4" />
             {label}
-          </a>
-        </div>
-      ) : (
-        <>
-          <p className="font-medium">Get access</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Enter your details to unlock this download.
-          </p>
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-accent">
+            <Gift className="size-5" />
+          </span>
+          <DialogTitle>Get access</DialogTitle>
+          <DialogDescription>Enter your details to unlock this download.</DialogDescription>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 grid gap-4 sm:grid-cols-2">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
-                    <FormLabel className="sr-only">Name</FormLabel>
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Your name"
-                        className="rounded-xl border-border bg-surface-2"
-                        {...field}
-                      />
+                      <Input placeholder="Your name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -102,13 +119,9 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
                 name="phone"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="sr-only">Phone number</FormLabel>
+                    <FormLabel>Phone number</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="01XXXXXXXXX"
-                        className="rounded-xl border-border bg-surface-2"
-                        {...field}
-                      />
+                      <Input placeholder="01XXXXXXXXX" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,30 +132,21 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="sr-only">Email</FormLabel>
+                    <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="you@example.com"
-                        className="rounded-xl border-border bg-surface-2"
-                        {...field}
-                      />
+                      <Input type="email" placeholder="you@example.com" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <button
-                type="submit"
-                disabled={submitLead.isPending}
-                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:col-span-2 sm:justify-self-end"
-              >
+              <Button type="submit" disabled={submitLead.isPending} className="w-full">
                 {submitLead.isPending ? "Submitting..." : label}
-              </button>
+              </Button>
             </form>
           </Form>
-        </>
-      )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
