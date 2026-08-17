@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import { useCreateNote, useNotes, useUpdateNote } from "@/hooks/use-notes";
+import { DEFAULT_LEAD_MAGNET_CTA_LABEL } from "@/hooks/use-lead-magnets";
 import { dummyImage, type Note } from "@/lib/notes-data";
 import { uploadMedia } from "@/lib/storage";
 
@@ -37,6 +38,7 @@ const noteSchema = z.object({
   comment_count: z.coerce.number().int().min(0),
   featured: z.boolean(),
   locked: z.boolean(),
+  lead_magnet_cta_label: z.string().trim(),
 });
 
 type NoteForm = z.infer<typeof noteSchema>;
@@ -51,6 +53,7 @@ const emptyValues: NoteForm = {
   comment_count: 0,
   featured: false,
   locked: false,
+  lead_magnet_cta_label: "",
 };
 
 /** Full-page create/edit form, shared by /admin/notes/new and /admin/notes/$id. */
@@ -62,6 +65,14 @@ export function NoteEditorForm({ note }: { note?: Note }) {
 
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(note?.image_url ?? null);
+
+  const [leadMagnetFile, setLeadMagnetFile] = useState<File | null>(null);
+  const [leadMagnetFileName, setLeadMagnetFileName] = useState<string | null>(
+    note?.lead_magnet_file_url ? (note.lead_magnet_file_url.split("/").pop() ?? null) : null,
+  );
+  const [existingLeadMagnetUrl, setExistingLeadMagnetUrl] = useState<string | null>(
+    note?.lead_magnet_file_url ?? null,
+  );
 
   const form = useForm<NoteForm>({
     resolver: zodResolver(noteSchema),
@@ -76,6 +87,7 @@ export function NoteEditorForm({ note }: { note?: Note }) {
           comment_count: note.comment_count,
           featured: note.featured,
           locked: note.locked,
+          lead_magnet_cta_label: note.lead_magnet_cta_label ?? "",
         }
       : emptyValues,
   });
@@ -87,6 +99,19 @@ export function NoteEditorForm({ note }: { note?: Note }) {
     setImagePreview(URL.createObjectURL(file));
   };
 
+  const onLeadMagnetFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setLeadMagnetFile(file);
+    setLeadMagnetFileName(file.name);
+  };
+
+  const onRemoveLeadMagnet = () => {
+    setLeadMagnetFile(null);
+    setLeadMagnetFileName(null);
+    setExistingLeadMagnetUrl(null);
+  };
+
   const onSubmit = async (values: NoteForm) => {
     try {
       let image_url = note?.image_url ?? null;
@@ -94,12 +119,20 @@ export function NoteEditorForm({ note }: { note?: Note }) {
         image_url = await uploadMedia(imageFile, "notes", values.slug);
       }
 
+      let lead_magnet_file_url = existingLeadMagnetUrl;
+      if (leadMagnetFile) {
+        lead_magnet_file_url = await uploadMedia(leadMagnetFile, "lead-magnets", values.slug);
+      }
+      const lead_magnet_cta_label = values.lead_magnet_cta_label.trim() || null;
+
       if (note) {
         await updateNote.mutateAsync({
           id: note.id,
           ...values,
           sort_order: note.sort_order,
           image_url,
+          lead_magnet_file_url,
+          lead_magnet_cta_label,
         });
       } else {
         const nextSortOrder = (notes?.at(-1)?.sort_order ?? 0) + 10;
@@ -107,6 +140,8 @@ export function NoteEditorForm({ note }: { note?: Note }) {
           ...values,
           sort_order: nextSortOrder,
           image_url,
+          lead_magnet_file_url,
+          lead_magnet_cta_label,
         });
       }
       toast.success(note ? "Note updated." : "Note created.");
@@ -272,6 +307,44 @@ export function NoteEditorForm({ note }: { note?: Note }) {
                   className="h-32 w-full rounded-lg object-cover"
                 />
                 <Input type="file" accept="image/*" onChange={onFileChange} />
+              </div>
+            </div>
+
+            <div className="space-y-4 rounded-xl border border-border panel-card p-5">
+              <div>
+                <Label>Lead magnet (optional)</Label>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Attach a file visitors can download after submitting their contact info.
+                </p>
+              </div>
+              <FormField
+                control={form.control}
+                name="lead_magnet_cta_label"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Button label</FormLabel>
+                    <FormControl>
+                      <Input placeholder={DEFAULT_LEAD_MAGNET_CTA_LABEL} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="space-y-2">
+                <Label>File</Label>
+                {leadMagnetFileName ? (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="truncate text-muted-foreground">{leadMagnetFileName}</span>
+                    <button
+                      type="button"
+                      onClick={onRemoveLeadMagnet}
+                      className="text-xs text-destructive"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ) : null}
+                <Input type="file" onChange={onLeadMagnetFileChange} />
               </div>
             </div>
           </aside>

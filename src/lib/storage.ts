@@ -5,7 +5,7 @@ const BUCKET = "media";
 /** Uploads a file to the shared `media` storage bucket and returns its public URL. */
 export async function uploadMedia(
   file: File,
-  folder: "hero" | "notes" | "case-studies",
+  folder: "hero" | "notes" | "case-studies" | "lead-magnets",
   prefix?: string,
 ): Promise<string> {
   const cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, "-");
