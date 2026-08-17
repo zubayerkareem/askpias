@@ -1,12 +1,13 @@
 import type { ReactNode } from "react";
 import { Link } from "@tanstack/react-router";
-import { FileText, LayoutGrid, LogOut, Mail, Settings } from "lucide-react";
+import { Download, FileText, LayoutGrid, LogOut, Mail, Settings } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 const navItems = [
   { to: "/admin/notes", label: "Notes", icon: FileText },
   { to: "/admin/case-studies", label: "Case studies", icon: LayoutGrid },
   { to: "/admin/messages", label: "Messages", icon: Mail },
+  { to: "/admin/leads", label: "Leads", icon: Download },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ] as const;
 

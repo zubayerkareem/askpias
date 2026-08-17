@@ -10,6 +10,8 @@ export type Note = {
   content: string; // Tiptap HTML output; "" when not yet written
   category: string;
   image_url: string | null;
+  lead_magnet_file_url: string | null; // null => no lead magnet attached
+  lead_magnet_cta_label: string | null; // null => client falls back to "Download"
   featured: boolean;
   locked: boolean;
   comment_count: number;
@@ -31,4 +33,8 @@ export type NoteInput = Pick<
   | "comment_count"
   | "published_at"
   | "sort_order"
-> & { image_url?: string | null };
+> & {
+  image_url?: string | null;
+  lead_magnet_file_url?: string | null;
+  lead_magnet_cta_label?: string | null;
+};

@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { Lock, MessageCircle, Zap } from "lucide-react";
 import { SiteNav } from "@/components/site/SiteNav";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { LeadMagnetForm } from "@/components/site/LeadMagnetForm";
 import { dummyImage } from "@/lib/notes-data";
 import { noteBySlugQueryOptions } from "@/hooks/use-notes";
 
@@ -85,6 +86,14 @@ function NoteDetail() {
             />
           ) : (
             <p className="mt-8 text-muted-foreground">{note.excerpt}</p>
+          )}
+
+          {!note.locked && note.lead_magnet_file_url && (
+            <LeadMagnetForm
+              noteId={note.id}
+              ctaLabel={note.lead_magnet_cta_label}
+              fileUrl={note.lead_magnet_file_url}
+            />
           )}
         </article>
       </main>

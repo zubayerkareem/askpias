@@ -18,6 +18,7 @@ import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies/$slug
 import { Route as NotesIndexRouteImport } from './routes/notes/index'
 import { Route as NotesSlugRouteImport } from './routes/notes/$slug'
 import { Route as AdminAuthenticatedIndexRouteImport } from './routes/admin/_authenticated/index'
+import { Route as AdminAuthenticatedLeadsRouteImport } from './routes/admin/_authenticated/leads'
 import { Route as AdminAuthenticatedMessagesRouteImport } from './routes/admin/_authenticated/messages'
 import { Route as AdminAuthenticatedSettingsRouteImport } from './routes/admin/_authenticated/settings'
 import { Route as AdminAuthenticatedCaseStudiesIndexRouteImport } from './routes/admin/_authenticated/case-studies/index'
@@ -70,6 +71,11 @@ const NotesSlugRoute = NotesSlugRouteImport.update({
 const AdminAuthenticatedIndexRoute = AdminAuthenticatedIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => AdminAuthenticatedRoute,
+} as any)
+const AdminAuthenticatedLeadsRoute = AdminAuthenticatedLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
   getParentRoute: () => AdminAuthenticatedRoute,
 } as any)
 const AdminAuthenticatedMessagesRoute =
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/notes/$slug': typeof NotesSlugRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/notes/': typeof NotesIndexRoute
+  '/admin/leads': typeof AdminAuthenticatedLeadsRoute
   '/admin/messages': typeof AdminAuthenticatedMessagesRoute
   '/admin/settings': typeof AdminAuthenticatedSettingsRoute
   '/admin/': typeof AdminAuthenticatedIndexRoute
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/notes/$slug': typeof NotesSlugRoute
   '/case-studies': typeof CaseStudiesIndexRoute
   '/notes': typeof NotesIndexRoute
+  '/admin/leads': typeof AdminAuthenticatedLeadsRoute
   '/admin/messages': typeof AdminAuthenticatedMessagesRoute
   '/admin/settings': typeof AdminAuthenticatedSettingsRoute
   '/admin': typeof AdminAuthenticatedIndexRoute
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/notes/$slug': typeof NotesSlugRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/notes/': typeof NotesIndexRoute
+  '/admin/_authenticated/leads': typeof AdminAuthenticatedLeadsRoute
   '/admin/_authenticated/messages': typeof AdminAuthenticatedMessagesRoute
   '/admin/_authenticated/settings': typeof AdminAuthenticatedSettingsRoute
   '/admin/_authenticated/': typeof AdminAuthenticatedIndexRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/notes/$slug'
     | '/case-studies/'
     | '/notes/'
+    | '/admin/leads'
     | '/admin/messages'
     | '/admin/settings'
     | '/admin/'
@@ -207,6 +217,7 @@ export interface FileRouteTypes {
     | '/notes/$slug'
     | '/case-studies'
     | '/notes'
+    | '/admin/leads'
     | '/admin/messages'
     | '/admin/settings'
     | '/admin'
@@ -226,6 +237,7 @@ export interface FileRouteTypes {
     | '/notes/$slug'
     | '/case-studies/'
     | '/notes/'
+    | '/admin/_authenticated/leads'
     | '/admin/_authenticated/messages'
     | '/admin/_authenticated/settings'
     | '/admin/_authenticated/'
@@ -313,6 +325,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuthenticatedIndexRouteImport
       parentRoute: typeof AdminAuthenticatedRoute
     }
+    '/admin/_authenticated/leads': {
+      id: '/admin/_authenticated/leads'
+      path: '/leads'
+      fullPath: '/admin/leads'
+      preLoaderRoute: typeof AdminAuthenticatedLeadsRouteImport
+      parentRoute: typeof AdminAuthenticatedRoute
+    }
     '/admin/_authenticated/messages': {
       id: '/admin/_authenticated/messages'
       path: '/messages'
@@ -373,6 +392,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminAuthenticatedRouteChildren {
+  AdminAuthenticatedLeadsRoute: typeof AdminAuthenticatedLeadsRoute
   AdminAuthenticatedMessagesRoute: typeof AdminAuthenticatedMessagesRoute
   AdminAuthenticatedSettingsRoute: typeof AdminAuthenticatedSettingsRoute
   AdminAuthenticatedIndexRoute: typeof AdminAuthenticatedIndexRoute
@@ -385,6 +405,7 @@ interface AdminAuthenticatedRouteChildren {
 }
 
 const AdminAuthenticatedRouteChildren: AdminAuthenticatedRouteChildren = {
+  AdminAuthenticatedLeadsRoute: AdminAuthenticatedLeadsRoute,
   AdminAuthenticatedMessagesRoute: AdminAuthenticatedMessagesRoute,
   AdminAuthenticatedSettingsRoute: AdminAuthenticatedSettingsRoute,
   AdminAuthenticatedIndexRoute: AdminAuthenticatedIndexRoute,
