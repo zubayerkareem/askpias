@@ -12,6 +12,8 @@ export type Note = {
   image_url: string | null;
   lead_magnet_file_url: string | null; // null => no lead magnet attached
   lead_magnet_cta_label: string | null; // null => client falls back to "Download"
+  lead_magnet_payment_required: boolean;
+  lead_magnet_price: number | null; // BDT, required when lead_magnet_payment_required
   featured: boolean;
   locked: boolean;
   comment_count: number;
@@ -37,4 +39,6 @@ export type NoteInput = Pick<
   image_url?: string | null;
   lead_magnet_file_url?: string | null;
   lead_magnet_cta_label?: string | null;
+  lead_magnet_payment_required?: boolean;
+  lead_magnet_price?: number | null;
 };

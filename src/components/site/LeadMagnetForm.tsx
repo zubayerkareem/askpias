@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_LEAD_MAGNET_CTA_LABEL, useSubmitLeadMagnetLead } from "@/hooks/use-lead-magnets";
+import { useInitiateLeadMagnetPayment } from "@/hooks/use-lead-magnet-payment";
 
 const leadMagnetSchema = z.object({
   name: z.string().trim().min(1, "Please enter your name."),
@@ -38,9 +39,17 @@ type LeadMagnetFormProps = {
   noteId: string;
   ctaLabel: string | null;
   fileUrl: string;
+  paymentRequired: boolean;
+  price: number | null;
 };
 
-export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProps) {
+export function LeadMagnetForm({
+  noteId,
+  ctaLabel,
+  fileUrl,
+  paymentRequired,
+  price,
+}: LeadMagnetFormProps) {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const form = useForm<LeadMagnetFormValues>({
@@ -48,9 +57,27 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
     defaultValues: { name: "", phone: "", email: "" },
   });
   const submitLead = useSubmitLeadMagnetLead();
+  const initiatePayment = useInitiateLeadMagnetPayment();
+  const isPending = submitLead.isPending || initiatePayment.isPending;
   const label = ctaLabel || DEFAULT_LEAD_MAGNET_CTA_LABEL;
+  const buttonLabel = paymentRequired && price ? `${label} — ৳${price}` : label;
 
   const onSubmit = (values: LeadMagnetFormValues) => {
+    if (paymentRequired) {
+      initiatePayment.mutate(
+        { noteId, ...values },
+        {
+          onSuccess: ({ redirectUrl }) => {
+            window.location.href = redirectUrl;
+          },
+          onError: () => {
+            toast.error("Something went wrong — please try again.");
+          },
+        },
+      );
+      return;
+    }
+
     submitLead.mutate(
       { note_id: noteId, ...values },
       {
@@ -90,7 +117,7 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
         <DialogTrigger asChild>
           <Button size="lg" className="gap-1.5">
             <Download className="size-4" />
-            {label}
+            {buttonLabel}
           </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
@@ -98,7 +125,11 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
             <Gift className="size-5" />
           </span>
           <DialogTitle>Get access</DialogTitle>
-          <DialogDescription>Enter your details to unlock this download.</DialogDescription>
+          <DialogDescription>
+            {paymentRequired
+              ? `Enter your details — you'll be taken to a secure payment page to complete your ৳${price} purchase.`
+              : "Enter your details to unlock this download."}
+          </DialogDescription>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -140,8 +171,12 @@ export function LeadMagnetForm({ noteId, ctaLabel, fileUrl }: LeadMagnetFormProp
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={submitLead.isPending} className="w-full">
-                {submitLead.isPending ? "Submitting..." : label}
+              <Button type="submit" disabled={isPending} className="w-full">
+                {isPending
+                  ? paymentRequired
+                    ? "Redirecting to payment..."
+                    : "Submitting..."
+                  : buttonLabel}
               </Button>
             </form>
           </Form>

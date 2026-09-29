@@ -24,29 +24,36 @@ import { DEFAULT_LEAD_MAGNET_CTA_LABEL } from "@/hooks/use-lead-magnets";
 import { dummyImage, type Note } from "@/lib/notes-data";
 import { uploadMedia } from "@/lib/storage";
 
-const noteSchema = z.object({
-  title: z.string().trim().min(1, "Required"),
-  slug: z
-    .string()
-    .trim()
-    .min(1, "Required")
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Lowercase letters, numbers and hyphens only"),
-  excerpt: z.string().trim().min(1, "Required"),
-  content: z.string(),
-  category: z.string().trim().min(1, "Required"),
-  published_at: z.string().min(1, "Required"),
-  comment_count: z.coerce.number().int().min(0),
-  featured: z.boolean(),
-  locked: z.boolean(),
-  lead_magnet_cta_label: z.string().trim(),
-  lead_magnet_url: z
-    .string()
-    .trim()
-    .refine(
-      (val) => val === "" || /^https?:\/\//i.test(val),
-      "Enter a valid URL starting with http:// or https://",
-    ),
-});
+const noteSchema = z
+  .object({
+    title: z.string().trim().min(1, "Required"),
+    slug: z
+      .string()
+      .trim()
+      .min(1, "Required")
+      .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Lowercase letters, numbers and hyphens only"),
+    excerpt: z.string().trim().min(1, "Required"),
+    content: z.string(),
+    category: z.string().trim().min(1, "Required"),
+    published_at: z.string().min(1, "Required"),
+    comment_count: z.coerce.number().int().min(0),
+    featured: z.boolean(),
+    locked: z.boolean(),
+    lead_magnet_cta_label: z.string().trim(),
+    lead_magnet_url: z
+      .string()
+      .trim()
+      .refine(
+        (val) => val === "" || /^https?:\/\//i.test(val),
+        "Enter a valid URL starting with http:// or https://",
+      ),
+    lead_magnet_payment_required: z.boolean(),
+    lead_magnet_price: z.coerce.number().min(0),
+  })
+  .refine((values) => !values.lead_magnet_payment_required || values.lead_magnet_price > 0, {
+    message: "Enter a price greater than 0",
+    path: ["lead_magnet_price"],
+  });
 
 type NoteForm = z.infer<typeof noteSchema>;
 
@@ -62,6 +69,8 @@ const emptyValues: NoteForm = {
   locked: false,
   lead_magnet_cta_label: "",
   lead_magnet_url: "",
+  lead_magnet_payment_required: false,
+  lead_magnet_price: 0,
 };
 
 /** Full-page create/edit form, shared by /admin/notes/new and /admin/notes/$id. */
@@ -97,6 +106,8 @@ export function NoteEditorForm({ note }: { note?: Note }) {
           locked: note.locked,
           lead_magnet_cta_label: note.lead_magnet_cta_label ?? "",
           lead_magnet_url: "",
+          lead_magnet_payment_required: note.lead_magnet_payment_required,
+          lead_magnet_price: note.lead_magnet_price ?? 0,
         }
       : emptyValues,
   });
@@ -135,11 +146,18 @@ export function NoteEditorForm({ note }: { note?: Note }) {
         lead_magnet_file_url = values.lead_magnet_url.trim();
       }
       const lead_magnet_cta_label = values.lead_magnet_cta_label.trim() || null;
+      const lead_magnet_price = values.lead_magnet_payment_required
+        ? values.lead_magnet_price
+        : null;
 
       // lead_magnet_url is a transient UI-only field (the "paste a link" input) —
       // there is no such column in `notes` (only lead_magnet_file_url), so it must
       // never be spread into the Supabase payload or the request is rejected.
-      const { lead_magnet_url: _leadMagnetUrl, ...noteValues } = values;
+      const {
+        lead_magnet_url: _leadMagnetUrl,
+        lead_magnet_price: _leadMagnetPrice,
+        ...noteValues
+      } = values;
 
       if (note) {
         await updateNote.mutateAsync({
@@ -149,6 +167,7 @@ export function NoteEditorForm({ note }: { note?: Note }) {
           image_url,
           lead_magnet_file_url,
           lead_magnet_cta_label,
+          lead_magnet_price,
         });
       } else {
         const nextSortOrder = (notes?.at(-1)?.sort_order ?? 0) + 10;
@@ -158,6 +177,7 @@ export function NoteEditorForm({ note }: { note?: Note }) {
           image_url,
           lead_magnet_file_url,
           lead_magnet_cta_label,
+          lead_magnet_price,
         });
       }
       toast.success(note ? "Note updated." : "Note created.");
@@ -346,6 +366,33 @@ export function NoteEditorForm({ note }: { note?: Note }) {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name="lead_magnet_payment_required"
+                render={({ field }) => (
+                  <FormItem className="flex items-center gap-2 space-y-0">
+                    <FormControl>
+                      <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    </FormControl>
+                    <FormLabel className="!mt-0">Require payment to download</FormLabel>
+                  </FormItem>
+                )}
+              />
+              {form.watch("lead_magnet_payment_required") && (
+                <FormField
+                  control={form.control}
+                  name="lead_magnet_price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price (BDT)</FormLabel>
+                      <FormControl>
+                        <Input type="number" min={0} step="0.01" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
               <div className="space-y-2">
                 <Label>File</Label>
                 {leadMagnetFileName ? (

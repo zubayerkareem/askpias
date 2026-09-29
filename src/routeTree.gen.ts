@@ -17,6 +17,7 @@ import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies/inde
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies/$slug'
 import { Route as NotesIndexRouteImport } from './routes/notes/index'
 import { Route as NotesSlugRouteImport } from './routes/notes/$slug'
+import { Route as NotesDownloadRouteImport } from './routes/notes/download'
 import { Route as AdminAuthenticatedIndexRouteImport } from './routes/admin/_authenticated/index'
 import { Route as AdminAuthenticatedLeadsRouteImport } from './routes/admin/_authenticated/leads'
 import { Route as AdminAuthenticatedMessagesRouteImport } from './routes/admin/_authenticated/messages'
@@ -66,6 +67,11 @@ const NotesIndexRoute = NotesIndexRouteImport.update({
 const NotesSlugRoute = NotesSlugRouteImport.update({
   id: '/notes/$slug',
   path: '/notes/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesDownloadRoute = NotesDownloadRouteImport.update({
+  id: '/notes/download',
+  path: '/notes/download',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminAuthenticatedIndexRoute = AdminAuthenticatedIndexRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminAuthenticatedRouteWithChildren
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
+  '/notes/download': typeof NotesDownloadRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/notes/': typeof NotesIndexRoute
   '/admin/leads': typeof AdminAuthenticatedLeadsRoute
@@ -153,6 +160,7 @@ export interface FileRoutesByTo {
   '/faqs': typeof FaqsRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
+  '/notes/download': typeof NotesDownloadRoute
   '/case-studies': typeof CaseStudiesIndexRoute
   '/notes': typeof NotesIndexRoute
   '/admin/leads': typeof AdminAuthenticatedLeadsRoute
@@ -174,6 +182,7 @@ export interface FileRoutesById {
   '/admin/_authenticated': typeof AdminAuthenticatedRouteWithChildren
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
+  '/notes/download': typeof NotesDownloadRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/notes/': typeof NotesIndexRoute
   '/admin/_authenticated/leads': typeof AdminAuthenticatedLeadsRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/case-studies/$slug'
     | '/notes/$slug'
+    | '/notes/download'
     | '/case-studies/'
     | '/notes/'
     | '/admin/leads'
@@ -215,6 +225,7 @@ export interface FileRouteTypes {
     | '/faqs'
     | '/case-studies/$slug'
     | '/notes/$slug'
+    | '/notes/download'
     | '/case-studies'
     | '/notes'
     | '/admin/leads'
@@ -235,6 +246,7 @@ export interface FileRouteTypes {
     | '/admin/_authenticated'
     | '/case-studies/$slug'
     | '/notes/$slug'
+    | '/notes/download'
     | '/case-studies/'
     | '/notes/'
     | '/admin/_authenticated/leads'
@@ -256,6 +268,7 @@ export interface RootRouteChildren {
   AdminAuthenticatedRoute: typeof AdminAuthenticatedRouteWithChildren
   CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
+  NotesDownloadRoute: typeof NotesDownloadRoute
   CaseStudiesIndexRoute: typeof CaseStudiesIndexRoute
   NotesIndexRoute: typeof NotesIndexRoute
 }
@@ -316,6 +329,13 @@ declare module '@tanstack/react-router' {
       path: '/notes/$slug'
       fullPath: '/notes/$slug'
       preLoaderRoute: typeof NotesSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes/download': {
+      id: '/notes/download'
+      path: '/notes/download'
+      fullPath: '/notes/download'
+      preLoaderRoute: typeof NotesDownloadRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/_authenticated/': {
@@ -428,6 +448,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminAuthenticatedRoute: AdminAuthenticatedRouteWithChildren,
   CaseStudiesSlugRoute: CaseStudiesSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
+  NotesDownloadRoute: NotesDownloadRoute,
   CaseStudiesIndexRoute: CaseStudiesIndexRoute,
   NotesIndexRoute: NotesIndexRoute,
 }

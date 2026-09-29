@@ -93,6 +93,8 @@ function NoteDetail() {
               noteId={note.id}
               ctaLabel={note.lead_magnet_cta_label}
               fileUrl={note.lead_magnet_file_url}
+              paymentRequired={note.lead_magnet_payment_required}
+              price={note.lead_magnet_price}
             />
           )}
         </article>
