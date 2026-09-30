@@ -2,7 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import { getSupabaseAdmin } from "@/lib/supabase-admin.server";
-import { initializeEpsPayment, verifyEpsTransaction } from "@/lib/eps.server";
+import { createUddoktaPayCharge, verifyUddoktaPayPayment } from "@/lib/uddoktapay.server";
 
 const initiatePaymentSchema = z.object({
   noteId: z.string().uuid(),
@@ -15,7 +15,6 @@ const initiatePaymentSchema = z.object({
 });
 
 function generateMerchantTransactionId(): string {
-  // Guide requires a unique, minimum-10-digit string per transaction.
   return `LM${Date.now()}${Math.floor(1000 + Math.random() * 9000)}`;
 }
 
@@ -26,7 +25,7 @@ function siteOrigin(): string {
 
 /**
  * Starts a paid-lead-magnet checkout: records the submission + a pending
- * payment row, then asks EPS to initialize a transaction and returns the
+ * payment row, then asks UddoktaPay to create a charge and returns the
  * hosted-page URL to redirect the visitor's browser to.
  */
 export const initiateLeadMagnetPayment = createServerFn({ method: "POST" })
@@ -63,28 +62,26 @@ export const initiateLeadMagnetPayment = createServerFn({ method: "POST" })
     if (paymentError) throw new Error("Could not start payment.");
 
     const origin = siteOrigin();
-    const returnBase = `${origin}/notes/download?slug=${encodeURIComponent(note.slug)}&mtid=${encodeURIComponent(merchantTransactionId)}`;
 
     try {
-      const { redirectUrl } = await initializeEpsPayment({
-        merchantTransactionId,
-        customerOrderId: merchantTransactionId,
-        totalAmount: note.lead_magnet_price,
-        successUrl: returnBase,
-        failUrl: `${returnBase}&result=fail`,
-        cancelUrl: `${returnBase}&result=cancel`,
-        customerName: data.name,
-        customerEmail: data.email,
-        customerPhone: data.phone,
-        productName: note.title,
+      const paymentUrl = await createUddoktaPayCharge({
+        fullName: data.name,
+        email: data.email,
+        amount: Number(note.lead_magnet_price),
+        // Echoed back by verify-payment — this is how a returning invoice_id
+        // is tied to our payment row, so the redirect URL needs no params
+        // of its own (UddoktaPay appends ?invoice_id=... to it).
+        metadata: { merchant_transaction_id: merchantTransactionId, note_id: note.id },
+        redirectUrl: `${origin}/notes/download`,
+        cancelUrl: `${origin}/notes/download?result=cancel&slug=${encodeURIComponent(note.slug)}`,
       });
-      return { redirectUrl };
+      return { redirectUrl: paymentUrl };
     } catch (error) {
       await supabaseAdmin
         .from("lead_magnet_payments")
         .update({
           status: "failed",
-          error_message: error instanceof Error ? error.message : "EPS initialize failed",
+          error_message: error instanceof Error ? error.message : "UddoktaPay create charge failed",
         })
         .eq("merchant_transaction_id", merchantTransactionId);
       throw new Error("Could not start payment — please try again.");
@@ -92,64 +89,93 @@ export const initiateLeadMagnetPayment = createServerFn({ method: "POST" })
   });
 
 const verifyPaymentSchema = z.object({
-  merchantTransactionId: z.string().trim().min(1),
+  invoiceId: z.string().trim().min(1),
 });
 
 export type LeadMagnetPaymentResult = {
   status: "success" | "failed" | "cancelled" | "pending";
+  slug: string | null;
   fileUrl: string | null;
   ctaLabel: string | null;
 };
 
+type PaymentNote = {
+  slug: string;
+  lead_magnet_file_url: string | null;
+  lead_magnet_cta_label: string | null;
+};
+
 /**
  * Server-side source of truth for whether a lead-magnet payment succeeded.
- * Never trust the browser merely landing on the success return URL — EPS's
- * CheckMerchantTransactionStatus call is what actually confirms payment.
+ * Never trust the browser merely landing on the redirect URL — UddoktaPay's
+ * verify-payment call is what actually confirms payment.
  */
 export const verifyLeadMagnetPayment = createServerFn({ method: "GET" })
   .validator(verifyPaymentSchema)
   .handler(async ({ data }): Promise<LeadMagnetPaymentResult> => {
     const supabaseAdmin = getSupabaseAdmin();
+    const paymentSelect =
+      "id, status, amount, notes(slug, lead_magnet_file_url, lead_magnet_cta_label)";
 
-    const { data: payment, error: paymentError } = await supabaseAdmin
+    // Idempotent: once we've recorded success for this invoice, trust our
+    // own record rather than re-hitting UddoktaPay on every page refresh.
+    const { data: known } = await supabaseAdmin
       .from("lead_magnet_payments")
-      .select("id, status, note_id, notes(lead_magnet_file_url, lead_magnet_cta_label)")
-      .eq("merchant_transaction_id", data.merchantTransactionId)
-      .single();
-    if (paymentError || !payment) throw new Error("Payment not found.");
-
-    const note = payment.notes as unknown as {
-      lead_magnet_file_url: string | null;
-      lead_magnet_cta_label: string | null;
-    } | null;
-
-    // Idempotent: once we've recorded success, trust our own record rather
-    // than re-hitting EPS on every page refresh.
-    if (payment.status === "success") {
+      .select(paymentSelect)
+      .eq("invoice_id", data.invoiceId)
+      .maybeSingle();
+    if (known?.status === "success") {
+      const note = known.notes as unknown as PaymentNote | null;
       return {
         status: "success",
+        slug: note?.slug ?? null,
         fileUrl: note?.lead_magnet_file_url ?? null,
         ctaLabel: note?.lead_magnet_cta_label ?? null,
       };
     }
 
-    const verification = await verifyEpsTransaction(data.merchantTransactionId);
-    const status =
-      verification.status?.toLowerCase() === "success" ? ("success" as const) : ("failed" as const);
+    const verification = await verifyUddoktaPayPayment(data.invoiceId);
+    const merchantTransactionId = verification.metadata["merchant_transaction_id"];
+    if (!merchantTransactionId) throw new Error("Payment not found.");
+
+    const { data: payment, error: paymentError } = await supabaseAdmin
+      .from("lead_magnet_payments")
+      .select(paymentSelect)
+      .eq("merchant_transaction_id", merchantTransactionId)
+      .single();
+    if (paymentError || !payment) throw new Error("Payment not found.");
+
+    const note = payment.notes as unknown as PaymentNote | null;
+    const paidInFull = verification.amount != null && verification.amount >= Number(payment.amount);
+
+    const status: LeadMagnetPaymentResult["status"] =
+      verification.status === "COMPLETED" && paidInFull
+        ? "success"
+        : verification.status === "PENDING"
+          ? "pending"
+          : "failed";
 
     await supabaseAdmin
       .from("lead_magnet_payments")
       .update({
         status,
-        eps_transaction_id: verification.epsTransactionId,
-        financial_entity: verification.financialEntity,
-        error_message: verification.errorMessage,
+        invoice_id: data.invoiceId,
+        payment_method: verification.paymentMethod,
+        sender_number: verification.senderNumber,
+        gateway_transaction_id: verification.transactionId,
+        error_message:
+          verification.status === "COMPLETED" && !paidInFull
+            ? `Amount mismatch: paid ${verification.amount}, expected ${payment.amount}`
+            : verification.status === "ERROR"
+              ? verification.message
+              : null,
         updated_at: new Date().toISOString(),
       })
       .eq("id", payment.id);
 
     return {
       status,
+      slug: note?.slug ?? null,
       fileUrl: status === "success" ? (note?.lead_magnet_file_url ?? null) : null,
       ctaLabel: note?.lead_magnet_cta_label ?? null,
     };

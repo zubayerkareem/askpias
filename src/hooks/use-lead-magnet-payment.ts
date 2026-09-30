@@ -3,7 +3,7 @@ import {
   initiateLeadMagnetPayment,
   verifyLeadMagnetPayment,
   type LeadMagnetPaymentResult,
-} from "@/lib/eps-payment.functions";
+} from "@/lib/payment.functions";
 
 export type InitiateLeadMagnetPaymentInput = {
   noteId: string;
@@ -12,7 +12,7 @@ export type InitiateLeadMagnetPaymentInput = {
   email: string;
 };
 
-/** Public — starts an EPS checkout and returns the hosted-page redirect URL. */
+/** Public — starts a UddoktaPay checkout and returns the hosted-page redirect URL. */
 export function useInitiateLeadMagnetPayment() {
   return useMutation({
     mutationFn: async (input: InitiateLeadMagnetPaymentInput) => {
@@ -22,12 +22,11 @@ export function useInitiateLeadMagnetPayment() {
 }
 
 /** Public — polls the server-verified status of a payment return. */
-export function useVerifyLeadMagnetPayment(merchantTransactionId: string | null) {
+export function useVerifyLeadMagnetPayment(invoiceId: string | null) {
   return useQuery<LeadMagnetPaymentResult>({
-    queryKey: ["lead-magnet-payment-verify", merchantTransactionId],
-    queryFn: async () =>
-      verifyLeadMagnetPayment({ data: { merchantTransactionId: merchantTransactionId! } }),
-    enabled: !!merchantTransactionId,
+    queryKey: ["lead-magnet-payment-verify", invoiceId],
+    queryFn: async () => verifyLeadMagnetPayment({ data: { invoiceId: invoiceId! } }),
+    enabled: !!invoiceId,
     retry: false,
     staleTime: Infinity,
   });

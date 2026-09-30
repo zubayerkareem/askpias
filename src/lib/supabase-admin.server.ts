@@ -1,7 +1,7 @@
 // Server-only Supabase client using the service role key — bypasses RLS.
 // Never import this from client components; only from createServerFn
-// handlers (see src/server/eps-payment.ts). Payment state (who paid, how
-// much, EPS's verified status) must not be writable by anyone holding only
+// handlers (see src/lib/payment.functions.ts). Payment state (who paid, how
+// much, the gateway's verified status) must not be writable by anyone holding only
 // the public anon key.
 import { createClient } from "@supabase/supabase-js";
 
