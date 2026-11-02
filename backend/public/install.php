@@ -264,6 +264,45 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ! $installed) {
         $log[] = ['label' => 'Upload storage link', 'ok' => true, 'output' => $output];
     }
 
+    // Website: write its .env, build it with Node, then start it.
+    if ($errors === [] && $php) {
+        $appRoot = dirname($root);
+
+        @file_put_contents(
+            $appRoot.'/.env',
+            "VITE_API_URL={$apiUrl}/api\nVITE_ADMIN_URL={$apiUrl}/admin\nVITE_GTM_ID=\n",
+        );
+        $log[] = ['label' => 'Website configuration', 'ok' => true, 'output' => "API: {$apiUrl}"];
+
+        if (! is_file($appRoot.'/.output/server/index.mjs')) {
+            $build = 'cd '.escapeshellarg($appRoot).' && '
+                .'{ command -v bun >/dev/null 2>&1 && bun install --frozen-lockfile && bun run build '
+                .'|| npm install && npm run build; }';
+
+            [$code, $output] = runStep(['bash', '-lc', $build], $appRoot);
+            $log[] = ['label' => 'Website build (Node)', 'ok' => $code === 0, 'output' => $output];
+
+            if ($code !== 0) {
+                $errors[] = 'The website build failed. Install Node.js 20+ and PM2, then run: bash install.sh --frontend-only';
+            }
+        } else {
+            $log[] = ['label' => 'Website build (Node)', 'ok' => true, 'output' => 'Already built'];
+        }
+    }
+
+    if ($errors === [] && $php) {
+        $appRoot = dirname($root);
+        $start = 'cd '.escapeshellarg($appRoot).' && { '
+            .'command -v pm2 >/dev/null 2>&1 && { pm2 describe askpias-web >/dev/null 2>&1 '
+            .'&& PORT=3000 pm2 restart askpias-web --update-env '
+            .'|| PORT=3000 pm2 start .output/server/index.mjs --name askpias-web --update-env; } '
+            .'|| { command -v node >/dev/null 2>&1 && nohup node .output/server/index.mjs '
+            .'> storage/logs/site.log 2>&1 < /dev/null & }; }';
+
+        [$code, $output] = runStep(['bash', '-lc', $start], $appRoot);
+        $log[] = ['label' => 'Website started on 127.0.0.1:3000', 'ok' => $code === 0, 'output' => $output];
+    }
+
     if ($errors === []) {
         @file_put_contents($lockFile, date('c')."\n");
         $done = true;
@@ -349,15 +388,18 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST' && ! $installed) {
     <?php endif; ?>
 
     <?php if ($done): ?>
-        <div class="success">Installation complete. Admin panel: <a href="/admin"><?= h($_SERVER['HTTP_HOST'] ?? 'this server') ?>/admin</a></div>
+        <div class="success">
+            Installation complete — admin at <a href="/admin">/admin</a>,
+            website at <a href="<?= h($field('site_url', 'https://askpias.com')) ?>"><?= h($field('site_url', 'https://askpias.com')) ?></a>
+        </div>
 
         <div class="card">
-            <h2>Build the website (one command)</h2>
-            <p style="margin: 0 0 8px; font-size: 13px;">
-                The public site is a Node build, so it can't be built from the browser. Run this once over SSH
-                (as root), then point the site's proxy at <code>127.0.0.1:3000</code>:
+            <h2>If the website shows 503</h2>
+            <p style="margin: 0; font-size: 13px;">
+                The Node process isn't reachable on port 3000. Point the website's domain at
+                <code>http://127.0.0.1:3000</code> (reverse proxy), and start it with
+                <code>pm2 start askpias-web</code> if the process stopped.
             </p>
-            <pre>cd <?= h(dirname($root)) ?> &amp;&amp; bash install.sh --frontend-only</pre>
         </div>
     <?php elseif ($installed): ?>
         <div class="card"><a href="/admin">Go to the admin panel →</a></div>

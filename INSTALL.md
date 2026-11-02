@@ -74,22 +74,34 @@ The wizard locks itself with `backend/storage/installed.lock` (delete it to run 
 should be removed from the server once you're done: `rm backend/public/install.php`.
 
 ## 1c. Zip installation (no git on the server)
-Build the package on your own machine:
-```bash
-bash package.sh                 # → dist/askpias-1.0.0.zip
-VERSION=1.1.0 bash package.sh   # or pick a version
+Windows:
+```powershell
+powershell -ExecutionPolicy Bypass -File package.ps1        # → dist/askpias-1.0.0.zip
 ```
-Only tracked files go in: `.env`, `vendor/`, `node_modules/`, `.output/` and uploads are
-excluded. The archive extracts to `askpias-<version>/` with the site at its root and the
-admin/API inside `backend/`.
+Linux/macOS:
+```bash
+bash package.sh                 # → dist/askpias-<version>.zip (or .tar.gz)
+VERSION=1.1.0 bash package.sh   # pick a version
+```
+The package contains only tracked files **plus the prebuilt site** (`.output`), so the
+server never has to run a Node build. `.env`, `vendor/`, `node_modules/` and uploads are
+excluded. It extracts to `askpias-<version>/` with the site at the root and the admin/API
+inside `backend/`.
 
 On the server (upload the zip with aaPanel → Files, or `scp`):
 ```bash
 cd /www/wwwroot
 unzip askpias-1.0.0.zip
 mv askpias-1.0.0 askpias
-cd askpias && bash setup.sh
 ```
+Then either the browser wizard (`https://<api-domain>/install.php` — see 1b) or:
+```bash
+cd /www/wwwroot/askpias && bash setup.sh
+```
+
+The browser wizard now installs **both** apps: database + admin, then it writes the site's
+`.env`, builds it if `.output` is missing, and starts the Node process on `127.0.0.1:3000`.
+It needs Node 20+/PM2 installed and `shell_exec` + `proc_open` enabled in that site's PHP.
 
 Updates work without git too: `bash update.sh` detects there is no checkout and downloads
 the latest archive from GitHub (`ARCHIVE_URL`, defaults to the `main` tarball), syncing it
