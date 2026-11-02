@@ -75,7 +75,16 @@ missing=""
 for ext in pdo_mysql mbstring openssl fileinfo curl tokenizer xml ctype zip json gd; do
   "$PHP_BIN" -r "exit(extension_loaded('$ext') ? 0 : 1);" || missing="$missing $ext"
 done
-[ -z "$missing" ] || die "Missing PHP extensions:$missing — enable them in your PHP 8.3 profile."
+
+if [ -n "$missing" ]; then
+  warn "Missing PHP extensions:$missing"
+  printf '  Binary:  %s\n' "$PHP_BIN"
+  printf '  Loaded:  %s\n' "$("$PHP_BIN" --ini | awk -F': ' '/Loaded Configuration/ {print $2}')"
+  printf '  Panels often enable extensions for FPM only — the CLI reads its own ini.\n'
+  printf '  Fix: enable them in aaPanel (PHP 8.3 -> Extensions) and restart PHP,\n'
+  printf '  or add "extension=<name>.so" to the ini above, then rerun install.sh.\n'
+  die "Enable the extensions listed above and rerun install.sh."
+fi
 ok "PHP extensions present"
 
 COMPOSER_BIN="${COMPOSER_BIN:-}"
