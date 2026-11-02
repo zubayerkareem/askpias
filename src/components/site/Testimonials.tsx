@@ -1,65 +1,28 @@
-import { Linkedin } from "lucide-react";
 import { useEffect, useState } from "react";
-import Autoplay from "embla-carousel-autoplay";
+import { Quote } from "lucide-react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
-
-export type Testimonial = {
-  headline: string;
-  quote: string;
-  name: string;
-  role: string;
-  company: string;
-  initials: string;
-};
-
-export const testimonials: Testimonial[] = [
-  {
-    headline: "Sales more than doubled",
-    quote:
-      "Pias doesn't just run ads — he understands the whole business and builds a system around it. Our sales more than doubled in three months.",
-    name: "Sadia Rahman",
-    role: "Founder",
-    company: "Zarin Lifestyle",
-    initials: "SR",
-  },
-  {
-    headline: "No more missed appointments",
-    quote:
-      "In the very first meeting I realised our problem wasn't marketing, it was follow-up. Since his system went live we don't miss appointments anymore.",
-    name: "Dr. Tanvir Hasan",
-    role: "Director",
-    company: "Dhaka Dental Studio",
-    initials: "TH",
-  },
-  {
-    headline: "Our messaging finally clicked",
-    quote:
-      "Our messaging changed completely. Now prospects tell us on sales calls exactly what we solve.",
-    name: "Imran K.",
-    role: "Co-founder",
-    company: "Ledgerly",
-    initials: "IK",
-  },
-];
+import { useTestimonials } from "@/hooks/use-testimonials";
+import { fallbackTestimonials, type Testimonial } from "@/lib/testimonials";
 
 function TestimonialCard({ t }: { t: Testimonial }) {
   return (
-    <figure className="panel-card flex h-full flex-col rounded-2xl border border-border p-6">
-      <p className="eyebrow text-mint">{t.headline}</p>
-      <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-        {t.quote}
+    <figure className="flex h-full w-full flex-col rounded-xl border border-line bg-page p-5 transition-shadow hover:shadow-[0_18px_40px_-30px_rgba(0,0,0,0.45)]">
+      <Quote className="size-6 text-brand/70" aria-hidden />
+
+      <p className="mt-3 font-display text-base leading-snug font-bold">{t.headline}</p>
+
+      <blockquote className="mt-2 flex-1 text-sm leading-relaxed text-muted-foreground">
+        &ldquo;{t.quote}&rdquo;
       </blockquote>
-      <figcaption className="mt-6 flex items-center gap-3 border-t border-border pt-5">
-        <span className="relative inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/15 text-sm font-bold text-accent">
+
+      <figcaption className="mt-5 flex items-center gap-3 border-t border-line pt-4">
+        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft font-display text-[0.65rem] font-extrabold text-brand">
           {t.initials}
-          <span className="absolute -right-0.5 -bottom-0.5 inline-flex size-4 items-center justify-center rounded-full bg-[#0A66C2] text-white ring-2 ring-background">
-            <Linkedin className="size-2.5" />
-          </span>
         </span>
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{t.name}</p>
@@ -67,9 +30,6 @@ function TestimonialCard({ t }: { t: Testimonial }) {
             {t.role}, {t.company}
           </p>
         </div>
-        <span className="ml-auto shrink-0 text-[0.65rem] font-bold tracking-wide text-muted-foreground/60 uppercase">
-          {t.company}
-        </span>
       </figcaption>
     </figure>
   );
@@ -77,55 +37,67 @@ function TestimonialCard({ t }: { t: Testimonial }) {
 
 export function Testimonials({
   title = "What clients say",
-  items = testimonials,
+  items,
 }: {
   title?: string;
   items?: Testimonial[];
 }) {
+  const { data } = useTestimonials();
+  const list = items ?? data ?? fallbackTestimonials;
+
   const [api, setApi] = useState<CarouselApi>();
   const [selected, setSelected] = useState(0);
 
   useEffect(() => {
     if (!api) return;
-    setSelected(api.selectedScrollSnap());
-    api.on("select", () => setSelected(api.selectedScrollSnap()));
+    const update = () => setSelected(api.selectedScrollSnap());
+    update();
+    api.on("select", update);
+    api.on("reInit", update);
+    return () => {
+      api.off("select", update);
+      api.off("reInit", update);
+    };
+  }, [api]);
+
+  useEffect(() => {
+    if (!api) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => api.scrollNext(), 4500);
+    return () => window.clearInterval(id);
   }, [api]);
 
   return (
-    <section className="mx-auto max-w-6xl px-5 py-16">
-      {title && <h2 className="text-center text-2xl sm:text-3xl">{title}</h2>}
+    <section className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+      <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h2>
 
-      {/* Desktop / tablet: static grid */}
-      <div className={`hidden gap-5 sm:grid sm:grid-cols-2 lg:grid-cols-3 ${title ? "mt-10" : ""}`}>
-        {items.map((t) => (
+      <div className="mt-6 hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3">
+        {list.map((t) => (
           <TestimonialCard key={t.name} t={t} />
         ))}
       </div>
 
-      {/* Mobile: auto-sliding carousel, one testimonial per slide */}
-      <div className={`sm:hidden ${title ? "mt-10" : ""}`}>
-        <Carousel
-          opts={{ loop: true }}
-          plugins={[Autoplay({ delay: 4000, stopOnInteraction: false })]}
-          setApi={setApi}
-        >
+      <div className="mt-6 lg:hidden">
+        <Carousel opts={{ loop: true, align: "start" }} setApi={setApi}>
           <CarouselContent>
-            {items.map((t) => (
+            {list.map((t) => (
               <CarouselItem key={t.name}>
                 <TestimonialCard t={t} />
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
+
         <div className="mt-4 flex justify-center gap-1.5">
-          {items.map((t, i) => (
+          {list.map((t, i) => (
             <button
               key={t.name}
               type="button"
               aria-label={`Go to testimonial ${i + 1}`}
+              aria-current={i === selected}
               onClick={() => api?.scrollTo(i)}
-              className={`h-1.5 rounded-full transition-all ${
-                i === selected ? "w-5 bg-accent" : "w-1.5 bg-border"
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                i === selected ? "w-6 bg-brand" : "w-1.5 bg-foreground/25"
               }`}
             />
           ))}

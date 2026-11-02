@@ -1,10 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
-import { SiteNav } from "@/components/site/SiteNav";
+import { PageShell } from "@/components/site/PageShell";
 import { Hero } from "@/components/site/Hero";
-import { Story } from "@/components/site/Story";
+import { Building } from "@/components/site/Building";
+import { Ebook } from "@/components/site/Ebook";
+import { BlogSection } from "@/components/site/BlogSection";
 import { Testimonials } from "@/components/site/Testimonials";
-import { NotesSection } from "@/components/site/NotesSection";
 import { Booking } from "@/components/site/Booking";
 import { AskAnything } from "@/components/site/AskAnything";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -29,18 +30,16 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteNav />
-      <main className="page-enter">
-        <Hero />
-        <Story />
-        <Testimonials />
-        <NotesSection />
-        <Booking />
-        <AskAnything />
-      </main>
+    <PageShell>
+      <Hero />
+      <Building />
+      <Ebook />
+      <BlogSection />
+      <Testimonials />
+      <Booking />
+      <AskAnything />
       <SiteFooter />
       <Toaster />
-    </div>
+    </PageShell>
   );
 }

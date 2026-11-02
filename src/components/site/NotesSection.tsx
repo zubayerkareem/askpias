@@ -1,40 +1,50 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { NoteRow, NoteRowSkeleton } from "@/components/site/NoteRow";
+import { NoteCard } from "@/components/site/NoteCard";
+import { Reveal } from "@/components/site/Reveal";
 import { useNotes } from "@/hooks/use-notes";
 
 const PREVIEW_COUNT = 3;
 
 export function NotesSection() {
-  const { data: notes, isPending } = useNotes();
-  const preview = notes?.slice(0, PREVIEW_COUNT) ?? [];
+  const { data } = useNotes();
+  const notes = data ?? [];
+  const preview = notes.slice(0, PREVIEW_COUNT);
 
   return (
-    <section className="mx-auto max-w-6xl px-5 py-16">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="eyebrow text-accent">Notes</p>
-          <h2 className="mt-3 text-3xl sm:text-[2.1rem]">
-            Recent thinking on marketing and growth
-          </h2>
-        </div>
-        <Link
-          to="/notes"
-          className="inline-flex shrink-0 items-center gap-1.5 text-sm font-semibold text-accent"
-        >
-          View all notes
-          <ArrowRight className="size-4" />
-        </Link>
-      </div>
+    <section className="canvas-grid border-t border-border">
+      <div className="mx-auto max-w-[1180px] px-4 py-14 sm:px-6 sm:py-20">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+            <div>
+              <p className="label">Notes</p>
+              <h2 className="h-section mt-3 max-w-[18ch]">
+                Thinking out <span className="text-accent-text">loud</span>
+              </h2>
+              <p className="mt-4 max-w-[52ch] text-base text-muted-foreground">
+                Practical lessons pulled straight from real client work.
+              </p>
+            </div>
+            <Link
+              to="/notes"
+              className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm font-bold transition-colors hover:border-brand/60 hover:bg-foreground/5"
+            >
+              All notes
+              <ArrowRight
+                className="size-4 transition-transform group-hover:translate-x-1"
+                aria-hidden
+              />
+            </Link>
+          </div>
+        </Reveal>
 
-      <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 sm:gap-x-10">
-        {isPending ? (
-          Array.from({ length: PREVIEW_COUNT }).map((_, i) => <NoteRowSkeleton key={i} />)
-        ) : preview.length > 0 ? (
-          preview.map((n) => <NoteRow key={n.slug} note={n} />)
-        ) : (
-          <p className="text-sm text-muted-foreground">No notes yet — check back soon.</p>
-        )}
+        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {preview.map((n, i) => (
+            <Reveal key={n.slug} delay={i * 90}>
+              <NoteCard note={n} />
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );

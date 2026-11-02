@@ -10,28 +10,35 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BookingRouteImport } from './routes/booking'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as FaqsRouteImport } from './routes/faqs'
-import { Route as AdminAuthenticatedRouteImport } from './routes/admin/_authenticated'
+import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as BooksIndexRouteImport } from './routes/books/index'
+import { Route as BooksSlugRouteImport } from './routes/books/$slug'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies/index'
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies/$slug'
 import { Route as NotesIndexRouteImport } from './routes/notes/index'
 import { Route as NotesSlugRouteImport } from './routes/notes/$slug'
 import { Route as NotesDownloadRouteImport } from './routes/notes/download'
-import { Route as AdminAuthenticatedIndexRouteImport } from './routes/admin/_authenticated/index'
-import { Route as AdminAuthenticatedLeadsRouteImport } from './routes/admin/_authenticated/leads'
-import { Route as AdminAuthenticatedMessagesRouteImport } from './routes/admin/_authenticated/messages'
-import { Route as AdminAuthenticatedSettingsRouteImport } from './routes/admin/_authenticated/settings'
-import { Route as AdminAuthenticatedCaseStudiesIndexRouteImport } from './routes/admin/_authenticated/case-studies/index'
-import { Route as AdminAuthenticatedCaseStudiesIdRouteImport } from './routes/admin/_authenticated/case-studies/$id'
-import { Route as AdminAuthenticatedCaseStudiesNewRouteImport } from './routes/admin/_authenticated/case-studies/new'
-import { Route as AdminAuthenticatedNotesIndexRouteImport } from './routes/admin/_authenticated/notes/index'
-import { Route as AdminAuthenticatedNotesIdRouteImport } from './routes/admin/_authenticated/notes/$id'
-import { Route as AdminAuthenticatedNotesNewRouteImport } from './routes/admin/_authenticated/notes/new'
+import { Route as ProjectsSlugRouteImport } from './routes/projects/$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BookingRoute = BookingRouteImport.update({
@@ -39,14 +46,34 @@ const BookingRoute = BookingRouteImport.update({
   path: '/booking',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqsRoute = FaqsRouteImport.update({
   id: '/faqs',
   path: '/faqs',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAuthenticatedRoute = AdminAuthenticatedRouteImport.update({
-  id: '/admin/_authenticated',
-  path: '/admin',
+const RobotsDottxtRoute = RobotsDottxtRouteImport.update({
+  id: '/robots.txt',
+  path: '/robots.txt',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksIndexRoute = BooksIndexRouteImport.update({
+  id: '/books/',
+  path: '/books/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BooksSlugRoute = BooksSlugRouteImport.update({
+  id: '/books/$slug',
+  path: '/books/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CaseStudiesIndexRoute = CaseStudiesIndexRouteImport.update({
@@ -74,201 +101,139 @@ const NotesDownloadRoute = NotesDownloadRouteImport.update({
   path: '/notes/download',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAuthenticatedIndexRoute = AdminAuthenticatedIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminAuthenticatedRoute,
+const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
+  id: '/projects/$slug',
+  path: '/projects/$slug',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AdminAuthenticatedLeadsRoute = AdminAuthenticatedLeadsRouteImport.update({
-  id: '/leads',
-  path: '/leads',
-  getParentRoute: () => AdminAuthenticatedRoute,
-} as any)
-const AdminAuthenticatedMessagesRoute =
-  AdminAuthenticatedMessagesRouteImport.update({
-    id: '/messages',
-    path: '/messages',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
-const AdminAuthenticatedSettingsRoute =
-  AdminAuthenticatedSettingsRouteImport.update({
-    id: '/settings',
-    path: '/settings',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
-const AdminAuthenticatedCaseStudiesIndexRoute =
-  AdminAuthenticatedCaseStudiesIndexRouteImport.update({
-    id: '/case-studies/',
-    path: '/case-studies/',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
-const AdminAuthenticatedCaseStudiesIdRoute =
-  AdminAuthenticatedCaseStudiesIdRouteImport.update({
-    id: '/case-studies/$id',
-    path: '/case-studies/$id',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
-const AdminAuthenticatedCaseStudiesNewRoute =
-  AdminAuthenticatedCaseStudiesNewRouteImport.update({
-    id: '/case-studies/new',
-    path: '/case-studies/new',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
-const AdminAuthenticatedNotesIndexRoute =
-  AdminAuthenticatedNotesIndexRouteImport.update({
-    id: '/notes/',
-    path: '/notes/',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
-const AdminAuthenticatedNotesIdRoute =
-  AdminAuthenticatedNotesIdRouteImport.update({
-    id: '/notes/$id',
-    path: '/notes/$id',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
-const AdminAuthenticatedNotesNewRoute =
-  AdminAuthenticatedNotesNewRouteImport.update({
-    id: '/notes/new',
-    path: '/notes/new',
-    getParentRoute: () => AdminAuthenticatedRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/booking': typeof BookingRoute
+  '/contact': typeof ContactRoute
   '/faqs': typeof FaqsRoute
-  '/admin': typeof AdminAuthenticatedRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/books/$slug': typeof BooksSlugRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/notes/download': typeof NotesDownloadRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
+  '/books/': typeof BooksIndexRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/notes/': typeof NotesIndexRoute
-  '/admin/leads': typeof AdminAuthenticatedLeadsRoute
-  '/admin/messages': typeof AdminAuthenticatedMessagesRoute
-  '/admin/settings': typeof AdminAuthenticatedSettingsRoute
-  '/admin/': typeof AdminAuthenticatedIndexRoute
-  '/admin/case-studies/$id': typeof AdminAuthenticatedCaseStudiesIdRoute
-  '/admin/case-studies/new': typeof AdminAuthenticatedCaseStudiesNewRoute
-  '/admin/notes/$id': typeof AdminAuthenticatedNotesIdRoute
-  '/admin/notes/new': typeof AdminAuthenticatedNotesNewRoute
-  '/admin/case-studies/': typeof AdminAuthenticatedCaseStudiesIndexRoute
-  '/admin/notes/': typeof AdminAuthenticatedNotesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/booking': typeof BookingRoute
+  '/contact': typeof ContactRoute
   '/faqs': typeof FaqsRoute
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/books/$slug': typeof BooksSlugRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/notes/download': typeof NotesDownloadRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
+  '/books': typeof BooksIndexRoute
   '/case-studies': typeof CaseStudiesIndexRoute
   '/notes': typeof NotesIndexRoute
-  '/admin/leads': typeof AdminAuthenticatedLeadsRoute
-  '/admin/messages': typeof AdminAuthenticatedMessagesRoute
-  '/admin/settings': typeof AdminAuthenticatedSettingsRoute
-  '/admin': typeof AdminAuthenticatedIndexRoute
-  '/admin/case-studies/$id': typeof AdminAuthenticatedCaseStudiesIdRoute
-  '/admin/case-studies/new': typeof AdminAuthenticatedCaseStudiesNewRoute
-  '/admin/notes/$id': typeof AdminAuthenticatedNotesIdRoute
-  '/admin/notes/new': typeof AdminAuthenticatedNotesNewRoute
-  '/admin/case-studies': typeof AdminAuthenticatedCaseStudiesIndexRoute
-  '/admin/notes': typeof AdminAuthenticatedNotesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/booking': typeof BookingRoute
+  '/contact': typeof ContactRoute
   '/faqs': typeof FaqsRoute
-  '/admin/_authenticated': typeof AdminAuthenticatedRouteWithChildren
+  '/robots.txt': typeof RobotsDottxtRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/books/$slug': typeof BooksSlugRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/notes/download': typeof NotesDownloadRoute
+  '/projects/$slug': typeof ProjectsSlugRoute
+  '/books/': typeof BooksIndexRoute
   '/case-studies/': typeof CaseStudiesIndexRoute
   '/notes/': typeof NotesIndexRoute
-  '/admin/_authenticated/leads': typeof AdminAuthenticatedLeadsRoute
-  '/admin/_authenticated/messages': typeof AdminAuthenticatedMessagesRoute
-  '/admin/_authenticated/settings': typeof AdminAuthenticatedSettingsRoute
-  '/admin/_authenticated/': typeof AdminAuthenticatedIndexRoute
-  '/admin/_authenticated/case-studies/$id': typeof AdminAuthenticatedCaseStudiesIdRoute
-  '/admin/_authenticated/case-studies/new': typeof AdminAuthenticatedCaseStudiesNewRoute
-  '/admin/_authenticated/notes/$id': typeof AdminAuthenticatedNotesIdRoute
-  '/admin/_authenticated/notes/new': typeof AdminAuthenticatedNotesNewRoute
-  '/admin/_authenticated/case-studies/': typeof AdminAuthenticatedCaseStudiesIndexRoute
-  '/admin/_authenticated/notes/': typeof AdminAuthenticatedNotesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/booking'
-    | '/faqs'
+    | '/about'
     | '/admin'
+    | '/booking'
+    | '/contact'
+    | '/faqs'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/books/$slug'
     | '/case-studies/$slug'
     | '/notes/$slug'
     | '/notes/download'
+    | '/projects/$slug'
+    | '/books/'
     | '/case-studies/'
     | '/notes/'
-    | '/admin/leads'
-    | '/admin/messages'
-    | '/admin/settings'
-    | '/admin/'
-    | '/admin/case-studies/$id'
-    | '/admin/case-studies/new'
-    | '/admin/notes/$id'
-    | '/admin/notes/new'
-    | '/admin/case-studies/'
-    | '/admin/notes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/admin'
     | '/booking'
+    | '/contact'
     | '/faqs'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/books/$slug'
     | '/case-studies/$slug'
     | '/notes/$slug'
     | '/notes/download'
+    | '/projects/$slug'
+    | '/books'
     | '/case-studies'
     | '/notes'
-    | '/admin/leads'
-    | '/admin/messages'
-    | '/admin/settings'
-    | '/admin'
-    | '/admin/case-studies/$id'
-    | '/admin/case-studies/new'
-    | '/admin/notes/$id'
-    | '/admin/notes/new'
-    | '/admin/case-studies'
-    | '/admin/notes'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/admin'
     | '/booking'
+    | '/contact'
     | '/faqs'
-    | '/admin/_authenticated'
+    | '/robots.txt'
+    | '/sitemap.xml'
+    | '/books/$slug'
     | '/case-studies/$slug'
     | '/notes/$slug'
     | '/notes/download'
+    | '/projects/$slug'
+    | '/books/'
     | '/case-studies/'
     | '/notes/'
-    | '/admin/_authenticated/leads'
-    | '/admin/_authenticated/messages'
-    | '/admin/_authenticated/settings'
-    | '/admin/_authenticated/'
-    | '/admin/_authenticated/case-studies/$id'
-    | '/admin/_authenticated/case-studies/new'
-    | '/admin/_authenticated/notes/$id'
-    | '/admin/_authenticated/notes/new'
-    | '/admin/_authenticated/case-studies/'
-    | '/admin/_authenticated/notes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   BookingRoute: typeof BookingRoute
+  ContactRoute: typeof ContactRoute
   FaqsRoute: typeof FaqsRoute
-  AdminAuthenticatedRoute: typeof AdminAuthenticatedRouteWithChildren
+  RobotsDottxtRoute: typeof RobotsDottxtRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  BooksSlugRoute: typeof BooksSlugRoute
   CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
   NotesDownloadRoute: typeof NotesDownloadRoute
+  ProjectsSlugRoute: typeof ProjectsSlugRoute
+  BooksIndexRoute: typeof BooksIndexRoute
   CaseStudiesIndexRoute: typeof CaseStudiesIndexRoute
   NotesIndexRoute: typeof NotesIndexRoute
 }
@@ -282,11 +247,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/booking': {
       id: '/booking'
       path: '/booking'
       fullPath: '/booking'
       preLoaderRoute: typeof BookingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faqs': {
@@ -296,11 +282,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaqsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/_authenticated': {
-      id: '/admin/_authenticated'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminAuthenticatedRouteImport
+    '/robots.txt': {
+      id: '/robots.txt'
+      path: '/robots.txt'
+      fullPath: '/robots.txt'
+      preLoaderRoute: typeof RobotsDottxtRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/': {
+      id: '/books/'
+      path: '/books'
+      fullPath: '/books/'
+      preLoaderRoute: typeof BooksIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/books/$slug': {
+      id: '/books/$slug'
+      path: '/books/$slug'
+      fullPath: '/books/$slug'
+      preLoaderRoute: typeof BooksSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/case-studies/': {
@@ -338,117 +345,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotesDownloadRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/_authenticated/': {
-      id: '/admin/_authenticated/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminAuthenticatedIndexRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/leads': {
-      id: '/admin/_authenticated/leads'
-      path: '/leads'
-      fullPath: '/admin/leads'
-      preLoaderRoute: typeof AdminAuthenticatedLeadsRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/messages': {
-      id: '/admin/_authenticated/messages'
-      path: '/messages'
-      fullPath: '/admin/messages'
-      preLoaderRoute: typeof AdminAuthenticatedMessagesRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/settings': {
-      id: '/admin/_authenticated/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminAuthenticatedSettingsRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/case-studies/': {
-      id: '/admin/_authenticated/case-studies/'
-      path: '/case-studies'
-      fullPath: '/admin/case-studies/'
-      preLoaderRoute: typeof AdminAuthenticatedCaseStudiesIndexRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/case-studies/$id': {
-      id: '/admin/_authenticated/case-studies/$id'
-      path: '/case-studies/$id'
-      fullPath: '/admin/case-studies/$id'
-      preLoaderRoute: typeof AdminAuthenticatedCaseStudiesIdRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/case-studies/new': {
-      id: '/admin/_authenticated/case-studies/new'
-      path: '/case-studies/new'
-      fullPath: '/admin/case-studies/new'
-      preLoaderRoute: typeof AdminAuthenticatedCaseStudiesNewRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/notes/': {
-      id: '/admin/_authenticated/notes/'
-      path: '/notes'
-      fullPath: '/admin/notes/'
-      preLoaderRoute: typeof AdminAuthenticatedNotesIndexRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/notes/$id': {
-      id: '/admin/_authenticated/notes/$id'
-      path: '/notes/$id'
-      fullPath: '/admin/notes/$id'
-      preLoaderRoute: typeof AdminAuthenticatedNotesIdRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
-    }
-    '/admin/_authenticated/notes/new': {
-      id: '/admin/_authenticated/notes/new'
-      path: '/notes/new'
-      fullPath: '/admin/notes/new'
-      preLoaderRoute: typeof AdminAuthenticatedNotesNewRouteImport
-      parentRoute: typeof AdminAuthenticatedRoute
+    '/projects/$slug': {
+      id: '/projects/$slug'
+      path: '/projects/$slug'
+      fullPath: '/projects/$slug'
+      preLoaderRoute: typeof ProjectsSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface AdminAuthenticatedRouteChildren {
-  AdminAuthenticatedLeadsRoute: typeof AdminAuthenticatedLeadsRoute
-  AdminAuthenticatedMessagesRoute: typeof AdminAuthenticatedMessagesRoute
-  AdminAuthenticatedSettingsRoute: typeof AdminAuthenticatedSettingsRoute
-  AdminAuthenticatedIndexRoute: typeof AdminAuthenticatedIndexRoute
-  AdminAuthenticatedCaseStudiesIdRoute: typeof AdminAuthenticatedCaseStudiesIdRoute
-  AdminAuthenticatedCaseStudiesNewRoute: typeof AdminAuthenticatedCaseStudiesNewRoute
-  AdminAuthenticatedNotesIdRoute: typeof AdminAuthenticatedNotesIdRoute
-  AdminAuthenticatedNotesNewRoute: typeof AdminAuthenticatedNotesNewRoute
-  AdminAuthenticatedCaseStudiesIndexRoute: typeof AdminAuthenticatedCaseStudiesIndexRoute
-  AdminAuthenticatedNotesIndexRoute: typeof AdminAuthenticatedNotesIndexRoute
-}
-
-const AdminAuthenticatedRouteChildren: AdminAuthenticatedRouteChildren = {
-  AdminAuthenticatedLeadsRoute: AdminAuthenticatedLeadsRoute,
-  AdminAuthenticatedMessagesRoute: AdminAuthenticatedMessagesRoute,
-  AdminAuthenticatedSettingsRoute: AdminAuthenticatedSettingsRoute,
-  AdminAuthenticatedIndexRoute: AdminAuthenticatedIndexRoute,
-  AdminAuthenticatedCaseStudiesIdRoute: AdminAuthenticatedCaseStudiesIdRoute,
-  AdminAuthenticatedCaseStudiesNewRoute: AdminAuthenticatedCaseStudiesNewRoute,
-  AdminAuthenticatedNotesIdRoute: AdminAuthenticatedNotesIdRoute,
-  AdminAuthenticatedNotesNewRoute: AdminAuthenticatedNotesNewRoute,
-  AdminAuthenticatedCaseStudiesIndexRoute:
-    AdminAuthenticatedCaseStudiesIndexRoute,
-  AdminAuthenticatedNotesIndexRoute: AdminAuthenticatedNotesIndexRoute,
-}
-
-const AdminAuthenticatedRouteWithChildren =
-  AdminAuthenticatedRoute._addFileChildren(AdminAuthenticatedRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   BookingRoute: BookingRoute,
+  ContactRoute: ContactRoute,
   FaqsRoute: FaqsRoute,
-  AdminAuthenticatedRoute: AdminAuthenticatedRouteWithChildren,
+  RobotsDottxtRoute: RobotsDottxtRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
+  BooksSlugRoute: BooksSlugRoute,
   CaseStudiesSlugRoute: CaseStudiesSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
   NotesDownloadRoute: NotesDownloadRoute,
+  ProjectsSlugRoute: ProjectsSlugRoute,
+  BooksIndexRoute: BooksIndexRoute,
   CaseStudiesIndexRoute: CaseStudiesIndexRoute,
   NotesIndexRoute: NotesIndexRoute,
 }

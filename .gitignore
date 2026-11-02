@@ -19,6 +19,12 @@ dist-ssr
 # Env
 .env
 
+# Local agent workspace data (taste files, session scratch)
+.commandcode/
+
+# Local dev tunnels (cloudflared logs)
+.tunnels/
+
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars

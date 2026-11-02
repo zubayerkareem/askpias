@@ -12,4 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  vite: {
+    server: {
+      // Allow public dev tunnels (cloudflared / ngrok) to reach the dev server.
+      allowedHosts: [".trycloudflare.com", ".ngrok-free.app", ".ngrok.app", "localhost"],
+    },
+  },
 });

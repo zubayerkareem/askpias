@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteNav } from "@/components/site/SiteNav";
+import { PageShell } from "@/components/site/PageShell";
+import { PageHeader } from "@/components/site/PageHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Testimonials } from "@/components/site/Testimonials";
 import {
@@ -64,54 +65,46 @@ const faqs = [
 
 function Faqs() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteNav />
-      <main className="page-enter">
-        <section className="border-b border-border">
-          <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-20">
-            <p className="eyebrow text-mint">FAQ</p>
-            <h1 className="mt-4 text-3xl sm:text-4xl">What everyone asks me</h1>
-            <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
-              Straight answers about how I work, pricing, timelines and results.
-            </p>
-          </div>
-        </section>
+    <PageShell>
+      <PageHeader label="FAQ" title="What everyone asks me">
+        Straight answers about how I work, pricing, timelines and results.
+      </PageHeader>
 
-        <section className="mx-auto max-w-3xl px-5 pt-16">
-          <Accordion type="single" collapsible className="space-y-3">
+      <section className="border-b border-line px-6 py-8 sm:px-10 lg:px-16 lg:py-10 xl:px-20">
+        <div className="mx-auto max-w-[820px]">
+          <Accordion type="single" collapsible>
             {faqs.map((f, i) => (
-              <AccordionItem
-                key={f.q}
-                value={`item-${i}`}
-                className="rounded-2xl border border-border bg-surface px-5"
-              >
-                <AccordionTrigger className="text-left text-base hover:no-underline">
+              <AccordionItem key={f.q} value={`item-${i}`} className="border-line">
+                <AccordionTrigger className="py-4 text-left font-display text-base font-bold hover:no-underline">
                   {f.q}
                 </AccordionTrigger>
-                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                <AccordionContent className="max-w-[68ch] pb-4 text-sm leading-relaxed text-muted-foreground">
                   {f.a}
                 </AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
-        </section>
+        </div>
+      </section>
 
-        <Testimonials title="Straight from clients" />
+      <Testimonials title="Straight from clients" />
 
-        <section className="mx-auto max-w-3xl px-5 pb-16">
-          <div className="panel flex flex-col items-center gap-4 p-8 text-center">
-            <h2 className="text-xl">Didn't find your answer?</h2>
-            <p className="text-sm text-muted-foreground">A quick call is always the easiest way.</p>
-            <a
-              href="/booking"
-              className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground shadow-glow transition-opacity hover:opacity-90"
-            >
-              Book a meeting
-            </a>
-          </div>
-        </section>
-      </main>
+      <section className="px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+        <h2 className="font-display text-2xl font-extrabold tracking-tight">
+          Didn&apos;t find your answer?
+        </h2>
+        <p className="mt-2 max-w-[46ch] text-sm leading-relaxed text-muted-foreground">
+          A quick call is always the easiest way to get a straight answer.
+        </p>
+        <a
+          href="/booking"
+          className="mt-5 inline-flex items-center rounded-lg bg-brand px-5 py-3 text-sm font-bold text-brand-foreground transition-colors hover:bg-brand/90"
+        >
+          Book a strategy call
+        </a>
+      </section>
+
       <SiteFooter />
-    </div>
+    </PageShell>
   );
 }

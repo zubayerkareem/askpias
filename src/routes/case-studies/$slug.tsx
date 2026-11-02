@@ -1,14 +1,17 @@
 import { createFileRoute, notFound, Link } from "@tanstack/react-router";
-import { SiteNav } from "@/components/site/SiteNav";
+import { useEffect } from "react";
+import { PageShell } from "@/components/site/PageShell";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { dummyImage } from "@/lib/notes-data";
+import { CoverImage } from "@/components/site/CoverImage";
 import { caseStudyBySlugQueryOptions } from "@/hooks/use-case-studies";
+import { enrichContentHtml } from "@/lib/video";
+import { analytics } from "@/lib/analytics";
 
 export const Route = createFileRoute("/case-studies/$slug")({
   loader: async ({ context, params }) => {
-    const caseStudy = await context.queryClient.ensureQueryData(
-      caseStudyBySlugQueryOptions(params.slug),
-    );
+    const caseStudy = await context.queryClient
+      .ensureQueryData(caseStudyBySlugQueryOptions(params.slug))
+      .catch(() => null);
     if (!caseStudy) throw notFound();
     return caseStudy;
   },
@@ -33,46 +36,60 @@ export const Route = createFileRoute("/case-studies/$slug")({
 function CaseStudyDetail() {
   const caseStudy = Route.useLoaderData();
 
+  useEffect(() => {
+    analytics.viewItem(
+      {
+        item_id: caseStudy.slug,
+        item_name: caseStudy.name,
+        item_category: caseStudy.tags[0] ?? "case study",
+      },
+      "case_studies",
+    );
+  }, [caseStudy.slug, caseStudy.name, caseStudy.tags]);
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteNav />
-      <main className="page-enter">
-        <article className="mx-auto max-w-3xl px-5 py-16 lg:py-20">
-          <Link to="/case-studies" className="text-sm font-semibold text-accent">
+    <PageShell>
+      <article className="px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+        <div className="mx-auto max-w-[760px]">
+          <Link to="/case-studies" className="text-sm font-semibold text-brand">
             ← All case studies
           </Link>
 
-          <div className="mt-6 flex flex-wrap gap-2">
+          <div className="mt-5 flex flex-wrap gap-1.5">
             {caseStudy.tags.map((tag) => (
               <span
                 key={tag}
-                className="rounded-full bg-secondary px-2 py-0.5 text-[0.7rem] font-medium text-secondary-foreground"
+                className="rounded-full bg-brand-soft px-2.5 py-1 text-[0.7rem] font-bold text-brand"
               >
                 {tag}
               </span>
             ))}
           </div>
 
-          <h1 className="mt-4 text-3xl leading-tight sm:text-4xl">{caseStudy.name}</h1>
-          <p className="mt-4 text-muted-foreground">{caseStudy.summary}</p>
+          <h1 className="mt-4 font-display text-[clamp(1.9rem,4vw,2.8rem)] leading-[1.05] font-extrabold tracking-[-0.03em]">
+            {caseStudy.name}
+          </h1>
+          <p className="mt-3 text-[1.0625rem] leading-relaxed text-muted-foreground">
+            {caseStudy.summary}
+          </p>
 
-          <img
-            src={caseStudy.image_url ?? dummyImage(caseStudy.slug)}
-            alt=""
-            className="mt-8 aspect-video w-full rounded-2xl border border-border object-cover"
+          <CoverImage
+            src={caseStudy.image_url}
+            label={caseStudy.tags[0] ?? caseStudy.name}
+            className="mt-7 aspect-video w-full rounded-xl object-cover"
           />
 
           {caseStudy.content && (
-            // Safe: `content` is admin-authored HTML — write access is gated by
-            // Supabase Auth + RLS, not arbitrary visitor input.
+            // Safe: `content` is admin-authored HTML — write access is gated by the admin login.
             <div
-              className="prose dark:prose-invert mt-8 max-w-none"
-              dangerouslySetInnerHTML={{ __html: caseStudy.content }}
+              className="prose prose-neutral mt-8 max-w-none prose-headings:font-display prose-headings:font-extrabold prose-a:text-brand"
+              dangerouslySetInnerHTML={{ __html: enrichContentHtml(caseStudy.content) }}
             />
           )}
-        </article>
-      </main>
+        </div>
+      </article>
+
       <SiteFooter />
-    </div>
+    </PageShell>
   );
 }

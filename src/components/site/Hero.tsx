@@ -1,78 +1,117 @@
-import { ArrowDown, Calendar, Facebook, Linkedin, Mail, Youtube } from "lucide-react";
+import { useState } from "react";
+import { Award, CalendarDays, Play, Users } from "lucide-react";
 import { SiteAvatar } from "@/components/site/SiteAvatar";
-
-const socials = [
-  { icon: Linkedin, label: "LinkedIn" },
-  { icon: Facebook, label: "Facebook" },
-  { icon: Youtube, label: "YouTube" },
-  { icon: Mail, label: "Email" },
-];
+import { useSiteSettings } from "@/hooks/use-site-settings";
+import { youtubeEmbedUrl, youtubeId } from "@/lib/video";
+import { analytics } from "@/lib/analytics";
 
 export function Hero() {
+  const { data: settings } = useSiteSettings();
+  const [playing, setPlaying] = useState(false);
+
+  const embed = youtubeEmbedUrl(settings?.intro_video_url);
+  const videoId = youtubeId(settings?.intro_video_url);
+  const poster = videoId ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg` : null;
+
   return (
-    <section id="home" className="relative overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-40 right-[-10%] size-[520px] rounded-full opacity-40 blur-3xl"
-        style={{ background: "radial-gradient(circle, var(--primary), transparent 65%)" }}
-      />
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pt-8 pb-20 lg:grid-cols-[1.05fr_0.95fr] lg:pt-24 lg:pb-28">
-        <div className="order-2 lg:order-1">
-          <p className="eyebrow text-mint">Hi, I'm Pias Ahmed</p>
-          <h1 className="mt-4 text-4xl leading-[1.2] sm:text-5xl lg:text-[3.4rem]">
-            I build marketing systems that <span className="text-gradient">grow businesses.</span>
-          </h1>
-          <p className="mt-5 max-w-lg text-base leading-relaxed text-muted-foreground">
-            I don't just run ads. I combine strategy, consumer psychology and performance data to
-            build predictable growth systems for brands.
-          </p>
+    <section className="grid gap-8 border-b border-line px-6 py-10 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-x-12 lg:px-16 lg:py-14 xl:px-20">
+      {/* Headline — first on every screen */}
+      <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
+        <h1 className="font-display text-[clamp(2.2rem,3.6vw,3.5rem)] leading-[1.02] font-extrabold tracking-[-0.04em]">
+          Building businesses.
+          <br />
+          Sharing what works.
+        </h1>
+      </div>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a
-              href="/booking"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-semibold text-primary-foreground shadow-glow transition-opacity hover:opacity-90"
-            >
-              <Calendar className="size-4" />
-              Schedule a meeting
-            </a>
-            <a
-              href="#story"
-              className="inline-flex items-center gap-2 rounded-xl border border-input px-5 py-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-secondary"
-            >
-              Read my story
-              <ArrowDown className="size-4" />
-            </a>
-          </div>
+      {/* Video — under the headline on mobile, beside the text on desktop */}
+      <figure className="overflow-hidden rounded-xl border border-line bg-page lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
+        <div className="relative aspect-video bg-black">
+          {playing && embed ? (
+            <iframe
+              src={`${embed}&autoplay=1`}
+              title="A quick hello from Pias"
+              className="absolute inset-0 h-full w-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          ) : (
+            <>
+              {poster ? (
+                <img
+                  src={poster}
+                  alt="A quick hello from Pias"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              ) : (
+                <SiteAvatar
+                  alt="Pias Ahmed"
+                  width={960}
+                  height={540}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              )}
 
-          <p className="mt-10 text-sm text-muted-foreground">Connect with me</p>
-          <div className="mt-3 flex gap-3">
-            {socials.map((s) => (
-              <a
-                key={s.label}
-                href="#booking"
-                aria-label={s.label}
-                className="inline-flex size-11 items-center justify-center rounded-full bg-surface-2 text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <s.icon className="size-4" />
-              </a>
-            ))}
-          </div>
+              {embed && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    analytics.cta("play_intro_video", "hero");
+                    setPlaying(true);
+                  }}
+                  aria-label="Play intro video"
+                  className="absolute inset-0 grid place-items-center bg-black/20 transition-colors hover:bg-black/35"
+                >
+                  <span className="grid size-16 place-items-center rounded-full bg-white/95 text-brand shadow-[0_12px_30px_-12px_rgba(0,0,0,0.7)] transition-transform hover:scale-105">
+                    <Play className="ml-0.5 size-6 fill-current" aria-hidden />
+                  </span>
+                </button>
+              )}
+            </>
+          )}
         </div>
 
-        <div className="relative order-1 lg:order-2">
-          <div
-            aria-hidden
-            className="absolute inset-x-[-6%] top-1/3 hidden h-56 rounded-[50%] border border-border/70 lg:block"
-            style={{ transform: "rotate(-12deg)" }}
-          />
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-surface">
-            <SiteAvatar
-              alt="Pias Ahmed, brand builder and marketing consultant"
-              width={960}
-              height={960}
-              className="h-full w-full object-cover"
-            />
-          </div>
+        <figcaption className="border-t border-line px-4 py-3">
+          <p className="font-display text-sm font-semibold">A quick hello from Pias</p>
+          <p className="text-xs text-muted-foreground">Founder, AskPias</p>
+        </figcaption>
+      </figure>
+
+      {/* Intro copy, CTAs and stats */}
+      <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
+        <p className="max-w-[48ch] text-[1.0625rem] leading-relaxed text-muted-foreground">
+          I&apos;m Pias — a founder and marketer with 5 years of experience helping brands grow. I
+          build digital products and share what I learn along the way.
+        </p>
+
+        <div className="mt-7 flex flex-row gap-2 sm:gap-3">
+          <a
+            href="/booking"
+            onClick={() => analytics.cta("book_strategy_call", "hero")}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-brand px-3 py-3 text-[0.8rem] font-bold whitespace-nowrap text-brand-foreground transition-colors hover:bg-brand/90 sm:flex-none sm:gap-2 sm:px-5 sm:text-sm"
+          >
+            <CalendarDays className="size-4 shrink-0" aria-hidden />
+            Book a call
+          </a>
+          <a
+            href="#books"
+            onClick={() => analytics.cta("explore_books", "hero")}
+            className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-line bg-page px-3 py-3 text-[0.8rem] font-bold whitespace-nowrap transition-colors hover:bg-surface sm:flex-none sm:px-5 sm:text-sm"
+          >
+            Explore my books
+          </a>
+        </div>
+
+        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
+          <span className="inline-flex items-center gap-2">
+            <Award className="size-4" aria-hidden />
+            5 Years in Marketing
+          </span>
+          <span aria-hidden className="hidden h-4 w-px bg-line sm:block" />
+          <span className="inline-flex items-center gap-2">
+            <Users className="size-4" aria-hidden />
+            20+ Brands Worked With
+          </span>
         </div>
       </div>
     </section>

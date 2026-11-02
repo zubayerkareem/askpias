@@ -1,4 +1,4 @@
-import { ArrowRight, HelpCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,6 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useSubmitMessage } from "@/hooks/use-messages";
+import { analytics } from "@/lib/analytics";
 
 const messageSchema = z.object({
   phone: z
@@ -26,6 +27,9 @@ const messageSchema = z.object({
 
 type MessageForm = z.infer<typeof messageSchema>;
 
+const fieldClass =
+  "h-11 rounded-lg border-line bg-page px-3 text-sm shadow-none placeholder:text-muted-foreground/70";
+
 export function AskAnything() {
   const form = useForm<MessageForm>({
     resolver: zodResolver(messageSchema),
@@ -36,6 +40,7 @@ export function AskAnything() {
   const onSubmit = (values: MessageForm) => {
     submitMessage.mutate(values, {
       onSuccess: () => {
+        analytics.lead("ask_me_anything");
         toast.success("Question sent — you'll hear back from me soon.");
         form.reset();
       },
@@ -46,38 +51,27 @@ export function AskAnything() {
   };
 
   return (
-    <section className="mx-auto max-w-6xl px-5 pb-24">
-      <div className="panel flex flex-col gap-8 p-7 sm:p-8 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex items-center gap-4 lg:max-w-xs">
-          <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-full bg-primary/20 text-accent">
-            <HelpCircle className="size-6" />
-          </span>
-          <div>
-            <h2 className="text-xl">Ask me anything</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Got a question about marketing or growth? Leave your contact info and I&apos;ll get
-              back to you.
-            </p>
-          </div>
+    <section className="px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+      <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-12">
+        <div>
+          <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Ask me anything
+          </h2>
+          <p className="mt-3 max-w-[36ch] text-sm leading-relaxed text-muted-foreground">
+            A question about marketing or growth? Leave your details and I&apos;ll reply personally.
+          </p>
         </div>
 
         <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="grid w-full gap-4 sm:grid-cols-2 lg:max-w-xl"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="grid w-full gap-5 sm:grid-cols-2">
             <FormField
               control={form.control}
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="sr-only">Phone number</FormLabel>
+                  <FormLabel className="text-sm font-semibold">Phone number</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="01XXXXXXXXX"
-                      className="rounded-xl border-border bg-surface-2"
-                      {...field}
-                    />
+                    <Input placeholder="01XXXXXXXXX" className={fieldClass} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -88,12 +82,12 @@ export function AskAnything() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="sr-only">Email</FormLabel>
+                  <FormLabel className="text-sm font-semibold">Email</FormLabel>
                   <FormControl>
                     <Input
                       type="email"
                       placeholder="you@example.com"
-                      className="rounded-xl border-border bg-surface-2"
+                      className={fieldClass}
                       {...field}
                     />
                   </FormControl>
@@ -106,12 +100,12 @@ export function AskAnything() {
               name="question"
               render={({ field }) => (
                 <FormItem className="sm:col-span-2">
-                  <FormLabel className="sr-only">Your question</FormLabel>
+                  <FormLabel className="text-sm font-semibold">Your question</FormLabel>
                   <FormControl>
                     <Textarea
-                      placeholder="Type your question..."
-                      rows={3}
-                      className="rounded-xl border-border bg-surface-2"
+                      placeholder="What's on your mind?"
+                      rows={4}
+                      className="min-h-[112px] rounded-lg border-line bg-page px-3 py-2.5 text-sm shadow-none placeholder:text-muted-foreground/70"
                       {...field}
                     />
                   </FormControl>
@@ -122,10 +116,13 @@ export function AskAnything() {
             <button
               type="submit"
               disabled={submitMessage.isPending}
-              className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 sm:col-span-2 sm:justify-self-end"
+              className="group inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand px-5 py-3 text-sm font-bold text-brand-foreground transition-colors hover:bg-brand/90 disabled:cursor-not-allowed disabled:opacity-50 sm:col-span-2 sm:justify-self-end"
             >
-              {submitMessage.isPending ? "Sending..." : "Send"}
-              <ArrowRight className="size-4" />
+              {submitMessage.isPending ? "Sending…" : "Send question"}
+              <ArrowRight
+                className="size-4 transition-transform group-hover:translate-x-1"
+                aria-hidden
+              />
             </button>
           </form>
         </Form>

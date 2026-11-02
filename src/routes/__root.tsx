@@ -12,6 +12,7 @@ import type { ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { themeInitScript } from "../hooks/use-theme";
 import { RouteProgress } from "../components/site/RouteProgress";
+import { PageViewTracker, TagManager } from "../components/site/TagManager";
 
 function NotFoundComponent() {
   return (
@@ -88,7 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Manrope:wght@400..800&display=swap",
       },
       { rel: "icon", href: "/favicon.jpg", type: "image/jpeg" },
     ],
@@ -105,6 +106,12 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en">
       <head>
         <HeadContent />
+        {/* dataLayer scaffold — must exist before any GTM tag loads. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}",
+          }}
+        />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
       </head>
       <body>
@@ -120,6 +127,8 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <TagManager />
+      <PageViewTracker />
       <RouteProgress />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />

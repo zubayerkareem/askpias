@@ -1,11 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
 
 export type SiteSettings = {
-  id: number;
   hero_image_url: string | null;
   case_studies_iframe_url: string | null;
-  updated_at: string;
+  intro_video_url: string | null;
+  gtm_container_id: string | null;
+  contact_email: string | null;
+  tagline: string | null;
 };
 
 const SITE_SETTINGS_KEY = ["site-settings"] as const;
@@ -13,32 +15,7 @@ const SITE_SETTINGS_KEY = ["site-settings"] as const;
 export function useSiteSettings() {
   return useQuery({
     queryKey: SITE_SETTINGS_KEY,
-    queryFn: async () => {
-      const { data, error } = await supabase.from("site_settings").select("*").eq("id", 1).single();
-      if (error) throw error;
-      return data as SiteSettings;
-    },
+    queryFn: () => api.get<SiteSettings>("/settings"),
     staleTime: 60_000,
-  });
-}
-
-export function useUpdateSiteSettings() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (
-      input: Partial<Pick<SiteSettings, "hero_image_url" | "case_studies_iframe_url">>,
-    ) => {
-      const { data, error } = await supabase
-        .from("site_settings")
-        .update(input)
-        .eq("id", 1)
-        .select()
-        .single();
-      if (error) throw error;
-      return data as SiteSettings;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: SITE_SETTINGS_KEY });
-    },
   });
 }

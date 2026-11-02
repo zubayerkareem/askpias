@@ -1,8 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteNav } from "@/components/site/SiteNav";
+import { PageShell } from "@/components/site/PageShell";
+import { PageHeader } from "@/components/site/PageHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Testimonials } from "@/components/site/Testimonials";
-import { NoteRow, NoteRowSkeleton } from "@/components/site/NoteRow";
+import { NoteCard } from "@/components/site/NoteCard";
+import { Reveal } from "@/components/site/Reveal";
 import { useNotes } from "@/hooks/use-notes";
 
 const title = "Notes — Marketing & Growth | Pias Ahmed";
@@ -24,37 +26,32 @@ export const Route = createFileRoute("/notes/")({
 });
 
 function Notes() {
-  const { data: notes, isPending } = useNotes();
+  const { data } = useNotes();
+  const notes = data ?? [];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteNav />
-      <main className="page-enter">
-        <section className="border-b border-border">
-          <div className="mx-auto max-w-6xl px-5 py-16 text-center lg:py-20">
-            <p className="eyebrow text-mint">Notes</p>
-            <h1 className="mt-4 text-3xl sm:text-4xl">My notes on marketing and growth</h1>
-            <p className="mx-auto mt-5 max-w-xl text-muted-foreground">
-              Practical lessons pulled straight from real client work.
-            </p>
-          </div>
-        </section>
+    <PageShell>
+      <PageHeader label="Blog" title="My notes on marketing and growth">
+        Practical lessons pulled straight from real client work — what worked, what didn&apos;t, and
+        why.
+      </PageHeader>
 
-        <section className="mx-auto max-w-6xl px-5 py-16">
-          <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-10">
-            {isPending ? (
-              Array.from({ length: 6 }).map((_, i) => <NoteRowSkeleton key={i} />)
-            ) : notes && notes.length > 0 ? (
-              notes.map((n) => <NoteRow key={n.slug} note={n} />)
-            ) : (
-              <p className="text-sm text-muted-foreground">No notes yet — check back soon.</p>
-            )}
-          </div>
-        </section>
+      <section className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+        <div className="grid gap-4 sm:grid-cols-2">
+          {notes.map((n, i) => (
+            <Reveal key={n.slug} delay={i * 60} className="h-full">
+              <NoteCard note={n} />
+            </Reveal>
+          ))}
+        </div>
 
-        <Testimonials title="Don't just take my word for it" />
-      </main>
+        {notes.length === 0 && (
+          <p className="text-sm text-muted-foreground">No posts published yet.</p>
+        )}
+      </section>
+
+      <Testimonials title="Don't just take my word for it" />
       <SiteFooter />
-    </div>
+    </PageShell>
   );
 }

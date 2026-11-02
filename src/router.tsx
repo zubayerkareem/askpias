@@ -1,7 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import { PageSkeleton } from "./components/site/PageSkeleton";
 
 export const getRouter = () => {
   const queryClient = new QueryClient();
@@ -11,9 +10,8 @@ export const getRouter = () => {
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
-    defaultPendingMs: 150,
-    defaultPendingMinMs: 400,
-    defaultPendingComponent: PageSkeleton,
+    // No pending component: loading is communicated by the top progress bar
+    // (RouteProgress / nprogress) only.
   });
 
   return router;

@@ -1,0 +1,23 @@
+[Unit]
+Description=AskPias site (TanStack Start / Nitro SSR)
+After=network.target
+
+[Service]
+Type=simple
+User=www
+Group=www
+WorkingDirectory=/www/wwwroot/askpias.com
+
+# nitro's node server honours PORT and HOST
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=127.0.0.1
+
+ExecStart=/usr/bin/node .output/server/index.mjs
+Restart=always
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

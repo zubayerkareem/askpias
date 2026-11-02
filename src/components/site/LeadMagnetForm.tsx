@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Download, Gift } from "lucide-react";
+import { CreditCard, Download, Gift } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -21,8 +22,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { DEFAULT_LEAD_MAGNET_CTA_LABEL, useSubmitLeadMagnetLead } from "@/hooks/use-lead-magnets";
-import { useInitiateLeadMagnetPayment } from "@/hooks/use-lead-magnet-payment";
+import { api } from "@/lib/api";
+import { analytics } from "@/lib/analytics";
+import { useCheckoutLead } from "@/hooks/use-payments";
 
 const leadMagnetSchema = z.object({
   name: z.string().trim().min(1, "Please enter your name."),
@@ -36,73 +38,89 @@ const leadMagnetSchema = z.object({
 type LeadMagnetFormValues = z.infer<typeof leadMagnetSchema>;
 
 type LeadMagnetFormProps = {
-  noteId: string;
+  noteId: number;
+  slug: string;
+  title: string;
   ctaLabel: string | null;
   fileUrl: string;
-  paymentRequired: boolean;
-  price: number | null;
+  paymentRequired?: boolean;
+  price?: number | null;
 };
 
 export function LeadMagnetForm({
   noteId,
+  slug,
+  title,
   ctaLabel,
   fileUrl,
-  paymentRequired,
-  price,
+  paymentRequired = false,
+  price = null,
 }: LeadMagnetFormProps) {
   const [open, setOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+
+  const label = ctaLabel || "Download";
+  const paid = paymentRequired && typeof price === "number" && price > 0;
+  const buttonLabel = paid ? `${label} — ৳${price}` : label;
+
   const form = useForm<LeadMagnetFormValues>({
     resolver: zodResolver(leadMagnetSchema),
     defaultValues: { name: "", phone: "", email: "" },
   });
-  const submitLead = useSubmitLeadMagnetLead();
-  const initiatePayment = useInitiateLeadMagnetPayment();
-  const isPending = submitLead.isPending || initiatePayment.isPending;
-  const label = ctaLabel || DEFAULT_LEAD_MAGNET_CTA_LABEL;
-  const buttonLabel = paymentRequired && price ? `${label} — ৳${price}` : label;
+
+  const submitLead = useMutation({
+    mutationFn: (values: LeadMagnetFormValues) =>
+      api.post<{ download_url: string | null }>("/leads", { ...values, note_id: noteId, slug }),
+  });
+
+  const checkout = useCheckoutLead();
+  const isPending = submitLead.isPending || checkout.isPending;
 
   const onSubmit = (values: LeadMagnetFormValues) => {
-    if (paymentRequired) {
-      initiatePayment.mutate(
-        { noteId, ...values },
+    if (paid) {
+      analytics.beginCheckout(price, [
+        { item_id: slug, item_name: title, item_category: "lead_magnet", price },
+      ]);
+
+      checkout.mutate(
+        { ...values, slug },
         {
-          onSuccess: ({ redirectUrl }) => {
-            window.location.href = redirectUrl;
+          onSuccess: ({ payment_url }) => {
+            window.location.href = payment_url;
           },
           onError: () => {
-            toast.error("Something went wrong — please try again.");
+            toast.error("Could not start the payment — please try again.");
           },
         },
       );
       return;
     }
 
-    submitLead.mutate(
-      { note_id: noteId, ...values },
-      {
-        onSuccess: () => {
-          toast.success("You're in — grab your download below.");
-          setSubmitted(true);
-          setOpen(false);
-        },
-        onError: () => {
-          toast.error("Something went wrong — please try again.");
-        },
+    submitLead.mutate(values, {
+      onSuccess: () => {
+        analytics.lead("lead_magnet", {
+          item: { item_id: slug, item_name: label, item_category: "download" },
+        });
+        toast.success("You're in — grab your download below.");
+        setSubmitted(true);
+        setOpen(false);
       },
-    );
+      onError: () => {
+        toast.error("Something went wrong — please try again.");
+      },
+    });
   };
 
   if (submitted) {
     return (
-      <div className="mt-10 rounded-2xl border border-border panel-card p-6 text-center sm:p-8">
-        <p className="font-medium">Your download is ready.</p>
+      <div className="mt-10 rounded-xl border border-sheet-border p-6 text-center sm:p-8">
+        <p className="font-display font-extrabold">Your download is ready.</p>
         <a
           href={fileUrl}
           download
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+          className="mt-4 inline-flex items-center justify-center gap-1.5 rounded-full bg-brand px-5 py-2.5 text-sm font-bold text-brand-foreground transition-colors hover:bg-brand/90"
         >
           <Download className="size-4" />
           {label}
@@ -116,7 +134,7 @@ export function LeadMagnetForm({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button size="lg" className="gap-1.5">
-            <Download className="size-4" />
+            {paid ? <CreditCard className="size-4" /> : <Download className="size-4" />}
             {buttonLabel}
           </Button>
         </DialogTrigger>
@@ -124,12 +142,13 @@ export function LeadMagnetForm({
           <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-accent">
             <Gift className="size-5" />
           </span>
-          <DialogTitle>Get access</DialogTitle>
+          <DialogTitle>{paid ? `Buy for ৳${price}` : "Get access"}</DialogTitle>
           <DialogDescription>
-            {paymentRequired
-              ? `Enter your details — you'll be taken to a secure payment page to complete your ৳${price} purchase.`
+            {paid
+              ? "Enter your details — you'll be taken to a secure UddoktaPay checkout (bKash, Nagad, Rocket, bank)."
               : "Enter your details to unlock this download."}
           </DialogDescription>
+
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -173,10 +192,12 @@ export function LeadMagnetForm({
               />
               <Button type="submit" disabled={isPending} className="w-full">
                 {isPending
-                  ? paymentRequired
+                  ? paid
                     ? "Redirecting to payment..."
                     : "Submitting..."
-                  : buttonLabel}
+                  : paid
+                    ? `Pay ৳${price}`
+                    : label}
               </Button>
             </form>
           </Form>
