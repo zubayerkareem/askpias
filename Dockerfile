@@ -11,8 +11,8 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-ARG VITE_API_URL=http://localhost:8000/api
-ARG VITE_ADMIN_URL=http://localhost:8000/admin
+ARG VITE_API_URL=https://api.askpias.com/api
+ARG VITE_ADMIN_URL=https://api.askpias.com/admin
 ARG VITE_GTM_ID=""
 ENV VITE_API_URL=$VITE_API_URL \
     VITE_ADMIN_URL=$VITE_ADMIN_URL \
