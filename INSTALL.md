@@ -48,6 +48,24 @@ bash install.sh
 Every prompt can be pre-set as an environment variable; `SKIP_FRONTEND=yes` installs only
 the backend, `SEED_DEMO=no` skips demo content.
 
+## 1b. Browser installer (optional)
+A single-file wizard ships at `backend/public/install.php`. Point the API site's document
+root at `backend/public`, then open `https://api.example.com/install.php`:
+
+1. It lists requirements — PHP 8.3, extensions, writable `storage/` + `bootstrap/cache`,
+   and a PHP 8.3 CLI binary (the wizard shells out to `artisan`).
+2. Fill in site/API URLs, the database (add the MySQL root password and it creates the
+   database + user for you), and the admin account.
+3. It writes `.env`, generates the app key, runs migrations, optionally seeds demo content,
+   creates the admin, links uploads and caches the config.
+4. The last screen prints the only thing a browser can't do — the Node build:
+   ```bash
+   cd /www/wwwroot/askpias && bash install.sh --frontend-only
+   ```
+
+The wizard locks itself with `backend/storage/installed.lock` (delete it to run again) and
+should be removed from the server once you're done: `rm backend/public/install.php`.
+
 ## 2. Finish the web server (aaPanel + OpenLiteSpeed)
 1. **API site** — create a PHP site for `api.example.com`:
    - Document root: `<APP_DIR>/backend/public` (not the project root)

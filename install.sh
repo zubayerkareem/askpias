@@ -17,10 +17,13 @@ APP_VERSION="1.0.0"
 REPO_URL_DEFAULT="https://github.com/zubayerkareem/askpias.git"
 
 # --auto: no questions, everything from defaults (or the env vars you exported).
+# --frontend-only: rebuild + restart just the website (used after the browser installer).
 AUTO=0
+FRONTEND_ONLY=0
 for arg in "$@"; do
   case "$arg" in
     --auto|--yes|-y) AUTO=1 ;;
+    --frontend-only) FRONTEND_ONLY=1 ;;
   esac
 done
 
@@ -57,6 +60,48 @@ random_password() {
     tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16
   fi
 }
+
+# ------------------------------------------------------------ frontend only ---
+if [ "$FRONTEND_ONLY" -eq 1 ]; then
+  APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  step "Frontend only — $APP_DIR"
+
+  ask SITE_URL "Public site URL" "https://askpias.com"
+  ask API_URL "Admin/API URL" "https://api.askpias.com"
+
+  cd "$APP_DIR"
+  printf 'VITE_API_URL=%s/api\nVITE_ADMIN_URL=%s/admin\nVITE_GTM_ID=\n' "$API_URL" "$API_URL" > .env
+
+  if command -v bun >/dev/null 2>&1; then
+    bun install --frozen-lockfile || bun install
+    bun run build
+  elif [ -f package-lock.json ]; then
+    npm ci && npm run build
+  else
+    npm install && npm run build
+  fi
+  ok "Site built into $APP_DIR/.output"
+
+  if [ "$(id -u)" -eq 0 ] && id -u www >/dev/null 2>&1; then
+    chown -R www:www "$APP_DIR/.output" 2>/dev/null || true
+  fi
+
+  if command -v pm2 >/dev/null 2>&1; then
+    if pm2 describe askpias-web >/dev/null 2>&1; then
+      PORT=3000 pm2 restart askpias-web --update-env
+    else
+      PORT=3000 pm2 start .output/server/index.mjs --name askpias-web --update-env
+    fi
+    pm2 save >/dev/null
+    ok "PM2 process 'askpias-web' running on 127.0.0.1:3000"
+  else
+    warn "pm2 not found — start it with: cd $APP_DIR && PORT=3000 node .output/server/index.mjs"
+  fi
+
+  step "Done"
+  echo "  Remember: reverse-proxy $SITE_URL to http://127.0.0.1:3000 (snippet in INSTALL.md)."
+  exit 0
+fi
 
 # ---------------------------------------------------------------- preflight ---
 step "Checking the server"
