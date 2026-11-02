@@ -151,8 +151,11 @@ fi
 [ -n "$COMPOSER_BIN" ] || die "Composer not found. Install it or set COMPOSER_BIN=/path/to/composer.phar."
 ok "Composer at $COMPOSER_BIN"
 
-command -v git >/dev/null 2>&1 || die "git is required."
-ok "git available"
+if command -v git >/dev/null 2>&1; then
+  ok "git available"
+else
+  warn "git not found — fine for zip installs, needed only to download from GitHub."
+fi
 
 # -------------------------------------------------------------- questions ----
 step "Installation settings"
@@ -198,6 +201,7 @@ else
   done
 
   if [ "$moved" -eq 1 ]; then
+    command -v git >/dev/null 2>&1 || die "git is required to download the app — or extract the zip into $APP_DIR and rerun."
     git clone --branch "$BRANCH" "$REPO_URL" "$APP_DIR"
     ok "Cloned into $APP_DIR (panel default files moved to $BACKUP_DIR)"
   else

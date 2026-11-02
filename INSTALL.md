@@ -73,6 +73,28 @@ root at `backend/public`, then open `https://api.example.com/install.php`:
 The wizard locks itself with `backend/storage/installed.lock` (delete it to run again) and
 should be removed from the server once you're done: `rm backend/public/install.php`.
 
+## 1c. Zip installation (no git on the server)
+Build the package on your own machine:
+```bash
+bash package.sh                 # → dist/askpias-1.0.0.zip
+VERSION=1.1.0 bash package.sh   # or pick a version
+```
+Only tracked files go in: `.env`, `vendor/`, `node_modules/`, `.output/` and uploads are
+excluded. The archive extracts to `askpias-<version>/` with the site at its root and the
+admin/API inside `backend/`.
+
+On the server (upload the zip with aaPanel → Files, or `scp`):
+```bash
+cd /www/wwwroot
+unzip askpias-1.0.0.zip
+mv askpias-1.0.0 askpias
+cd askpias && bash setup.sh
+```
+
+Updates work without git too: `bash update.sh` detects there is no checkout and downloads
+the latest archive from GitHub (`ARCHIVE_URL`, defaults to the `main` tarball), syncing it
+over the app while keeping `.env`, uploads and logs.
+
 ## 2. Finish the web server (aaPanel + OpenLiteSpeed)
 1. **API site** — create a PHP site for `api.example.com`:
    - Document root: `<APP_DIR>/backend/public` (not the project root)

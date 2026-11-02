@@ -56,22 +56,58 @@ if [ -z "$COMPOSER_BIN" ]; then
   done
 fi
 
-[ -d "$APP_DIR/.git" ] || die "No git checkout at $APP_DIR — updates need a clone, not a zip."
+[ -d "$APP_DIR/backend" ] || die "$APP_DIR does not look like an AskPias install."
+
+ARCHIVE_URL="${ARCHIVE_URL:-https://github.com/zubayerkareem/askpias/archive/refs/heads/$BRANCH.tar.gz}"
 
 # -------------------------------------------------------------------- code ---
-step "Pulling $BRANCH"
-cd "$APP_DIR"
-command -v git >/dev/null 2>&1 || die "git is not available to this user."
-git fetch --prune origin "$BRANCH"
+if [ -d "$APP_DIR/.git" ] && command -v git >/dev/null 2>&1; then
+  step "Pulling $BRANCH"
+  cd "$APP_DIR"
+  git fetch --prune origin "$BRANCH"
 
-if [ "$FORCE" = "1" ]; then
-  git reset --hard "origin/$BRANCH"
-else
-  if ! git pull --ff-only origin "$BRANCH"; then
-    die "The pull was blocked (local changes or diverged history). Commit them, or rerun with FORCE=1."
+  if [ "$FORCE" = "1" ]; then
+    git reset --hard "origin/$BRANCH"
+  else
+    if ! git pull --ff-only origin "$BRANCH"; then
+      die "The pull was blocked (local changes or diverged history). Commit them, or rerun with FORCE=1."
+    fi
   fi
+  ok "$(git rev-parse --short HEAD) — $(git log -1 --pretty=%s)"
+else
+  # Zip install (no git checkout): fetch the release archive and sync it over,
+  # keeping .env, uploads and logs.
+  step "Downloading the latest package"
+  command -v curl >/dev/null 2>&1 || die "curl is required for zip updates."
+  command -v tar >/dev/null 2>&1 || die "tar is required for zip updates."
+
+  TMP_DIR="$(mktemp -d)"
+  trap 'rm -rf "$TMP_DIR"' EXIT
+
+  curl -fsSL --max-time 180 "$ARCHIVE_URL" | tar -xz -C "$TMP_DIR" \
+    || die "Could not download $ARCHIVE_URL"
+
+  SRC_DIR="$(find "$TMP_DIR" -maxdepth 1 -mindepth 1 -type d | head -n1)"
+  [ -n "$SRC_DIR" ] || die "Unexpected archive layout."
+
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a \
+      --exclude '.env' \
+      --exclude 'node_modules' \
+      --exclude 'vendor' \
+      --exclude '.output' \
+      --exclude 'backend/storage/app/public' \
+      --exclude 'backend/storage/logs' \
+      "$SRC_DIR"/ "$APP_DIR"/
+  else
+    ( cd "$SRC_DIR" && tar cf - \
+        --exclude='.env' --exclude='node_modules' --exclude='vendor' \
+        --exclude='.output' --exclude='backend/storage/app/public' --exclude='backend/storage/logs' . ) \
+      | ( cd "$APP_DIR" && tar xf - )
+  fi
+
+  ok "Package applied from $ARCHIVE_URL"
 fi
-ok "$(git rev-parse --short HEAD) — $(git log -1 --pretty=%s)"
 
 # ----------------------------------------------------------------- backend ---
 if [ "$SKIP_BACKEND" != "1" ]; then
@@ -121,4 +157,9 @@ if [ "$(id -u)" -eq 0 ] && id -u "$WEB_USER" >/dev/null 2>&1; then
 fi
 
 step "Done"
-printf 'Updated to %s on %s\n' "$(git -C "$APP_DIR" rev-parse --short HEAD)" "$(date '+%d %b %Y %H:%M')"
+if [ -d "$APP_DIR/.git" ] && command -v git >/dev/null 2>&1; then
+  REV="$(git -C "$APP_DIR" rev-parse --short HEAD)"
+else
+  REV="package $(date '+%Y-%m-%d')"
+fi
+printf 'Updated to %s on %s\n' "$REV" "$(date '+%d %b %Y %H:%M')"
