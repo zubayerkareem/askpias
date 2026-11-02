@@ -14,26 +14,26 @@ export function Ebook() {
 
   return (
     <section id="books" className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
-      <div className="grid grid-cols-[96px_minmax(0,1fr)] items-start gap-x-3 gap-y-3.5 rounded-xl border border-brand/20 bg-brand-soft p-3.5 sm:grid-cols-[132px_minmax(0,1fr)] sm:gap-x-5 sm:p-5 lg:grid-cols-[210px_minmax(0,1fr)] lg:items-center lg:gap-x-10 lg:gap-y-6 lg:p-8">
-        <div className="col-start-1 row-start-1 w-full lg:row-span-2 lg:self-center">
+      <div className="grid grid-cols-[104px_minmax(0,1fr)] gap-x-3 gap-y-3.5 rounded-xl border border-brand/20 bg-brand-soft p-3.5 sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-x-5 sm:p-5 lg:grid-cols-[210px_minmax(0,1fr)] lg:items-center lg:gap-x-10 lg:gap-y-6 lg:p-8">
+        <div className="relative col-start-1 row-start-1 h-full lg:row-span-2 lg:h-auto lg:aspect-[3/4] lg:self-center">
           {book?.cover_image_url ? (
             <img
               src={book.cover_image_url}
               alt={title}
-              className="aspect-[3/4] w-full rounded-md object-cover shadow-[0_18px_34px_-20px_rgba(0,0,0,0.5)]"
+              className="absolute inset-0 h-full w-full rounded-md object-cover shadow-[0_18px_34px_-20px_rgba(0,0,0,0.5)]"
             />
           ) : (
-            <div className="relative aspect-[3/4] overflow-hidden rounded-md bg-brand p-2.5 text-brand-foreground shadow-[0_18px_34px_-20px_rgba(0,0,0,0.5)] sm:p-3.5">
+            <div className="absolute inset-0 flex flex-col overflow-hidden rounded-md bg-brand p-2.5 text-brand-foreground shadow-[0_18px_34px_-20px_rgba(0,0,0,0.5)] sm:p-3.5">
               <p className="text-[0.5rem] font-bold tracking-[0.14em] uppercase opacity-85 sm:text-[0.55rem]">
                 Meta Ads
               </p>
-              <p className="mt-1 font-display text-[0.68rem] leading-[1.08] font-extrabold break-words hyphens-auto sm:text-[0.9rem] lg:text-lg">
+              <p className="mt-1 font-display text-[0.7rem] leading-[1.08] font-extrabold break-words hyphens-auto sm:text-[0.95rem] lg:text-lg">
                 Thermo&shy;dynamics
               </p>
               <p className="mt-1.5 hidden text-[0.6rem] leading-snug opacity-75 sm:block">
                 A practical guide to thinking clearly about Meta Ads.
               </p>
-              <p className="absolute bottom-2.5 left-2.5 text-[0.5rem] font-bold tracking-[0.24em] sm:bottom-3.5 sm:left-3.5 sm:text-[0.6rem]">
+              <p className="mt-auto pt-2 text-[0.5rem] font-bold tracking-[0.24em] sm:text-[0.6rem]">
                 P I A S
               </p>
             </div>
