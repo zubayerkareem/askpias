@@ -70,6 +70,25 @@ if ! command -v pm2 >/dev/null 2>&1; then
 fi
 ok "pm2 $(command -v pm2 >/dev/null 2>&1 && pm2 -v || echo 'not available')"
 
+# --------------------------------------------------------------- composer ---
+step "Composer"
+COMPOSER_BIN="${COMPOSER_BIN:-$(command -v composer || true)}"
+composer_ok=0
+if [ -n "$COMPOSER_BIN" ] && [ -f "$COMPOSER_BIN" ]; then
+  COMPOSER_VERSION="$("$PHP_BIN" "$COMPOSER_BIN" --version --no-ansi 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -n1 || true)"
+  case "$COMPOSER_VERSION" in
+    2.[2-9]*|2.[1-9][0-9]*|[3-9].*) composer_ok=1 ;;
+  esac
+fi
+if [ "$composer_ok" -eq 0 ]; then
+  warn "Installing Composer 2 (the distro package is too old for this lock file)…"
+  curl -sS https://getcomposer.org/installer | "$PHP_BIN" -- --install-dir=/usr/local/bin --filename=composer >/dev/null
+  COMPOSER_BIN=/usr/local/bin/composer
+fi
+[ -n "$COMPOSER_BIN" ] && [ -f "$COMPOSER_BIN" ] || die "Composer install failed."
+export COMPOSER_BIN
+ok "composer $("$PHP_BIN" "$COMPOSER_BIN" --version --no-ansi 2>/dev/null | head -n1)"
+
 # ---------------------------------------------------------------- database --
 step "MySQL"
 if [ -z "${MYSQL_ROOT_PASS:-}" ] && [ -t 0 ]; then
@@ -78,6 +97,10 @@ if [ -z "${MYSQL_ROOT_PASS:-}" ] && [ -t 0 ]; then
   printf '\n'
 fi
 export MYSQL_ROOT_PASS="${MYSQL_ROOT_PASS:-}"
+if [ -z "$MYSQL_ROOT_PASS" ]; then
+  warn "No root password given — the database and user will NOT be created."
+  warn "If the database does not exist yet, rerun with: MYSQL_ROOT_PASS='…' bash setup.sh"
+fi
 
 # ------------------------------------------------------------------ install --
 step "Installing AskPias"
@@ -86,6 +109,7 @@ chown -R "$WEB_USER":"$WEB_USER" "$APP_DIR" 2>/dev/null || true
 APP_DIR="$APP_DIR" \
 WEB_USER="$WEB_USER" \
 PHP_BIN="$PHP_BIN" \
+COMPOSER_BIN="$COMPOSER_BIN" \
 MYSQL_ROOT_PASS="$MYSQL_ROOT_PASS" \
   bash "$APP_DIR/install.sh" --auto
 
