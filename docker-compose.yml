@@ -56,8 +56,10 @@ services:
       SEED_DEMO: ${SEED_DEMO:-true}
     volumes:
       - uploads:/var/www/html/storage/app/public
-    ports:
-      - "8000:8080"
+    # No host port: Dokploy/Traefik reaches the container by domain.
+    # For plain `docker compose up` on a dev box, add:  ports: ["8000:8080"]
+    expose:
+      - "8080"
 
   web:
     build:
@@ -69,8 +71,10 @@ services:
     restart: unless-stopped
     depends_on:
       - api
-    ports:
-      - "3000:3000"
+    # Same here: binding 3000 collides with the Dokploy panel.
+    # Local dev override:  ports: ["3000:3000"]
+    expose:
+      - "3000"
 
 volumes:
   db-data:
