@@ -40,14 +40,17 @@ ok "$("$PHP_BIN" -r 'echo PHP_VERSION;') at $PHP_BIN"
 
 # ------------------------------------------------------------ web user ------
 step "Web server user"
-WEB_USER="${WEB_USER:-$(ps -eo user=,comm= | awk '$2 ~ /^(lsphp|litespeed|php-fpm|php)/ {print $1; exit}')}"
-WEB_USER="${WEB_USER:-www}"
-if ! id -u "$WEB_USER" >/dev/null 2>&1; then
-  WEB_USER=www
+if [ -z "${WEB_USER:-}" ]; then
+  WEB_USER="$(ps -eo user=,comm= | awk '$2 ~ /^(lsphp|litespeed|php-fpm)/ && $1 != "root" {print $1; exit}')"
+  if [ -z "$WEB_USER" ]; then
+    for candidate in www nobody litespeed; do
+      if id -u "$candidate" >/dev/null 2>&1; then WEB_USER="$candidate"; break; fi
+    done
+  fi
 fi
-if ! id -u "$WEB_USER" >/dev/null 2>&1; then
-  WEB_USER=nobody
-fi
+[ -n "${WEB_USER:-}" ] && [ "$WEB_USER" != "root" ] || WEB_USER=www
+id -u "$WEB_USER" >/dev/null 2>&1 || WEB_USER=nobody
+id -u "$WEB_USER" >/dev/null 2>&1 || die "No usable web-server user found. Set WEB_USER=… and rerun."
 ok "files will be owned by $WEB_USER"
 
 # ------------------------------------------------------------------ node ----
@@ -82,8 +85,12 @@ if [ -n "$COMPOSER_BIN" ] && [ -f "$COMPOSER_BIN" ]; then
 fi
 if [ "$composer_ok" -eq 0 ]; then
   warn "Installing Composer 2 (the distro package is too old for this lock file)…"
-  curl -sS https://getcomposer.org/installer | "$PHP_BIN" -- --install-dir=/usr/local/bin --filename=composer >/dev/null
-  COMPOSER_BIN=/usr/local/bin/composer
+  if curl -sS --max-time 60 https://getcomposer.org/installer -o /tmp/composer-setup.php; then
+    "$PHP_BIN" /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer >/dev/null
+    COMPOSER_BIN=/usr/local/bin/composer
+  else
+    die "Could not download Composer. Install it manually: curl -sS https://getcomposer.org/installer | $PHP_BIN -- --install-dir=/usr/local/bin --filename=composer"
+  fi
 fi
 [ -n "$COMPOSER_BIN" ] && [ -f "$COMPOSER_BIN" ] || die "Composer install failed."
 export COMPOSER_BIN
