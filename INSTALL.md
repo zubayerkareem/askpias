@@ -20,6 +20,13 @@ The only network dependencies are GitHub (source) and the Composer/Bun package r
 | RAM | 2 GB recommended (PHP + Node + MySQL) |
 
 ## 1. Quick install
+**One command** (detects PHP 8.3 and the web-server user, installs Node/PM2 if missing,
+asks only for the MySQL root password):
+```bash
+cd /www/wwwroot/askpias && bash setup.sh
+```
+
+Or run the installer directly:
 ```bash
 sudo git clone https://github.com/zubayerkareem/askpias.git /www/wwwroot/askpias.com
 cd /www/wwwroot/askpias.com
