@@ -62,6 +62,11 @@ services:
       - "8080"
 
   web:
+    # Opt-in only: Dokploy deploys the site as its own Application (root Dockerfile),
+    # because compose-level domain routing is less reliable there. Local full stack:
+    #   docker compose --profile full up -d --build
+    profiles:
+      - full
     build:
       context: .
       args:
