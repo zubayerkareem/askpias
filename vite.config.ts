@@ -12,6 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // The default nitro target is Cloudflare, whose bundle cannot run under plain Node.
+  // Every deployment path here runs the site with `node .output/server/index.mjs`,
+  // so build for the node-server preset.
+  nitro: { preset: "node-server" },
   vite: {
     server: {
       // Allow public dev tunnels (cloudflared / ngrok) to reach the dev server.
