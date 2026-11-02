@@ -5,6 +5,7 @@
 # (source) and the Composer/Bun package registries.
 #
 # Interactive:      sudo bash install.sh
+# Zero questions:   sudo bash install.sh --auto   (defaults + exported env vars)
 # Non-interactive:  APP_DIR=/www/wwwroot/site SITE_URL=https://site.com \
 #                   API_URL=https://api.site.com DB_NAME=db DB_USER=user \
 #                   ADMIN_EMAIL=you@site.com ADMIN_PASS=secret bash install.sh
@@ -14,6 +15,14 @@ set -Eeuo pipefail
 
 APP_VERSION="1.0.0"
 REPO_URL_DEFAULT="https://github.com/zubayerkareem/askpias.git"
+
+# --auto: no questions, everything from defaults (or the env vars you exported).
+AUTO=0
+for arg in "$@"; do
+  case "$arg" in
+    --auto|--yes|-y) AUTO=1 ;;
+  esac
+done
 
 if [ -t 1 ]; then
   C_BLUE=$'\033[1;34m'; C_GREEN=$'\033[1;32m'; C_RED=$'\033[1;31m'; C_OFF=$'\033[0m'
@@ -30,6 +39,7 @@ trap 'die "command failed at line ${LINENO}"' ERR
 ask() {
   local var="$1" question="$2" default="${3:-}" answer=""
   if [ -n "${!var:-}" ]; then return 0; fi
+  if [ "$AUTO" -eq 1 ]; then printf -v "$var" '%s' "$default"; return 0; fi
   if [ -t 0 ]; then
     if [ -n "$default" ]; then
       read -r -p "$question [$default]: " answer || true

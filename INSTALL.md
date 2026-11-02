@@ -31,6 +31,12 @@ whether to seed demo content. It then: installs PHP dependencies, writes `backen
 creates the database and admin user, runs migrations, builds the site and starts it under
 PM2. Re-running it is safe — `.env`, the database, uploads and the admin account are kept.
 
+**Zero questions** — accepts every default (URLs `askpias.com` / `api.askpias.com`, install
+dir `/www/wwwroot/askpias.com`, random DB + admin passwords):
+```bash
+MYSQL_ROOT_PASS='your-mysql-root-password' bash install.sh --auto
+```
+
 **Non-interactive** (CI or a repeat install):
 ```bash
 APP_DIR=/www/wwwroot/askpias.com \
