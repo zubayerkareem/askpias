@@ -107,6 +107,32 @@ Updates work without git too: `bash update.sh` detects there is no checkout and 
 the latest archive from GitHub (`ARCHIVE_URL`, defaults to the `main` tarball), syncing it
 over the app while keeping `.env`, uploads and logs.
 
+## 1d. Docker / Dokploy (auto-deploy from GitHub)
+`Dockerfile` (site), `backend/Dockerfile` (admin/API) and `docker-compose.yml` are included.
+The API container runs migrations, the storage link and the admin account on **every
+start** (`backend/docker/askpias-init.sh`), so a fresh database installs itself.
+
+**Single server:**
+```bash
+cp .env.docker.example .env      # fill APP_KEY (php artisan key:generate --show) + passwords
+docker compose up -d --build
+```
+Site → `http://server:3000`, admin → `http://server:8000/admin`.
+
+**Dokploy (deploy on every push):**
+1. Create a **Compose** application from the GitHub repo (`docker-compose.yml` at the root).
+2. Set the environment variables from `.env.docker.example` in Dokploy.
+3. Add domains: `askpias.com` → service `web`, port `3000`; `api.askpias.com` → service `api`,
+   port `8080`. Traefik issues the certificates.
+4. Enable auto-deploy (webhook) — every push rebuilds both images and the API migration
+   entrypoint runs on start.
+
+Notes:
+- `VITE_API_URL` / `VITE_ADMIN_URL` are **build args** — changing them needs a rebuild of the
+  `web` service.
+- Uploads live in the `uploads` volume (`storage/app/public`); keep it across deploys.
+- Not tested in this repo's CI — the first `docker compose build` is the real check.
+
 ## 2. Finish the web server (aaPanel + OpenLiteSpeed)
 1. **API site** — create a PHP site for `api.example.com`:
    - Document root: `<APP_DIR>/backend/public` (not the project root)

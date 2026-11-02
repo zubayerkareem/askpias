@@ -1,0 +1,13 @@
+.git
+.gitignore
+.github
+.commandcode
+.tunnels
+node_modules
+.output
+dist
+backend
+*.log
+.env
+.env.*
+!.env.example
