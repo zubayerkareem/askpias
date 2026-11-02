@@ -41,3 +41,6 @@ dist-ssr
 *.sw?
 .vercel
 .env*
+# Templates must ship with the package — installers copy them to .env
+!.env.example
+!backend/.env.example
