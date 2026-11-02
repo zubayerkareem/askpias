@@ -31,6 +31,9 @@ Then open the specific files for the area:
 | Admin account CLI | `backend/app/Console/Commands/CreateAdmin.php` |
 | Env writer | `backend/scripts/set-env.php` |
 | Deploy automation | `.github/workflows/deploy.yml`, `deploy/askpias-web.service` |
+| Production deploy (Docker) | `docker-compose.yml`, `Dockerfile`, `backend/Dockerfile` |
+| Container start hook | `backend/docker/askpias-init.sh` (migrations, admin, caches) |
+| Packaging | `package.sh` / `package.ps1` (zip with prebuilt `.output`) |
 
 ## Conventions observed in this codebase
 ### TypeScript / React
@@ -73,6 +76,15 @@ Then open the specific files for the area:
   content plus the admin password (`DatabaseSeeder.php`). `update.sh` never seeds.
 - Shell scripts keep LF endings (`.gitattributes`); `.env` files exist only on servers and
   are never committed.
+- **Production runs on Dokploy + Docker** — a Compose service (`db` + `api`) and an
+  Application service for the site (root `Dockerfile`). `INSTALL.md` §1 is the source of truth.
+  Schema changes ship through migrations because `askpias-init.sh` runs them on every start.
+- The site must build with `nitro.preset = node-server` (`vite.config.ts`). The Cloudflare
+  default produces a bundle that cannot run under Node → the container dies → 502.
+- `APP_ENV=production` requires `User` to implement `FilamentUser`; without it the panel
+  returns 403 *after* a successful login (`backend/app/Models/User.php`).
+- Never publish host ports in `docker-compose.yml`: 3000 is the Dokploy panel. Containers
+  `expose` 8080 (api) and 3000 (web); Traefik routes by domain.
 
 ## Verify before finishing
 - Frontend: `bunx tsc --noEmit`, `bun run lint`, `bun run build`.
@@ -92,3 +104,7 @@ Then open the specific files for the area:
   by it (git + composer on that user's PATH) or the run must be done over SSH.
 - `VITE_*` values are baked at build time — changing `VITE_API_URL` needs a rebuild, not a
   restart (`src/lib/api.ts`, `install.sh`, `update.sh`).
+- Docker: a bare `composer` image has no `ext-intl` (Filament needs it) — run Composer inside
+  the PHP image (`backend/Dockerfile`). A missing extension fails the build, not the app.
+- Dokploy: domain Host must not contain `https://`; the Service Name must match the compose
+  key (`api`, `web`) and the port the container listens on (8080 / 3000).

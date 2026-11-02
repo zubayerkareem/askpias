@@ -81,6 +81,10 @@ Search params validated: `slug`, `invoice_id`, `result` only.
   (`LeadController`, `PaymentController`, `MessageController`).
 
 ## 9. Update flow (`update.sh`, `backend/app/Filament/Pages/Updates.php`)
+Production uses Dokploy: **a push to `main` rebuilds both services**; the api container's
+`backend/docker/askpias-init.sh` runs migrations and re-ensures the admin on every start.
+The shell updater below remains for the standalone (aaPanel/zip) installs.
+
 No database state — the run log is the state (`backend/storage/logs/update.log`).
 
 | State | Signal |

@@ -1,228 +1,131 @@
-# INSTALL.md — installation and updates
+# INSTALL.md — deployment and updates
 
-One package installs **both** apps: the Filament admin/API (`backend/`) and the TanStack
-site (repo root). Everything runs on your own server — no SaaS, no external dashboard.
-The only network dependencies are GitHub (source) and the Composer/Bun package registries.
+This project is deployed with **Dokploy + Docker** (see 1). The older aaPanel/zip
+installers still work and are documented in 2; they are not used in production.
 
-## What gets installed
-- Laravel 13 API at `/api` and Filament admin at `/admin`
-- The site, built to `.output` and served by a Node process (Nitro SSR) on `127.0.0.1:3000`
-- MySQL schema, optional demo content, and one admin account
+Two services, one project:
+- **compose service** → `db` + `api` (Laravel admin/API) → `api.askpias.com`
+- **application service** → site (root `Dockerfile`) → `askpias.com`
 
-## Requirements
+---
+
+## 1. Dokploy (recommended, in use)
+
+### Files
+| File | Builds |
+| --- | --- |
+| `docker-compose.yml` | `db` (MySQL 8.4) + `api` (Laravel). `web` is behind the `full` profile and is NOT deployed here |
+| `backend/Dockerfile` | PHP 8.3 + nginx (`serversideup/php`), installs `intl gd exif`, runs Composer inside the image |
+| `backend/docker/askpias-init.sh` | Start hook: migrations → demo seed (once) → admin from env → caches |
+| `Dockerfile` | Site: `bun install` → `bun run build` → `node .output/server/index.mjs` on port 3000 |
+
+### Service 1 — Compose (db + api)
+1. Project → **Create Service → Compose**, source GitHub, branch `main`, compose path
+   `./docker-compose.yml`.
+2. Environment (Dokploy writes these into `.env`):
+
+```env
+APP_KEY=base64:...            # generate: echo "base64:$(openssl rand -base64 32)"
+SITE_URL=https://askpias.com
+API_URL=https://api.askpias.com
+DB_DATABASE=askpias
+DB_USERNAME=askpias
+DB_PASSWORD=...
+DB_ROOT_PASSWORD=...
+ADMIN_EMAIL=admin@askpias.com
+ADMIN_NAME=Pias Ahmed
+ADMIN_PASSWORD=...
+SEED_DEMO=true
+GTM_ID=
+```
+
+3. Domains → Host `api.askpias.com`, service `api`, **port 8080**, HTTPS on.
+   Never publish host ports: 3000 belongs to the Dokploy panel.
+4. Deploy. The api log must show `[askpias] Running migrations…` … `[askpias] Ready.`
+
+### Service 2 — Application (site)
+1. Project → **Create Service → Application**, same repo, branch `main`.
+2. Build type **Dockerfile**, Dockerfile path `Dockerfile`, context `.`.
+3. Domain → Host `askpias.com`, **port 3000**, HTTPS on.
+4. Deploy. Build args default to `https://api.askpias.com/api`; override with
+   `VITE_API_URL` / `VITE_ADMIN_URL` if the domains differ (they are **baked at build**).
+
+### Shared rules
+- `db-data` and `uploads` volumes persist the database and `storage/app/public`.
+- `APP_ENV=production` means the user model must implement `FilamentUser`
+  (`backend/app/Models/User.php`) or the panel returns 403 after login.
+- The site must be built with `nitro.preset = node-server` (`vite.config.ts`); the
+  Cloudflare default produces a bundle that cannot run under Node (socket hangs → 502).
+
+### Updates
+Push to `main`; with **Auto Deploy** enabled each service rebuilds and restarts.
+The api container re-runs migrations on every start, so schema changes ship with a push.
+Content edits (notes, images, prices) need no deploy — do them in `/admin`.
+
+---
+
+## 2. Standalone installers (aaPanel / VPS / zip)
+
+### Requirements
 | Thing | Version |
 | --- | --- |
-| PHP | 8.3+ with `pdo_mysql mbstring openssl fileinfo curl tokenizer xml ctype zip json gd` |
-| Composer | 2.x |
+| PHP | 8.3+ with `pdo_mysql mbstring openssl fileinfo curl tokenizer xml ctype zip json gd intl` |
+| Composer | 2.2+ |
 | MySQL | 5.7+ / 8.x |
 | Node or Bun | Node 20+ or Bun 1.x (build + SSR) |
-| git | any |
-| RAM | 2 GB recommended (PHP + Node + MySQL) |
+| git | any (not required for zip installs) |
 
-## 1. Quick install
-**One command** (detects PHP 8.3 and the web-server user, installs Node/PM2 if missing,
-asks only for the MySQL root password):
+### 2a. One command
 ```bash
-cd /www/wwwroot/askpias && bash setup.sh
+cd /www/wwwroot/askpias && bash setup.sh     # prompts once for the MySQL root password
 ```
 
-Or run the installer directly:
-```bash
-sudo git clone https://github.com/zubayerkareem/askpias.git /www/wwwroot/askpias.com
-cd /www/wwwroot/askpias.com
-sudo bash install.sh
-```
+### 2b. Browser installer
+`backend/public/install.php` — visit `https://<api-domain>/install.php`, enter database +
+admin details, click Install. It writes `.env`, migrates, creates the admin, builds and
+starts the site. Needs `shell_exec` + `proc_open` enabled, plus Node/PM2. Locks itself with
+`backend/storage/installed.lock`; delete that to re-run.
 
-The installer asks for the install directory, site/API URLs, database, admin account and
-whether to seed demo content. It then: installs PHP dependencies, writes `backend/.env`,
-creates the database and admin user, runs migrations, builds the site and starts it under
-PM2. Re-running it is safe — `.env`, the database, uploads and the admin account are kept.
-
-**Zero questions** — accepts every default (URLs `askpias.com` / `api.askpias.com`, install
-dir `/www/wwwroot/askpias.com`, random DB + admin passwords):
-```bash
-MYSQL_ROOT_PASS='your-mysql-root-password' bash install.sh --auto
-```
-
-**Non-interactive** (CI or a repeat install):
-```bash
-APP_DIR=/www/wwwroot/askpias.com \
-SITE_URL=https://askpias.com API_URL=https://api.askpias.com \
-DB_NAME=askpias DB_USER=askpias DB_PASS='strong-pass' MYSQL_ROOT_PASS='root-pass' \
-ADMIN_EMAIL=you@askpias.com ADMIN_PASS='admin-pass' \
-bash install.sh
-```
-Every prompt can be pre-set as an environment variable; `SKIP_FRONTEND=yes` installs only
-the backend, `SEED_DEMO=no` skips demo content.
-
-## 1b. Browser installer (optional)
-A single-file wizard ships at `backend/public/install.php`. Point the API site's document
-root at `backend/public`, then open `https://api.example.com/install.php`:
-
-1. It lists requirements — PHP 8.3, extensions, writable `storage/` + `bootstrap/cache`,
-   and a PHP 8.3 CLI binary (the wizard shells out to `artisan`).
-2. Fill in site/API URLs, the database (add the MySQL root password and it creates the
-   database + user for you), and the admin account.
-3. It writes `.env`, generates the app key, runs migrations, optionally seeds demo content,
-   creates the admin, links uploads and caches the config.
-4. The last screen prints the only thing a browser can't do — the Node build:
-   ```bash
-   cd /www/wwwroot/askpias && bash install.sh --frontend-only
-   ```
-
-The wizard locks itself with `backend/storage/installed.lock` (delete it to run again) and
-should be removed from the server once you're done: `rm backend/public/install.php`.
-
-## 1c. Zip installation (no git on the server)
-Windows:
+### 2c. Zip package
 ```powershell
-powershell -ExecutionPolicy Bypass -File package.ps1        # → dist/askpias-1.0.0.zip
+powershell -ExecutionPolicy Bypass -File package.ps1     # Windows → dist/askpias-1.0.0.zip
+bash package.sh                                          # Linux/macOS
 ```
-Linux/macOS:
+Contains tracked files **plus the prebuilt `.output`**. Extract on the server, then run
+`setup.sh` or open `install.php`.
+
+### 2d. Web server
+- API site: document root `<APP_DIR>/backend/public`, PHP 8.3.
+- Site: reverse proxy to `127.0.0.1:3000` (OLS `extprocessor`/`context`, nginx `proxy_pass`).
+- SSL on both domains.
+
+### 2e. Updates without Docker
 ```bash
-bash package.sh                 # → dist/askpias-<version>.zip (or .tar.gz)
-VERSION=1.1.0 bash package.sh   # pick a version
+cd /www/wwwroot/askpias && bash update.sh      # git pull, or downloads the GitHub archive
 ```
-The package contains only tracked files **plus the prebuilt site** (`.output`), so the
-server never has to run a Node build. `.env`, `vendor/`, `node_modules/` and uploads are
-excluded. It extracts to `askpias-<version>/` with the site at the root and the admin/API
-inside `backend/`.
+The admin has **System → Updates** which runs the same script.
 
-On the server (upload the zip with aaPanel → Files, or `scp`):
-```bash
-cd /www/wwwroot
-unzip askpias-1.0.0.zip
-mv askpias-1.0.0 askpias
-```
-Then either the browser wizard (`https://<api-domain>/install.php` — see 1b) or:
-```bash
-cd /www/wwwroot/askpias && bash setup.sh
-```
-
-The browser wizard now installs **both** apps: database + admin, then it writes the site's
-`.env`, builds it if `.output` is missing, and starts the Node process on `127.0.0.1:3000`.
-It needs Node 20+/PM2 installed and `shell_exec` + `proc_open` enabled in that site's PHP.
-
-Updates work without git too: `bash update.sh` detects there is no checkout and downloads
-the latest archive from GitHub (`ARCHIVE_URL`, defaults to the `main` tarball), syncing it
-over the app while keeping `.env`, uploads and logs.
-
-## 1d. Docker / Dokploy (auto-deploy from GitHub)
-`Dockerfile` (site), `backend/Dockerfile` (admin/API) and `docker-compose.yml` are included.
-The API container runs migrations, the storage link and the admin account on **every
-start** (`backend/docker/askpias-init.sh`), so a fresh database installs itself.
-
-**Single server:**
-```bash
-cp .env.docker.example .env      # fill APP_KEY (php artisan key:generate --show) + passwords
-docker compose up -d --build
-```
-Site → `http://server:3000`, admin → `http://server:8000/admin`.
-
-**Dokploy (deploy on every push):**
-1. Create a **Compose** application from the GitHub repo (`docker-compose.yml` at the root).
-2. Set the environment variables from `.env.docker.example` in Dokploy.
-3. Add domains: `askpias.com` → service `web`, port `3000`; `api.askpias.com` → service `api`,
-   port `8080`. Traefik issues the certificates.
-4. Enable auto-deploy (webhook) — every push rebuilds both images and the API migration
-   entrypoint runs on start.
-
-Notes:
-- `VITE_API_URL` / `VITE_ADMIN_URL` are **build args** — changing them needs a rebuild of the
-  `web` service.
-- Uploads live in the `uploads` volume (`storage/app/public`); keep it across deploys.
-- Not tested in this repo's CI — the first `docker compose build` is the real check.
-
-## 2. Finish the web server (aaPanel + OpenLiteSpeed)
-1. **API site** — create a PHP site for `api.example.com`:
-   - Document root: `<APP_DIR>/backend/public` (not the project root)
-   - PHP version: 8.3 (lsphp)
-   - Enable SSL, set `max_execution_time` to 120
-2. **Public site** — create a site for `example.com`, then proxy it to the Node process.
-   In OLS, add to the vhost config:
-   ```apacheconf
-   extprocessor askpias-node {
-     type              proxy
-     address           127.0.0.1:3000
-     maxConns          100
-     qsKeepAliveTimeout 60
-     respBuffer        0
-   }
-
-   context / {
-     type      proxy
-     handler   askpias-node
-   }
-   ```
-   nginx equivalent (cPanel/nginx panels):
-   ```nginx
-   location / {
-     proxy_pass http://127.0.0.1:3000;
-     proxy_http_version 1.1;
-     proxy_set_header Host $host;
-     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-     proxy_set_header X-Forwarded-Proto $scheme;
-   }
-   ```
-3. Enable SSL for both domains. Laravel already trusts proxies
-   (`backend/bootstrap/app.php`), so https URLs generate correctly behind the proxy.
-4. Optional cron: `* * * * * cd <APP_DIR>/backend && php artisan schedule:run >> /dev/null 2>&1`
-
-No PM2? Install the unit instead:
-```bash
-cp <APP_DIR>/deploy/askpias-web.service /etc/systemd/system/
-systemctl daemon-reload && systemctl enable --now askpias-web
-```
+---
 
 ## 3. First login
-`https://api.example.com/admin` with the email/password the installer printed.
-Change it any time:
+`https://api.askpias.com/admin` with `ADMIN_EMAIL` / `ADMIN_PASSWORD`. Reset any time:
 ```bash
-cd <APP_DIR>/backend && php artisan app:create-admin you@example.com
+php artisan app:create-admin you@example.com
 ```
 
-## 4. Updating from GitHub
-Three equivalent paths — all run the same `update.sh`.
-
-**A. From the admin panel** — *System → Updates → Run update now*. Shows the live output
-and the last run log. The command executes as the PHP user, so it needs ownership of the
-app directory and `git`/`composer` on that user's PATH.
-
-**B. Over SSH**
-```bash
-cd /www/wwwroot/askpias.com && bash update.sh
-```
-Flags: `FORCE=1` (discard local changes, `git reset --hard origin/<branch>`),
-`SKIP_FRONTEND=1`, `SKIP_BACKEND=1`, `BRANCH=release`.
-
-**C. Automatically on push** — `.github/workflows/deploy.yml` runs `update.sh` over SSH
-when `main` changes. Add repository secrets:
-`SSH_HOST`, `SSH_USER`, `SSH_KEY` (private key), `APP_DIR`.
-
-### What an update does
-`git pull` → `composer install --no-dev` → `php artisan migrate --force` →
-`optimize:clear` + `optimize` → install + build the frontend → restart the Node process →
-fix ownership.
-
-It **does not** touch `backend/.env`, the database rows, or uploaded files in
-`backend/storage/app/public`. It never seeds. Migrations are additive, so a rollback is
-`git reset --hard <previous-sha>` followed by the same script.
-
-## 5. Troubleshooting
+## 4. Troubleshooting
 | Symptom | Cause / fix |
 | --- | --- |
-| `bash: $'\r': command not found` | CRLF line endings. `.gitattributes` pins `*.sh` to LF; if the file was edited on Windows, run `sed -i 's/\r$//' install.sh update.sh` |
-| 500 right after install | `php artisan optimize:clear`, check `backend/storage/logs/laravel.log`, and that `storage/` + `bootstrap/cache` are owned by the web user |
-| PHP changes don't appear | OPcache with `validate_timestamps=0` — restart lsphp/OLS |
-| Site still calls the old API URL | `VITE_*` is baked at build time — rerun the frontend build, not just a restart |
-| Uploaded images 404 | `php artisan storage:link`; widen `open_basedir` to include `storage/` and `vendor/`; OLS must follow symlinks |
-| UddoktaPay: "return url not allowed" | `FRONTEND_URL` must be a domain whitelisted in the UddoktaPay dashboard |
-| Admin update button fails with permission error | Run `bash update.sh` once over SSH as the file owner, then `chown -R www:www <APP_DIR>` |
-| Emails not sending | Site settings → Email (SMTP); without it Laravel uses the `log` mailer |
+| 502 on the site | container down or wrong port. `docker ps`, `docker logs`. Must be port **3000** |
+| 404 on the site | no Traefik router: Host must be `askpias.com` (no `https://`), service `web`/Application, port 3000 |
+| 403 after admin login | `User` must implement `FilamentUser` (already fixed) or `APP_ENV` isn't production |
+| Composer: `ext-intl` missing | the API image installs it; a custom image must too |
+| Site shows old API URL | `VITE_*` is baked — rebuild the web service |
+| UddoktaPay "return url not allowed" | `FRONTEND_URL` must be a whitelisted domain |
+| `$'\r': command not found` | CRLF on a shell script — `.gitattributes` pins `*.sh` to LF |
 
-## 6. Security checklist
-- `APP_DEBUG=false`, `APP_ENV=production` (the installer sets both)
-- Change the seeded admin password; the installer already asks for one
-- Keep `backend/.env` at `600`, owned by the web user
-- Consider basic-auth or an IP allow-list in front of `/admin`
+## 5. Security checklist
+- `APP_DEBUG=false`, `APP_ENV=production`
+- Rotate the generated admin/DB passwords; keep `APP_KEY` stable (sessions break otherwise)
+- Keep `backend/.env` off git; it lives in Dokploy's environment variables
 - Rotate the UddoktaPay API key and GTM container ID from **Site settings**

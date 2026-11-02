@@ -8,9 +8,10 @@ Marketing/lead-gen site for Pias Ahmed, brand builder & marketing consultant.
 All content (notes, case studies, testimonials, site settings) is managed in the
 Filament admin panel and served to the frontend over a JSON API.
 
-> **Installing or updating on a server?** See [INSTALL.md](./INSTALL.md) — one-command
-> install (`install.sh`), aaPanel/OpenLiteSpeed setup, and the GitHub update flow
-> (`update.sh`, admin **System → Updates**, GitHub Actions).
+> **Installing or updating on a server?** See [INSTALL.md](./INSTALL.md).
+> Production deploys on **Dokploy + Docker**: a Compose service (`db` + `api`) and an
+> Application service for the site (§1). The shell installers (`install.sh`, `setup.sh`,
+> `update.sh`) and the zip/browser wizard remain as fallbacks (§2).
 
 ---
 

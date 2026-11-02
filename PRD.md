@@ -51,10 +51,11 @@ AskAnything → footer (`src/routes/index.tsx`).
   (`src/routes/sitemap[.]xml.ts`, `robots[.]txt.ts`, `backend/app/Filament/Pages/ManageSettings.php`).
 - **Analytics**: GTM dataLayer helpers — `page_view`, `view_item`, `select_item`,
   `begin_checkout`, `purchase`, `generate_lead`, `cta_click` (`src/lib/analytics.ts`).
-- **Install & updates**: `install.sh` provisions a server (dependencies, DB, admin account,
-  build, PM2) and `update.sh` pulls from GitHub and rebuilds both apps; the admin has
-  **System → Updates** (`backend/app/Filament/Pages/Updates.php`) and
-  `.github/workflows/deploy.yml` runs the same script on push.
+- **Install & updates**: production runs on **Dokploy + Docker** — a Compose service
+  (`db` + `api`) and an Application service for the site (`docker-compose.yml`,
+  `Dockerfile`, `backend/Dockerfile`); the api container migrates and creates the admin on
+  start (`backend/docker/askpias-init.sh`). Standalone fallbacks: `install.sh` / `setup.sh`
+  and the browser wizard `backend/public/install.php`. A push to `main` redeploys both.
 - **Theme**: light/dark toggle, class on `<html>`, key `askpias-theme`
   (`src/hooks/use-theme.ts`, `src/components/site/ThemeToggle.tsx`).
 
@@ -77,7 +78,7 @@ homepage media, GTM, UddoktaPay, SMTP, SEO, contact (`ManageSettings.php`).
 - No newsletter/subscriber model; no public accounts.
 - `site_settings` is a singleton row (`SiteSetting::current()` forces `id = 1`).
 - `/projects` has no index page; only detail pages exist.
-- Provisioning needs shell access — there is no browser-based installer, because the Node
-  SSR build cannot run from PHP (`install.sh`, `INSTALL.md`).
+- The Docker site image defaults `VITE_API_URL` to `https://api.askpias.com/api`
+  (`Dockerfile`); a different domain needs build args.
 - The admin "Run update" button depends on the PHP user owning the app directory with
   `git`/`composer` on its PATH; otherwise updates must run over SSH (`Updates.php`).

@@ -71,14 +71,30 @@ Build config: `@lovable.dev/vite-tanstack-config` wrapper; SSR entry overridden 
 - Notable Laravel setup: `trustProxies(at: '*')` and JSON errors for `api/*`
   (`backend/bootstrap/app.php`).
 
-## Deployment (self-hosted)
-- **Installer / updater**: `install.sh` and `update.sh` at the repo root (bash); docs in
-  `INSTALL.md`. Admin UI for updates: `backend/app/Filament/Pages/Updates.php`.
+## Deployment (Docker + Dokploy — the production path)
+- **Dokploy project with two services**: a **Compose** service (`db` + `api`) and an
+  **Application** service for the site (root `Dockerfile`). `docker-compose.yml`, the two
+  Dockerfiles and `backend/docker/askpias-init.sh` are the source of truth; see `INSTALL.md`.
+- **API image**: `serversideup/php:8.3-fpm-nginx`, installs `intl gd exif`, Composer runs
+  inside the image (the bare `composer` image has no `ext-intl`). nginx listens on **8080**.
+- **Site image**: `node:22-alpine`, `bun install` → `bun run build` → `node
+  .output/server/index.mjs` on **3000**. `VITE_*` are build args, baked at build time.
+- **Nitro preset must be `node-server`** (`vite.config.ts`); the default `cloudflare-module`
+  bundle exits immediately under Node → 502.
+- `APP_ENV=production` requires `User extends Authenticatable implements FilamentUser`
+  (`canAccessPanel`), otherwise the panel 403s after login.
+- Volumes: `db-data` (MySQL), `uploads` (`backend/storage/app/public`).
+- Updates: push to `main` → Dokploy rebuilds → the api entrypoint re-runs migrations.
+
+## Deployment (standalone installers — fallback)
+- **Installer / updater**: `install.sh`, `setup.sh`, `update.sh` at the repo root (bash);
+  `package.sh` / `package.ps1` build the distributable zip (prebuilt `.output`).
+- Admin UI for updates: `backend/app/Filament/Pages/Updates.php`.
+- Browser wizard: `backend/public/install.php`.
 - **Frontend runtime**: Node 20+ serving `.output/server/index.mjs` on `127.0.0.1:3000`
   via PM2 (`askpias-web`) or `deploy/askpias-web.service`; OLS/nginx reverse-proxies to it.
 - **Backend runtime**: PHP 8.3 (lsphp) with the document root set to `backend/public`.
-- **New env keys**: `APP_VERSION` (shown on the admin Updates page) and `APP_BRANCH`
-  (branch `update.sh` pulls), both read in `backend/config/app.php`.
-- **Automation**: `.github/workflows/deploy.yml` → SSH → `bash update.sh`; repository
-  secrets `SSH_HOST`, `SSH_USER`, `SSH_KEY`, `APP_DIR`.
+- **New env keys**: `APP_VERSION` (admin Updates page) and `APP_BRANCH` (branch `update.sh`
+  pulls), both read in `backend/config/app.php`.
+- **Automation**: `.github/workflows/deploy.yml` → SSH → `bash update.sh`.
 - **Script hygiene**: `.gitattributes` pins `*.sh` to LF.
