@@ -105,7 +105,7 @@ export function Hero() {
           <span aria-hidden className="hidden h-4 w-px bg-line sm:block" />
           <span className="inline-flex items-center gap-2">
             <Users className="size-4" aria-hidden />
-            20+ Brands Worked With
+            Worked with 20+ Brands
           </span>
         </div>
       </div>
