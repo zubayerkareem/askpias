@@ -7,7 +7,7 @@
 #   SKIP_FRONTEND=1 bash update.sh # backend only
 #   SKIP_BACKEND=1 bash update.sh  # frontend only
 #
-# Used by: SSH, the admin Updates page and .github/workflows/deploy.yml.
+# Used by: SSH and .github/workflows/deploy.yml.
 # Exits non-zero on failure, so the caller can show the real reason.
 set -Eeuo pipefail
 

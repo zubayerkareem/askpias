@@ -122,7 +122,7 @@ MYSQL_ROOT_PASS="$MYSQL_ROOT_PASS" \
 
 # --------------------------------------------------------------- ownership ---
 # Things installed as root above must be writable by the web user afterwards,
-# otherwise Admin → Updates cannot pull, run composer or rebuild.
+# otherwise update.sh cannot pull, run composer or rebuild.
 chown -R "$WEB_USER":"$WEB_USER" "$APP_DIR" 2>/dev/null || true
 
 if command -v runuser >/dev/null 2>&1; then

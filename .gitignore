@@ -22,13 +22,6 @@ dist-ssr
 # Local agent workspace data (taste files, session scratch)
 .commandcode/
 
-# Local dev tunnels (cloudflared logs)
-.tunnels/
-
-# Wrangler / Cloudflare
-.wrangler/
-.dev.vars
-
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

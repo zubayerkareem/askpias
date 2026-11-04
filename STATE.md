@@ -80,20 +80,11 @@ Search params validated: `slug`, `invoice_id`, `result` only.
 - Mail failures are caught and logged, never surfaced to the API
   (`LeadController`, `PaymentController`, `MessageController`).
 
-## 9. Update flow (`update.sh`, `backend/app/Filament/Pages/Updates.php`)
+## 9. Update flow (`update.sh`)
 Production uses Dokploy: **a push to `main` rebuilds both services**; the api container's
 `backend/docker/askpias-init.sh` runs migrations and re-ensures the admin on every start.
-The shell updater below remains for the standalone (aaPanel/zip) installs.
-
-No database state — the run log is the state (`backend/storage/logs/update.log`).
-
-| State | Signal |
-| --- | --- |
-| Never run | no `update.log`; page shows "Never" |
-| Succeeded | `update.sh` exit 0 → log written, "Application updated" notification |
-| Failed | non-zero exit → stdout+stderr in the log, "Update failed" notification |
-| Blocked by local changes | `git pull --ff-only` fails → script exits with the `FORCE=1` hint |
-| Not runnable | `update.sh` missing (e.g. a zip deploy) → danger notification, no process started |
+The shell updater remains for the standalone (aaPanel/zip) installs and runs over SSH
+(`.github/workflows/deploy.yml`) or by hand — there is no admin start button.
 
 Step order in `update.sh`: fetch/pull → composer → `migrate --force` → `optimize:clear` →
 `optimize` → frontend install+build → PM2/systemd restart → ownership fix.

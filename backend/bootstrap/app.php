@@ -13,8 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Running behind a Cloudflare tunnel (or any reverse proxy): trust the
-        // forwarded headers so URLs are generated as https.
+        // Running behind a reverse proxy: trust the forwarded headers so URLs are
+        // generated as https.
         $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {

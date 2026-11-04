@@ -205,32 +205,6 @@ status (`free` / `pending` / `paid` / `failed`, amount, invoice, transaction id)
 
 ---
 
-## Public preview via Cloudflare Tunnel
-
-Two quick tunnels are used while the apps run locally:
-
-```sh
-cloudflared tunnel --url http://localhost:8080   # site
-cloudflared tunnel --url http://127.0.0.1:8000   # API + admin
-```
-
-When the tunnel URLs change, update:
-
-- frontend `.env` → `VITE_API_URL=https://<backend>.trycloudflare.com/api`, `VITE_ADMIN_URL=https://<backend>.trycloudflare.com/admin` (restart `bun run dev`)
-- backend `.env` → `APP_URL=https://<backend>.trycloudflare.com` and add the site origin to `FRONTEND_URLS`, then `php artisan config:clear`
-
-`vite.config.ts` allows `*.trycloudflare.com` hosts for the dev server, and
-Laravel trusts forwarded headers so URLs are generated as `https`.
-
-Quick tunnels are temporary (random URL, no uptime guarantee). For a stable
-domain use a named tunnel: `cloudflared tunnel login`, `cloudflared tunnel create askpias`,
-then route a hostname to `http://localhost:8080` / `http://127.0.0.1:8000`.
-
-> The admin panel is publicly reachable while the backend tunnel is up — change the
-> seeded password before sharing the link.
-
----
-
 ## Notes for production
 
 - Set `APP_ENV=production` and `APP_DEBUG=false` in `backend/.env`.

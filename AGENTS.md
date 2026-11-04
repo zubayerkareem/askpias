@@ -27,7 +27,6 @@ Then open the specific files for the area:
 | Payment gateway | `backend/app/Services/UddoktaPayService.php` |
 | Mailables | `backend/app/Mail/*` + `backend/resources/views/mail/*` |
 | Install & update | `install.sh`, `update.sh`, `INSTALL.md` |
-| Admin updater | `backend/app/Filament/Pages/Updates.php` + `views/filament/pages/updates.blade.php` |
 | Admin account CLI | `backend/app/Console/Commands/CreateAdmin.php` |
 | Env writer | `backend/scripts/set-env.php` |
 | Deploy automation | `.github/workflows/deploy.yml`, `deploy/askpias-web.service` |
@@ -93,15 +92,10 @@ Then open the specific files for the area:
 - Scripts: `bash -n install.sh update.sh` after any edit; `php -l` on new PHP files.
 
 ## Environment traps hit before
-- Frontend calls the API through `VITE_API_URL`; a stale tunnel URL there breaks every page
+- Frontend calls the API through `VITE_API_URL`; a wrong value there breaks every page
   silently (`.env`, `src/lib/api.ts`).
 - UddoktaPay rejects return URLs whose host is not whitelisted in its dashboard; the return
   origin comes from `FRONTEND_URL` (`backend/.env:9`, `config/services.php`).
-- Vite 403s unknown tunnel hosts unless listed in `server.allowedHosts` (`vite.config.ts`).
-- Behind a tunnel Laravel needs `trustProxies(at: '*')` for https URLs
-  (`backend/bootstrap/app.php`).
-- Admin → System → Updates runs `update.sh` as the PHP user; the app directory must be owned
-  by it (git + composer on that user's PATH) or the run must be done over SSH.
 - `VITE_*` values are baked at build time — changing `VITE_API_URL` needs a rebuild, not a
   restart (`src/lib/api.ts`, `install.sh`, `update.sh`).
 - Docker: a bare `composer` image has no `ext-intl` (Filament needs it) — run Composer inside

@@ -340,6 +340,6 @@ cat <<EOF
          cd $APP_DIR/backend && $PHP_BIN artisan app:create-admin $ADMIN_EMAIL
 
   Update later (from GitHub):
-    bash $APP_DIR/update.sh          # or Admin -> System -> Updates
+    bash $APP_DIR/update.sh
 
 EOF

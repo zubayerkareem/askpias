@@ -103,7 +103,6 @@ Contains tracked files **plus the prebuilt `.output`**. Extract on the server, t
 ```bash
 cd /www/wwwroot/askpias && bash update.sh      # git pull, or downloads the GitHub archive
 ```
-The admin has **System → Updates** which runs the same script.
 
 ---
 

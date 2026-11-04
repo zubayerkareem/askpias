@@ -39,8 +39,7 @@ Scripts (`package.json`): `dev` = `vite dev`, `build` = `vite build`,
 `lint` = `eslint .`, `format` = `prettier --write .`. No test script.
 
 Build config: `@lovable.dev/vite-tanstack-config` wrapper; SSR entry overridden to
-`src/server.ts`; dev `allowedHosts` includes `*.trycloudflare.com`, `*.ngrok-free.app`
-(`vite.config.ts`). Nitro's default build target is Cloudflare per that config's comments.
+`src/server.ts`; Nitro is pinned to the `node-server` preset (`vite.config.ts`).
 
 ## Backend (declared in `backend/composer.json`, resolved from `backend/composer.lock`)
 | Package | Constraint | Installed |
@@ -79,7 +78,7 @@ Build config: `@lovable.dev/vite-tanstack-config` wrapper; SSR entry overridden 
   inside the image (the bare `composer` image has no `ext-intl`). nginx listens on **8080**.
 - **Site image**: `node:22-alpine`, `bun install` → `bun run build` → `node
   .output/server/index.mjs` on **3000**. `VITE_*` are build args, baked at build time.
-- **Nitro preset must be `node-server`** (`vite.config.ts`); the default `cloudflare-module`
+- **Nitro preset must be `node-server`** (`vite.config.ts`); the default serverless
   bundle exits immediately under Node → 502.
 - `APP_ENV=production` requires `User extends Authenticatable implements FilamentUser`
   (`canAccessPanel`), otherwise the panel 403s after login.
@@ -89,12 +88,11 @@ Build config: `@lovable.dev/vite-tanstack-config` wrapper; SSR entry overridden 
 ## Deployment (standalone installers — fallback)
 - **Installer / updater**: `install.sh`, `setup.sh`, `update.sh` at the repo root (bash);
   `package.sh` / `package.ps1` build the distributable zip (prebuilt `.output`).
-- Admin UI for updates: `backend/app/Filament/Pages/Updates.php`.
 - Browser wizard: `backend/public/install.php`.
 - **Frontend runtime**: Node 20+ serving `.output/server/index.mjs` on `127.0.0.1:3000`
   via PM2 (`askpias-web`) or `deploy/askpias-web.service`; OLS/nginx reverse-proxies to it.
 - **Backend runtime**: PHP 8.3 (lsphp) with the document root set to `backend/public`.
-- **New env keys**: `APP_VERSION` (admin Updates page) and `APP_BRANCH` (branch `update.sh`
-  pulls), both read in `backend/config/app.php`.
+- **Env keys**: `APP_VERSION` (used by the zip packaging scripts) and `APP_BRANCH` (branch
+  `update.sh` pulls); both written by the installers.
 - **Automation**: `.github/workflows/deploy.yml` → SSH → `bash update.sh`.
 - **Script hygiene**: `.gitattributes` pins `*.sh` to LF.

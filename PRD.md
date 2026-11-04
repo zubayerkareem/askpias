@@ -80,5 +80,3 @@ homepage media, GTM, UddoktaPay, SMTP, SEO, contact (`ManageSettings.php`).
 - `/projects` has no index page; only detail pages exist.
 - The Docker site image defaults `VITE_API_URL` to `https://api.askpias.com/api`
   (`Dockerfile`); a different domain needs build args.
-- The admin "Run update" button depends on the PHP user owning the app directory with
-  `git`/`composer` on its PATH; otherwise updates must run over SSH (`Updates.php`).

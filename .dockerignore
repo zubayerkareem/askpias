@@ -2,7 +2,6 @@
 .gitignore
 .github
 .commandcode
-.tunnels
 node_modules
 .output
 dist
