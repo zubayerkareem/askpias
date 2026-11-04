@@ -14,8 +14,9 @@
  */
 
 @theme inline {
-  --font-sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --font-sans: "Manrope", "Hind Siliguri", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display:
+    "Bricolage Grotesque", "Hind Siliguri", "Arial Black", system-ui, sans-serif;
 
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -332,6 +333,245 @@
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+/* ---- Article body ------------------------------------------------------ */
+
+/* Long-form reading column for notes, case studies, books and projects.
+   Bengali glyphs fall back to Hind Siliguri; Latin stays in Manrope. */
+.article-prose {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.95;
+  color: var(--color-foreground);
+  text-wrap: pretty;
+}
+
+@media (min-width: 640px) {
+  .article-prose {
+    font-size: 1.125rem;
+  }
+}
+
+.article-prose > :first-child {
+  margin-top: 0;
+}
+
+.article-prose > :last-child {
+  margin-bottom: 0;
+}
+
+.article-prose p {
+  margin: 1.15em 0;
+}
+
+.article-prose strong {
+  font-weight: 700;
+  color: var(--color-foreground);
+}
+
+.article-prose h2,
+.article-prose h3,
+.article-prose h4 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-foreground);
+  scroll-margin-top: 6rem;
+}
+
+.article-prose h2 {
+  margin: 2.75em 0 0.9em;
+  font-size: 1.5em;
+  line-height: 1.28;
+}
+
+.article-prose h2::before {
+  content: "";
+  display: block;
+  width: 2.25rem;
+  height: 3px;
+  margin-bottom: 0.85rem;
+  border-radius: 999px;
+  background: var(--color-brand);
+}
+
+.article-prose h3 {
+  margin: 2em 0 0.6em;
+  font-size: 1.22em;
+  line-height: 1.32;
+}
+
+.article-prose h4 {
+  margin: 1.75em 0 0.5em;
+  font-size: 1.08em;
+}
+
+.article-prose a {
+  color: var(--color-brand);
+  font-weight: 600;
+  text-decoration-line: underline;
+  text-decoration-color: color-mix(in oklab, var(--color-brand) 35%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.article-prose a:hover {
+  text-decoration-color: var(--color-brand);
+}
+
+.article-prose ul,
+.article-prose ol {
+  margin: 1.15em 0;
+}
+
+.article-prose li {
+  margin: 0.5em 0;
+}
+
+.article-prose ul {
+  list-style: none;
+  padding-left: 1.1em;
+}
+
+.article-prose ul > li {
+  position: relative;
+  padding-left: 1em;
+}
+
+.article-prose ul > li::before {
+  content: "";
+  position: absolute;
+  top: 0.82em;
+  left: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-brand);
+}
+
+.article-prose ol {
+  list-style: decimal;
+  padding-left: 1.4em;
+}
+
+.article-prose ol > li::marker {
+  color: var(--color-brand);
+  font-weight: 700;
+}
+
+/* Pull quote: oversized glyph, brand rule, soft tint. */
+.article-prose blockquote {
+  position: relative;
+  margin: 2em 0;
+  padding: 1.35rem 1.5rem 1.35rem 2.6rem;
+  border-left: 3px solid var(--color-brand);
+  border-radius: 0 14px 14px 0;
+  background: color-mix(in oklab, var(--color-brand-soft) 45%, transparent);
+  color: var(--color-foreground);
+  font-size: 1.05em;
+  line-height: 1.85;
+}
+
+.article-prose blockquote::before {
+  content: "\201C";
+  position: absolute;
+  top: 0.45rem;
+  left: 0.7rem;
+  font-family: var(--font-display);
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--color-brand);
+  opacity: 0.4;
+}
+
+.article-prose blockquote p {
+  margin: 0.4em 0;
+}
+
+.article-prose blockquote p:first-child {
+  margin-top: 0;
+}
+
+.article-prose blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+.article-table {
+  margin: 2em 0;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-page);
+}
+
+.article-prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95em;
+}
+
+.article-prose thead th {
+  background: var(--color-surface);
+}
+
+.article-prose th,
+.article-prose td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.article-prose tr:last-child th,
+.article-prose tr:last-child td {
+  border-bottom: 0;
+}
+
+.article-prose th + th,
+.article-prose td + td {
+  border-left: 1px solid var(--color-border);
+}
+
+.article-prose th p,
+.article-prose td p {
+  margin: 0;
+}
+
+.article-prose img {
+  margin: 2em 0;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+}
+
+.article-prose hr {
+  margin: 2.75em 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.article-prose code {
+  padding: 0.12em 0.4em;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+  font-size: 0.9em;
+}
+
+.article-prose pre {
+  margin: 1.75em 0;
+  padding: 1rem 1.15rem;
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-surface);
+}
+
+.article-prose pre code {
+  padding: 0;
+  border: 0;
+  background: transparent;
 }
 
 /* Floating glass surface — used by the pill nav. */

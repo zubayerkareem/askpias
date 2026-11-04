@@ -36,7 +36,7 @@ export function youtubeEmbedUrl(
 export function enrichContentHtml(html: string): string {
   if (!html) return html;
 
-  return html.replace(
+  const withEmbeds = html.replace(
     /<p>\s*(?:<br\s*\/?>)?\s*<a [^>]*href="([^"]+)"[^>]*>([^<]*)<\/a>\s*(?:<br\s*\/?>)?\s*<\/p>/gi,
     (match, href: string) => {
       const embed = youtubeEmbedUrl(href);
@@ -44,5 +44,14 @@ export function enrichContentHtml(html: string): string {
 
       return `<div class="video-embed"><iframe src="${embed}" title="YouTube video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
     },
+  );
+
+  // Every page renders its own <h1>, so rich content starts at <h2>.
+  const demoted = withEmbeds.replace(/<h1(\s[^>]*)?>/gi, "<h2$1>").replace(/<\/h1>/gi, "</h2>");
+
+  // Wrap tables so they can scroll on mobile and carry a rounded frame.
+  return demoted.replace(
+    /<table[\s\S]*?<\/table>/gi,
+    (table) => `<div class="article-table">${table}</div>`,
   );
 }
