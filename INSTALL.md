@@ -67,6 +67,10 @@ Push to `main`; with **Auto Deploy** enabled each service rebuilds and restarts.
 The api container re-runs migrations on every start, so schema changes ship with a push.
 Content edits (notes, images, prices) need no deploy — do them in `/admin`.
 
+The GitHub Actions workflow (`.github/workflows/deploy.yml`) is only the fallback for
+standalone installs: it SSHes in and runs `update.sh`. It skips with a warning unless the
+repository has `SSH_HOST`, `SSH_USER`, `SSH_KEY` and `APP_DIR` secrets.
+
 ---
 
 ## 2. Standalone installers (aaPanel / VPS / zip)
