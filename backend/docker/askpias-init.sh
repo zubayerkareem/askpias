@@ -10,7 +10,21 @@ if [ -z "${APP_KEY:-}" ]; then
     exit 1
 fi
 
-php artisan storage:link >/dev/null 2>&1 || true
+# storage/app/public is a mounted volume, so fix ownership before anything writes to it.
+mkdir -p storage/app/public
+chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
+chmod -R ug+rwX storage bootstrap/cache 2>/dev/null || true
+
+# The volume hides the image's storage directory, but the symlink lives in public/.
+# Recreate it instead of trusting whatever state the image was left in.
+if [ -d public/storage ] && [ ! -L public/storage ]; then
+    rm -rf public/storage
+fi
+if ln -sfn ../storage/app/public public/storage; then
+    chown -h www-data:www-data public/storage 2>/dev/null || true
+else
+    echo "[askpias] Could not create public/storage — uploads will be served by Laravel." >&2
+fi
 
 echo "[askpias] Running migrations…"
 php artisan migrate --force --no-interaction
@@ -31,7 +45,5 @@ if [ -n "${ADMIN_EMAIL:-}" ] && [ -n "${ADMIN_PASSWORD:-}" ]; then
 fi
 
 php artisan optimize --no-interaction || true
-
-chown -R www-data:www-data storage bootstrap/cache 2>/dev/null || true
 
 echo "[askpias] Ready."

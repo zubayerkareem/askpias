@@ -33,7 +33,9 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Laravel would register GET /storage/{path} for this disk and shadow
+            // the route in routes/web.php that serves uploads from the public disk.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],
