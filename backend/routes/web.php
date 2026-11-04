@@ -12,7 +12,7 @@ Route::get('/', function () {
 // where the symlink is missing (for example, a mounted storage/app/public volume).
 Route::get('/storage/{path}', function (string $path) {
     abort_if(str_contains($path, '..'), 404);
-    abort_unless(Storage::disk('public')->exists($path), 404);
+    abort_unless(Storage::disk('public')->fileExists($path), 404);
 
     return Storage::disk('public')->response($path);
 })->where('path', '.*');
