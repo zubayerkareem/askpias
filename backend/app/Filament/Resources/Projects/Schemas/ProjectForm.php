@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Projects\Schemas;
 
 use App\Models\Project;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -50,7 +51,16 @@ class ProjectForm
                             'chart' => 'Chart / growth',
                         ])
                         ->default('code')
-                        ->required(),
+                        ->required()
+                        ->helperText('Fallback icon when no logo image is uploaded.'),
+                    FileUpload::make('image_url')
+                        ->label('Logo / image')
+                        ->image()
+                        ->disk('public')
+                        ->directory('projects')
+                        ->imageEditor()
+                        ->columnSpanFull()
+                        ->helperText('Shown on the homepage "What I\'m building" card and the project page instead of the icon.'),
                     TextInput::make('summary')
                         ->maxLength(500)
                         ->columnSpanFull(),

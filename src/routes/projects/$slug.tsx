@@ -43,9 +43,17 @@ function ProjectDetail() {
         </Link>
 
         <div className="mt-6 flex items-start gap-4">
-          <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
-            <Icon className="size-6" aria-hidden />
-          </span>
+          {project.image_url ? (
+            <img
+              src={project.image_url}
+              alt={project.name}
+              className="size-14 shrink-0 rounded-xl border border-line bg-page object-contain p-2"
+            />
+          ) : (
+            <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-brand-soft text-brand">
+              <Icon className="size-6" aria-hidden />
+            </span>
+          )}
           <div>
             {project.kicker && (
               <p className="text-[0.68rem] font-bold tracking-[0.16em] uppercase text-brand">

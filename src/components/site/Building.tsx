@@ -11,6 +11,7 @@ const fallback = [
     kicker: "Web & software development",
     summary: "Custom websites, web apps and software products for ambitious teams.",
     icon: "code",
+    image_url: null,
   },
   {
     slug: "branding-curve",
@@ -18,6 +19,7 @@ const fallback = [
     kicker: "Marketing & brand growth",
     summary: "Strategy, content and growth systems for modern brands.",
     icon: "pen",
+    image_url: null,
   },
   {
     slug: "ads-gpt",
@@ -25,6 +27,7 @@ const fallback = [
     kicker: "Digital marketing",
     summary: "Tools, resources and done-for-you solutions for better advertising.",
     icon: "chart",
+    image_url: null,
   },
 ];
 
@@ -33,7 +36,10 @@ export function Building() {
   const items = data && data.length > 0 ? data : fallback;
 
   return (
-    <section id="building" className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+    <section
+      id="building"
+      className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20"
+    >
       <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
         What I&apos;m building
       </h2>
@@ -50,9 +56,17 @@ export function Building() {
               onClick={() => analytics.cta(p.name, "building")}
               className="group flex items-start gap-4 rounded-xl border border-line bg-page p-5 transition-all hover:-translate-y-0.5 hover:shadow-[0_18px_40px_-30px_rgba(0,0,0,0.45)]"
             >
-              <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
-                <Icon className="size-5" aria-hidden />
-              </span>
+              {p.image_url ? (
+                <img
+                  src={p.image_url}
+                  alt=""
+                  className="size-11 shrink-0 rounded-lg border border-line bg-page object-contain p-1"
+                />
+              ) : (
+                <span className="grid size-11 shrink-0 place-items-center rounded-lg bg-brand-soft text-brand">
+                  <Icon className="size-5" aria-hidden />
+                </span>
+              )}
 
               <div className="min-w-0 flex-1">
                 <div className="flex items-center justify-between gap-2">

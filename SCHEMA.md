@@ -76,9 +76,13 @@ GTM id, contact email, tagline, `seo_site_url`, `robots_txt`, `sitemap_enabled`
 
 ## `projects` — `2026_02_04_000001_create_projects_and_books_tables.php`
 `id`, `slug` (unique), `name`, `kicker` (null), `summary` (string 500, null),
-`description` (longtext, null), `icon` (string, default `code`), `tags` (json, null),
-`url` (null), `cta_label` (null), `is_published` (bool, true), `sort_order` (int, 0),
-timestamps. Index `(is_published, sort_order)`.
+`description` (longtext, null), `icon` (string, default `code`),
+`image_url` (null, added `2026_11_04_000003_add_image_url_to_projects_table.php`),
+`tags` (json, null), `url` (null), `cta_label` (null), `is_published` (bool, true),
+`sort_order` (int, 0), timestamps. Index `(is_published, sort_order)`.
+
+`image_url` is the admin-uploaded project logo (`public` disk, `projects/`); the homepage
+"What I'm building" cards and the project page show it instead of the `icon` fallback.
 
 ## `books` — same migration
 `id`, `slug` (unique), `title`, `subtitle` (string 500, null), `description` (longtext, null),

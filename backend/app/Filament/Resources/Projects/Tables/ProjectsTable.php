@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -17,6 +18,12 @@ class ProjectsTable
         return $table
             ->defaultSort('sort_order')
             ->columns([
+                ImageColumn::make('image_url')
+                    ->label('')
+                    ->disk('public')
+                    ->height(40)
+                    ->width(40)
+                    ->extraImgAttributes(['class' => 'object-contain']),
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()

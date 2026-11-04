@@ -14,6 +14,7 @@ class Project extends Model
         'summary',
         'description',
         'icon',
+        'image_url',
         'tags',
         'url',
         'cta_label',

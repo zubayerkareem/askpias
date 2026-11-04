@@ -9,6 +9,7 @@ export type Project = {
   summary: string | null;
   description: string | null;
   icon: string;
+  image_url: string | null;
   tags: string[];
   url: string | null;
   cta_label: string | null;

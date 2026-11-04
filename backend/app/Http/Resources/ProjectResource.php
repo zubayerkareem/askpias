@@ -19,11 +19,23 @@ class ProjectResource extends JsonResource
             'summary' => $this->summary,
             'description' => $this->description,
             'icon' => $this->icon,
+            'image_url' => $this->imageUrl(),
             'tags' => $this->tags ?? [],
             'url' => $this->url,
             'cta_label' => $this->cta_label,
             'sort_order' => (int) $this->sort_order,
             'updated_at' => $this->updated_at?->toIso8601String(),
         ];
+    }
+
+    private function imageUrl(): ?string
+    {
+        if (! $this->image_url) {
+            return null;
+        }
+
+        return str_starts_with($this->image_url, 'http')
+            ? $this->image_url
+            : Storage::disk('public')->url($this->image_url);
     }
 }
