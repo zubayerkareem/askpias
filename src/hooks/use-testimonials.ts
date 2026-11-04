@@ -1,25 +1,38 @@
-import { useQuery } from "@tanstack/react-query";
+import { queryOptions, useQuery } from "@tanstack/react-query";
 import { api, type Collection } from "@/lib/api";
-import { fallbackTestimonials, type Testimonial } from "@/lib/testimonials";
+
+export type Testimonial = {
+  id: number;
+  headline: string;
+  quote: string;
+  name: string;
+  role: string | null;
+  company: string | null;
+  initials: string | null;
+  rating: number;
+  sort_order: number;
+};
 
 const TESTIMONIALS_KEY = ["testimonials"] as const;
 
 /**
- * Testimonials are managed in the Filament admin. The bundled list is only a
- * fallback for when the API is unreachable (e.g. Laravel not running yet).
+ * Reviews are managed in the Filament admin (Content → Testimonials). Only
+ * published rows come back, and there is no bundled fallback — the site shows
+ * real reviews or nothing.
  */
+export const testimonialsQueryOptions = queryOptions({
+  queryKey: TESTIMONIALS_KEY,
+  queryFn: async () => {
+    try {
+      const response = await api.get<Collection<Testimonial>>("/testimonials");
+      return response.data;
+    } catch {
+      return [];
+    }
+  },
+  staleTime: 60_000,
+});
+
 export function useTestimonials() {
-  return useQuery({
-    queryKey: TESTIMONIALS_KEY,
-    queryFn: async () => {
-      try {
-        const response = await api.get<Collection<Testimonial>>("/testimonials");
-        return response.data.length > 0 ? response.data : fallbackTestimonials;
-      } catch {
-        return fallbackTestimonials;
-      }
-    },
-    staleTime: 60_000,
-    initialData: fallbackTestimonials,
-  });
+  return useQuery(testimonialsQueryOptions);
 }

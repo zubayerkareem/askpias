@@ -6,10 +6,19 @@ import {
   CarouselItem,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { useTestimonials } from "@/hooks/use-testimonials";
-import { fallbackTestimonials, type Testimonial } from "@/lib/testimonials";
+import { useTestimonials, type Testimonial } from "@/hooks/use-testimonials";
 
 function TestimonialCard({ t }: { t: Testimonial }) {
+  const initials =
+    t.initials ??
+    t.name
+      .split(" ")
+      .map((part) => part[0] ?? "")
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+  const byline = [t.role, t.company].filter(Boolean).join(", ");
+
   return (
     <figure className="flex h-full w-full flex-col rounded-xl border border-line bg-page p-5 transition-shadow hover:shadow-[0_18px_40px_-30px_rgba(0,0,0,0.45)]">
       <Quote className="size-6 text-brand/70" aria-hidden />
@@ -21,14 +30,14 @@ function TestimonialCard({ t }: { t: Testimonial }) {
       </blockquote>
 
       <figcaption className="mt-5 flex items-center gap-3 border-t border-line pt-4">
-        <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft font-display text-[0.65rem] font-extrabold text-brand">
-          {t.initials}
-        </span>
+        {initials && (
+          <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-soft font-display text-[0.65rem] font-extrabold text-brand">
+            {initials}
+          </span>
+        )}
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold">{t.name}</p>
-          <p className="truncate text-xs text-muted-foreground">
-            {t.role}, {t.company}
-          </p>
+          {byline && <p className="truncate text-xs text-muted-foreground">{byline}</p>}
         </div>
       </figcaption>
     </figure>
@@ -43,7 +52,7 @@ export function Testimonials({
   items?: Testimonial[];
 }) {
   const { data } = useTestimonials();
-  const list = items ?? data ?? fallbackTestimonials;
+  const list = items ?? data ?? [];
 
   const [api, setApi] = useState<CarouselApi>();
   const [selected, setSelected] = useState(0);
@@ -67,13 +76,15 @@ export function Testimonials({
     return () => window.clearInterval(id);
   }, [api]);
 
+  if (list.length === 0) return null;
+
   return (
     <section className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
       <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">{title}</h2>
 
       <div className="mt-6 hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3">
         {list.map((t) => (
-          <TestimonialCard key={t.name} t={t} />
+          <TestimonialCard key={`${t.name}-${t.headline}`} t={t} />
         ))}
       </div>
 
@@ -81,7 +92,7 @@ export function Testimonials({
         <Carousel opts={{ loop: true, align: "start" }} setApi={setApi}>
           <CarouselContent>
             {list.map((t) => (
-              <CarouselItem key={t.name}>
+              <CarouselItem key={`${t.name}-${t.headline}`}>
                 <TestimonialCard t={t} />
               </CarouselItem>
             ))}
@@ -91,7 +102,7 @@ export function Testimonials({
         <div className="mt-4 flex justify-center gap-1.5">
           {list.map((t, i) => (
             <button
-              key={t.name}
+              key={`${t.name}-${t.headline}`}
               type="button"
               aria-label={`Go to testimonial ${i + 1}`}
               aria-current={i === selected}

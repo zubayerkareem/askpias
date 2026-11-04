@@ -11,6 +11,7 @@ import type { ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { themeInitScript } from "../hooks/use-theme";
+import { testimonialsQueryOptions } from "../hooks/use-testimonials";
 import { RouteProgress } from "../components/site/RouteProgress";
 import { PageViewTracker, TagManager } from "../components/site/TagManager";
 
@@ -72,6 +73,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // Prefetch admin-managed reviews so every page that shows them renders on the
+  // server instead of waiting for the client fetch.
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(testimonialsQueryOptions).catch(() => []),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -109,7 +114,8 @@ function RootShell({ children }: { children: ReactNode }) {
         {/* dataLayer scaffold — must exist before any GTM tag loads. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}",
+            __html:
+              "window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}",
           }}
         />
         <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />

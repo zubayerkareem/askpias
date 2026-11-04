@@ -11,7 +11,7 @@ const perks = [
 const details = [
   { icon: Clock, label: "Duration", value: "30 min" },
   { icon: Globe, label: "Time zone", value: "GMT+6" },
-  { icon: Video, label: "Location", value: "Google Meet" },
+  { icon: Video, label: "Location", value: "Online" },
 ];
 
 export function Booking() {

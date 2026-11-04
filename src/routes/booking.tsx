@@ -37,8 +37,7 @@ function BookingPage() {
   return (
     <PageShell>
       <PageHeader label="Booking" title="Let's build your growth plan together">
-        Pick a day and time that works for you from the calendar below. The call happens on Google
-        Meet.
+        Pick a day and time that works for you from the calendar below. The call happens online.
       </PageHeader>
 
       <section className="border-b border-line px-6 py-7 sm:px-10 lg:px-16 xl:px-20">
@@ -55,8 +54,8 @@ function BookingPage() {
         </div>
       </section>
 
-      <Testimonials title="What past calls led to" />
       <Booking />
+      <Testimonials title="What past calls led to" />
 
       <section className="px-6 py-8 sm:px-10 lg:px-16 xl:px-20">
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
