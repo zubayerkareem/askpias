@@ -154,8 +154,9 @@
   --brand: #4d82f0;
   --brand-bright: #7aa6f8;
   --brand-foreground: #ffffff;
-  /* Always-light tint: used inside sheet cards, which stay light in both themes. */
-  --brand-soft: oklch(0.93 0.05 260);
+  /* Muted brand tint for icon tiles and placeholders. Adapts to the theme so
+     text on top keeps its contrast. */
+  --brand-soft: oklch(0.3 0.06 260);
   --accent-text: #8ab0f7;
 
   --secondary: oklch(0.25 0.012 300);

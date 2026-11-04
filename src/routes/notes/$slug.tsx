@@ -87,7 +87,7 @@ function NoteDetail() {
           ) : note.content ? (
             // Safe: `content` is admin-authored HTML — write access is gated by the admin login.
             <div
-              className="prose prose-neutral mt-8 max-w-none prose-headings:font-display prose-headings:font-extrabold prose-a:text-brand"
+              className="prose prose-neutral mt-8 max-w-none dark:prose-invert prose-headings:font-display prose-headings:font-extrabold prose-a:text-brand"
               dangerouslySetInnerHTML={{ __html: enrichContentHtml(note.content) }}
             />
           ) : (
@@ -127,11 +127,7 @@ function NoteDetail() {
                     >
                       <div className="size-16 shrink-0 overflow-hidden rounded-lg bg-brand-soft">
                         {item.image_url && (
-                          <img
-                            src={item.image_url}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
+                          <img src={item.image_url} alt="" className="h-full w-full object-cover" />
                         )}
                       </div>
 

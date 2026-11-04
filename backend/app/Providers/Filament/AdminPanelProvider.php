@@ -30,6 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            ->darkMode(false)
             ->brandName('AskPias')
             ->colors([
                 'primary' => Color::hex('#0141C5'),

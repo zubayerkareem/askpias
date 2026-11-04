@@ -92,7 +92,7 @@ function Story({ block }: { block: StoryBlock }) {
           {body && (
             // Safe: admin-authored HTML, same handling as note bodies.
             <div
-              className="prose prose-neutral mt-5 max-w-[62ch] text-[1.0625rem] leading-relaxed text-muted-foreground prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground"
+              className="prose prose-neutral mt-5 max-w-[62ch] text-[1.0625rem] leading-relaxed text-muted-foreground dark:prose-invert prose-headings:font-display prose-headings:text-foreground prose-p:text-muted-foreground"
               dangerouslySetInnerHTML={{ __html: body }}
             />
           )}

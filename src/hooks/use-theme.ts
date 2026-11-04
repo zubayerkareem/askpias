@@ -5,13 +5,16 @@ export type Theme = "light" | "dark";
 const STORAGE_KEY = "askpias-theme";
 
 function currentTheme(): Theme {
-  if (typeof document === "undefined") return "dark";
+  if (typeof document === "undefined") return "light";
   return document.documentElement.classList.contains("dark") ? "dark" : "light";
 }
 
-/** Reads/writes the theme class on <html>. Initial class is set by an inline script in __root. */
+/**
+ * Reads/writes the theme class on <html>. The site starts light and only the
+ * toggle changes it — no system (prefers-color-scheme) detection.
+ */
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>("dark");
+  const [theme, setTheme] = useState<Theme>("light");
 
   useEffect(() => {
     setTheme(currentTheme());

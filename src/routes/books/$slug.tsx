@@ -123,7 +123,7 @@ function BookDetail() {
 
         {book.description && (
           <div
-            className="prose prose-neutral mt-12 max-w-[760px] prose-headings:font-display prose-headings:font-extrabold prose-a:text-brand"
+            className="prose prose-neutral mt-12 max-w-[760px] dark:prose-invert prose-headings:font-display prose-headings:font-extrabold prose-a:text-brand"
             // Safe: `description` is admin-authored HTML from the rich editor.
             dangerouslySetInnerHTML={{ __html: enrichContentHtml(book.description) }}
           />

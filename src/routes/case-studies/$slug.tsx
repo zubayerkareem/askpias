@@ -82,7 +82,7 @@ function CaseStudyDetail() {
           {caseStudy.content && (
             // Safe: `content` is admin-authored HTML — write access is gated by the admin login.
             <div
-              className="prose prose-neutral mt-8 max-w-none prose-headings:font-display prose-headings:font-extrabold prose-a:text-brand"
+              className="prose prose-neutral mt-8 max-w-none dark:prose-invert prose-headings:font-display prose-headings:font-extrabold prose-a:text-brand"
               dangerouslySetInnerHTML={{ __html: enrichContentHtml(caseStudy.content) }}
             />
           )}
