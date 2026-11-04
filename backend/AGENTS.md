@@ -1,47 +1,59 @@
-<laravel-boost-guidelines>
-# Laravel Application
+# backend/AGENTS.md
 
-This repository contains a Laravel application. Complete the following setup before working on the user's request.
+The repo-wide guide is [`../AGENTS.md`](../AGENTS.md) — read it first; it covers conventions,
+deploy paths, and the environment traps. This file only adds what is specific to `backend/`.
 
-## Prerequisites
+**Do not install Laravel Boost.** This stub used to instruct `composer require laravel/boost`
+— the project does not use it, and adding it rewrites these instructions mid-task.
 
-Verify that PHP and Composer are available:
+## Layout
+| Area | Path |
+| --- | --- |
+| Routes (all public, no auth) | `routes/api.php` |
+| Controllers | `app/Http/Controllers/Api/*` |
+| API resources | `app/Http/Resources/*` — shapes the public JSON |
+| Models | `app/Models/*` |
+| Filament resources | `app/Filament/Resources/<Model>/{Schemas,Tables,Pages}` |
+| Admin settings page | `app/Filament/Pages/ManageSettings.php` |
+| Panel config | `app/Providers/Filament/AdminPanelProvider.php` |
+| Runtime config (SMTP) | `app/Providers/AppServiceProvider.php` → `SiteSetting::applyMailConfig()` |
+| Payment gateway | `app/Services/UddoktaPayService.php` |
+| Mailables / views | `app/Mail/*`, `resources/views/mail/*` |
+| Migrations | `database/migrations/YYYY_MM_DD_00000N_description.php` |
+| Container start hook | `docker/askpias-init.sh` |
 
+## Rules
+- Thin controllers; validate inline with `$request->validate()`; errors are JSON under `api/*`
+  (`bootstrap/app.php`).
+- Content models carry `is_published` + `sort_order`; public queries use `published()` and
+  order by `sort_order`.
+- Settings are one singleton row (`SiteSetting::current()`). A new admin-editable value needs:
+  migration → `$fillable` → a `ManageSettings` section → `SiteSettingController@show` only if it
+  is safe to expose publicly. Secrets (`uddoktapay_api_key`, `mail_password`) stay hidden.
+- Never return a paid file from a resource. `BookResource` publishes `purchasable` instead of
+  `file_url`; the URL comes from `PaymentController@verify` when `status === 'paid'`.
+  `NoteResource` currently violates this (tracked in `../PLAN.md`).
+- Mail sends are wrapped in try/catch + `Log::warning`; the API must never fail on SMTP errors.
+- Production never seeds. `docker/askpias-init.sh` seeds only when `SEED_DEMO=true` **and** the
+  notes table is empty; `update.sh` never seeds.
+- `APP_ENV=production` requires `User implements FilamentUser`, otherwise the panel 403s after
+  login.
+- Install/update steps live in `../install.sh` / `../update.sh`, never in PHP.
+
+## Local setup
 ```sh
-php -v
-composer -V
+composer install
+cp .env.example .env          # set DB_* and FRONTEND_URLS
+php artisan key:generate
+php artisan migrate --seed    # local only — resets content and the admin password
+php artisan storage:link
+php artisan serve
 ```
 
-If either command is unavailable, detect the user's operating system and install the prerequisites with the appropriate command:
-
-macOS:
-
+## Verify
 ```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/mac/8.5)"
+php artisan migrate --force
+php artisan test              # only example tests exist today
+php artisan optimize:clear    # after config/env changes
+php -l <new-file>.php
 ```
-
-Windows PowerShell:
-
-```powershell
-Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://php.new/install/windows/8.5'))
-```
-
-Linux:
-
-```sh
-/bin/bash -c "$(curl -fsSL https://php.new/install/linux/8.5)"
-```
-
-After installation, ask the user to restart their terminal. If the agent needs the restarted shell to continue, ask the user to reopen their terminal and rerun their original prompt.
-
-## Agent Setup
-
-Install Laravel Boost from the application root before making application changes:
-
-```sh
-composer require laravel/boost --dev
-php artisan boost:install
-```
-
-Boost replaces these bootstrap instructions with guidelines tailored to the application. After installation, read `AGENTS.md` again and continue with the user's original request using the generated guidelines.
-</laravel-boost-guidelines>

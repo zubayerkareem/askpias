@@ -16,7 +16,7 @@ Two services, one project:
 | --- | --- |
 | `docker-compose.yml` | `db` (MySQL 8.4) + `api` (Laravel). `web` is behind the `full` profile and is NOT deployed here |
 | `backend/Dockerfile` | PHP 8.3 + nginx (`serversideup/php`), installs `intl gd exif`, runs Composer inside the image |
-| `backend/docker/askpias-init.sh` | Start hook: migrations → demo seed (once) → admin from env → caches |
+| `backend/docker/askpias-init.sh` | Start hook: migrations → demo seed (only when `notes` is empty) → admin from env → caches |
 | `Dockerfile` | Site: `bun install` → `bun run build` → `node .output/server/index.mjs` on port 3000 |
 
 ### Service 1 — Compose (db + api)
@@ -35,7 +35,7 @@ DB_ROOT_PASSWORD=...
 ADMIN_EMAIL=admin@askpias.com
 ADMIN_NAME=Pias Ahmed
 ADMIN_PASSWORD=...
-SEED_DEMO=true
+SEED_DEMO=true                # seeds demo content only if the notes table is empty
 GTM_ID=
 ```
 
@@ -51,6 +51,11 @@ GTM_ID=
    `VITE_API_URL` / `VITE_ADMIN_URL` if the domains differ (they are **baked at build**).
 
 ### Shared rules
+- `migrate --force` runs on every container start, so schema changes ship with a push. The
+  `about` page content is also a data migration, not a seeder.
+- The demo seeder runs at most once: only when `SEED_DEMO=true` **and** the notes table is
+  empty. It is never re-run on an existing database (it would reset content and the admin
+  password).
 - `db-data` and `uploads` volumes persist the database and `storage/app/public`.
 - `APP_ENV=production` means the user model must implement `FilamentUser`
   (`backend/app/Models/User.php`) or the panel returns 403 after login.

@@ -7,11 +7,14 @@ colours in components." (`src/styles.css:13`)
 ## Typography
 | Token | Value | Source |
 | --- | --- | --- |
-| `--font-sans` | `"Manrope", system-ui, -apple-system, "Segoe UI", sans-serif` | `src/styles.css:17` |
+| `--font-sans` | `"Manrope", "Hind Siliguri", system-ui, -apple-system, "Segoe UI", sans-serif` | `src/styles.css:17` |
 | `--font-display` | `"Bricolage Grotesque", "Arial Black", system-ui, sans-serif` | `src/styles.css:18` |
-| Loading | Google Fonts: Bricolage Grotesque 400–800, Manrope 400–800 | `src/routes/__root.tsx` (`fonts.googleapis.com` link) |
+| Loading | Google Fonts: Bricolage Grotesque 400–800, Manrope 400–800, Hind Siliguri 400–700 | `src/routes/__root.tsx` (`fonts.googleapis.com` link) |
 | Heading weight | `800`, letter-spacing `-0.035em`, line-height `1.02` | `src/styles.css:208-217` |
 | Body | `1rem` / `1.6` | `src/styles.css:197-206` |
+
+The stack is a per-glyph fallback: Latin text picks Manrope, Bengali glyphs fall through to
+Hind Siliguri. Don't collapse it to a single family.
 
 Type utilities (`@utility`):
 - `h-display` — `clamp(3rem, 6.6vw, 5.75rem)`, lh `0.9`, tracking `-0.045em` (`:236`)
@@ -31,6 +34,7 @@ Type utilities (`@utility`):
 | `--surface` / `--surface-2` | `#f4efe4` / `#ece6d8` |
 | `--brand`, `--primary`, `--accent` | `#0141c5` |
 | `--brand-bright` | `#0141c5` |
+| `--brand-foreground` | `#ffffff` |
 | `--brand-soft` | `#e7eefb` |
 | `--accent-text` | `#0141c5` |
 | `--sheet` | `oklch(0.998 0 0)` |
@@ -50,7 +54,9 @@ Type utilities (`@utility`):
 | `--page` | `oklch(0.205 0.018 298)` |
 | `--brand`, `--primary` | `#4d82f0` |
 | `--brand-bright` | `#7aa6f8` |
-| `--brand-soft` | `oklch(0.93 0.05 260)` |
+| `--brand-foreground` | `#ffffff` |
+| `--brand-soft` | `oklch(0.3 0.06 260)` |
+| `--line` | `oklch(1 0 0 / 0.12)` |
 | `--accent-text` | `#8ab0f7` |
 | `--muted-foreground` | `oklch(0.72 0.012 300)` |
 | `--sheet` | `oklch(0.985 0.002 300)` (sheets stay light in both themes) |

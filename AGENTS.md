@@ -9,15 +9,23 @@ Two apps in one repo: TanStack Start site at the root, Laravel + Filament admin 
 4. `TOKENS.md` — colours/type before touching any UI.
 5. `STACK.md` — versions and env wiring.
 6. `PLAN.md` — open items.
+7. `backend/AGENTS.md` — extra rules when working in the Laravel app.
 
 Then open the specific files for the area:
 
 | Area | Entry point |
 | --- | --- |
 | Routes | `src/routes/**` (file-based; `routeTree.gen.ts` is generated) |
-| Page chrome | `src/components/site/PageShell.tsx`, `SiteNav.tsx`, `SiteFooter.tsx` |
-| API client | `src/lib/api.ts` (`API_URL`, `api.get/post`, `Collection<T>`) |
-| Data hooks | `src/hooks/use-{notes,case-studies,testimonials,projects,books,site-settings,messages,payments}.ts` |
+| Page chrome | `src/components/site/PageShell.tsx`, `SiteNav.tsx`, `SiteFooter.tsx`, `PageHeader.tsx` |
+| Page blocks | `src/components/site/PageBlocks.tsx`, `src/hooks/use-pages.ts` |
+| API client | `src/lib/api.ts` (`API_URL`, `api.get/post`, `ApiError`, `Collection<T>`, `Item<T>`) |
+| Data hooks | `src/hooks/use-{notes,case-studies,testimonials,projects,books,pages,site-settings,messages,payments}.ts` |
+| Rich content | `src/lib/video.ts` (YouTube embeds, `<h1>`→`<h2>`, table wrapper), `src/lib/reading-time.ts` |
+| Homepage blocks | `src/components/site/{Hero,Building,Ebook,BlogSection,Testimonials,Booking,AskAnything}.tsx` |
+| Shared UI | `CoverImage.tsx`, `Reveal.tsx`, `Marquee.tsx`, `SiteAvatar.tsx`, `NoteCard.tsx`, `CaseStudyCard.tsx`, `RouteProgress.tsx`, `ThemeToggle.tsx` |
+| Project icons | `src/lib/project-icons.ts` (fallback when `projects.image_url` is empty) |
+| Book sale | `src/components/site/BookPurchase.tsx`, `src/routes/books/download.tsx`, `Api/BookController.php` |
+| SSR error page | `src/server.ts`, `src/lib/error-capture.ts`, `src/lib/error-page.ts` |
 | Marketing analytics | `src/lib/analytics.ts` (`analytics.*` → `window.dataLayer`) |
 | API routes | `backend/routes/api.php` |
 | Controllers | `backend/app/Http/Controllers/Api/*` |
@@ -31,7 +39,7 @@ Then open the specific files for the area:
 | Env writer | `backend/scripts/set-env.php` |
 | Deploy automation | `.github/workflows/deploy.yml`, `deploy/askpias-web.service` |
 | Production deploy (Docker) | `docker-compose.yml`, `Dockerfile`, `backend/Dockerfile` |
-| Container start hook | `backend/docker/askpias-init.sh` (migrations, admin, caches) |
+| Container start hook | `backend/docker/askpias-init.sh` (migrations, conditional seed, admin, caches) |
 | Packaging | `package.sh` / `package.ps1` (zip with prebuilt `.output`) |
 
 ## Conventions observed in this codebase
@@ -43,8 +51,17 @@ Then open the specific files for the area:
 - Prettier: `printWidth: 100`, double quotes, semicolons, trailing commas (`.prettierrc`).
 - ESLint bans importing `server-only` (`eslint.config.js`).
 - Route files are thin: `createFileRoute` + `head()` (title/description/og/canonical) +
-  component; data loads through react-query hooks, not loaders, except
-  `notes/$slug.tsx` which uses loader data.
+  component. List/form routes use react-query hooks; detail routes (`about`, `books/$slug`,
+  `case-studies/$slug`, `notes/$slug`, `projects/$slug`) preload in a route `loader` with
+  `context.queryClient.ensureQueryData(...)` and `.catch(() => null)`.
+- Page content is DB-driven: `pages.blocks` is a Filament Builder with five types (`hero`,
+  `story`, `practice`, `stats`, `cta`). A new block type needs all four of `PageForm` block,
+  the `PageBlock` union in `use-pages.ts`, a renderer in `PageBlocks.tsx`, and normalisation in
+  `PageResource` if it carries images. `/about` falls back to hardcoded copy when the API has no
+  row.
+- Broadcast/marketing HTML goes through `enrichContentHtml()` before `dangerouslySetInnerHTML`
+  (`books/$slug.tsx`, `notes/$slug.tsx`) — it rewrites YouTube links, demotes `<h1>`, wraps
+  tables.
 - Styling uses semantic tokens only (`bg-page`, `border-line`, `text-brand`,
   `text-muted-foreground`); never hardcode hex in components (`src/styles.css:13`).
 - Cards = white sheet (`bg-page`) + `border border-line` + `rounded-xl`; no grey fills.
@@ -67,6 +84,10 @@ Then open the specific files for the area:
   `backend/app/Providers/AppServiceProvider.php` (see `applyMailConfig`).
 - Mail sends are always wrapped in try/catch + `Log::warning` so the API never fails on SMTP
   errors (`LeadController.php`, `MessageController.php`).
+- Never expose a paid file through a public resource. `BookResource` keeps `file_url` out and
+  publishes a computed `purchasable` flag; the book download URL is only returned by
+  `PaymentController@verify` after `status === 'paid'`. `NoteResource` still returns
+  `lead_magnet_file_url` on every request — a known bug in `PLAN.md`, don't copy the pattern.
 - Migrations: `YYYY_MM_DD_00000N_description.php`, one concern per file.
 - Server install and updates live only in `install.sh` / `update.sh` at the repo root —
   don't duplicate those steps in PHP. The admin page and GitHub Actions both shell out to

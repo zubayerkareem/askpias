@@ -15,6 +15,11 @@ and only ever set in two controllers.
 (`backend/app/Models/Lead.php`). Admin filter exposes the same four values
 (`backend/app/Filament/Resources/Leads/Tables/LeadsTable.php`).
 
+A lead belongs to either a note (lead magnet, `note_id`) or a book (`book_id`, added
+`2026_11_04_000007`); both are nullable and only one is set. Both checkout paths
+(`LeadController@checkout`, `BookController@checkout`) create `pending` leads; verification is
+shared and returns whichever download URL matches the lead.
+
 Transitions enforced in `backend/app/Http/Controllers/Api/PaymentController.php`:
 ```
 COMPLETED -> paid            (also invoice_id, payment_method, transaction_id, paid_at)
