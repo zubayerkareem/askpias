@@ -60,7 +60,7 @@ function ContactPage() {
                     href="/booking"
                     className="font-semibold text-foreground underline decoration-line underline-offset-4 hover:decoration-brand"
                   >
-                    Book a 30-minute call
+                    Book a 30-90 minute call
                   </a>
                   <span className="mt-1 block text-muted-foreground">
                     Straight to the calendar, no back and forth.

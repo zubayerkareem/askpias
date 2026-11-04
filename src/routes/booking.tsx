@@ -9,7 +9,7 @@ import { useContactEmail } from "@/hooks/use-site-settings";
 
 const title = "Book a Meeting — Pias Ahmed";
 const description =
-  "Book a 30-minute 1:1 strategy call with Pias Ahmed and walk away with a clear action plan for your brand, marketing and growth.";
+  "Book a 30-90 minute 1:1 strategy call with Pias Ahmed and walk away with a clear action plan for your brand, marketing and growth.";
 
 export const Route = createFileRoute("/booking")({
   head: () => ({
@@ -26,7 +26,7 @@ export const Route = createFileRoute("/booking")({
 });
 
 const facts = [
-  { icon: Clock, title: "30 minutes", body: "Focused, straight to the point" },
+  { icon: Clock, title: "30-90 minutes", body: "Focused, straight to the point" },
   { icon: MessageCircle, title: "No sales pitch", body: "Just your problem and the solution" },
   { icon: ShieldCheck, title: "100% confidential", body: "Your data stays private" },
 ];

@@ -87,7 +87,7 @@ HTML;
                 'type' => 'cta',
                 'data' => [
                     'heading' => "Let's look at your numbers",
-                    'body' => "Book a free 30-minute call, or send a message and I'll reply personally.",
+                    'body' => "Book a free 30-90 minute call, or send a message and I'll reply personally.",
                     'primary_label' => 'Book a call',
                     'primary_url' => '/booking',
                     'secondary_label' => 'Contact me',

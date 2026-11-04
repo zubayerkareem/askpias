@@ -3,13 +3,13 @@ import { CalBooking } from "@/components/site/CalBooking";
 import { useContactEmail } from "@/hooks/use-site-settings";
 
 const perks = [
-  { icon: Video, title: "30-minute call", body: "Online session" },
+  { icon: Video, title: "30-90 minute call", body: "Online session" },
   { icon: Lightbulb, title: "Business diagnosis", body: "We find your real growth opportunities" },
   { icon: ListChecks, title: "Actionable plan", body: "You leave with clear next steps" },
 ];
 
 const details = [
-  { icon: Clock, label: "Duration", value: "30 min" },
+  { icon: Clock, label: "Duration", value: "30-90 min" },
   { icon: Globe, label: "Time zone", value: "GMT+6" },
   { icon: Video, label: "Location", value: "Online" },
 ];

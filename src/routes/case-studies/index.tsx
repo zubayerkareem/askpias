@@ -60,7 +60,7 @@ function CaseStudies() {
               Your brand could be next.
             </h2>
             <p className="mt-2 max-w-[46ch] text-sm leading-relaxed text-muted-foreground">
-              Start with a free 30-minute call. We look at your numbers and agree on the shortest
+              Start with a free 30-90 minute call. We look at your numbers and agree on the shortest
               path to growth.
             </p>
           </div>

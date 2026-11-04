@@ -39,7 +39,7 @@ const faqs = [
   },
   {
     q: "How does the process start?",
-    a: "It starts with a free 30-minute strategy call where I understand your business, numbers and goals. Then I share an audit and a plan — if you like it, we start working together.",
+    a: "It starts with a free 30-90 minute strategy call where I understand your business, numbers and goals. Then I share an audit and a plan — if you like it, we start working together.",
   },
   {
     q: "How long until I see results?",
