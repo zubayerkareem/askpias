@@ -56,11 +56,20 @@ class BookForm
                             ['undo', 'redo'],
                         ]),
                     FileUpload::make('cover_image_url')
-                        ->label('Cover image')
+                        ->label('Cover image (books page)')
                         ->image()
                         ->disk('public')
                         ->directory('books')
                         ->imageEditor()
+                        ->helperText('Used in the books grid, the book page and social previews.')
+                        ->columnSpanFull(),
+                    FileUpload::make('featured_image_url')
+                        ->label('Homepage image (featured)')
+                        ->image()
+                        ->disk('public')
+                        ->directory('books')
+                        ->imageEditor()
+                        ->helperText('Used in the homepage featured book block. Falls back to the cover image when empty.')
                         ->columnSpanFull(),
                 ]),
 

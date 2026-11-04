@@ -9,6 +9,7 @@ export type Book = {
   description: string | null;
   badge: string | null;
   cover_image_url: string | null;
+  featured_image_url: string | null;
   price: number | null;
   currency: string;
   features: string[];

@@ -19,6 +19,7 @@ class BookResource extends JsonResource
             'description' => $this->description,
             'badge' => $this->badge,
             'cover_image_url' => $this->coverUrl(),
+            'featured_image_url' => $this->featuredUrl(),
             'price' => $this->price !== null ? (float) $this->price : null,
             'currency' => $this->currency ?? 'BDT',
             'features' => $this->features ?? [],
@@ -31,12 +32,22 @@ class BookResource extends JsonResource
 
     private function coverUrl(): ?string
     {
-        if (! $this->cover_image_url) {
+        return $this->mediaUrl($this->cover_image_url);
+    }
+
+    private function featuredUrl(): ?string
+    {
+        return $this->mediaUrl($this->featured_image_url);
+    }
+
+    private function mediaUrl(?string $path): ?string
+    {
+        if (! $path) {
             return null;
         }
 
-        return str_starts_with($this->cover_image_url, 'http')
-            ? $this->cover_image_url
-            : Storage::disk('public')->url($this->cover_image_url);
+        return str_starts_with($path, 'http')
+            ? $path
+            : Storage::disk('public')->url($path);
     }
 }

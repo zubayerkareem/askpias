@@ -86,10 +86,14 @@ GTM id, contact email, tagline, `seo_site_url`, `robots_txt`, `sitemap_enabled`
 
 ## `books` — same migration
 `id`, `slug` (unique), `title`, `subtitle` (string 500, null), `description` (longtext, null),
-`badge` (null), `cover_image_url` (null), `price` (decimal(10,2), null),
-`currency` (string 8, default `BDT`), `features` (json, null), `buy_url` (null),
-`sample_url` (null), `is_featured` (bool, false), `is_published` (bool, true),
+`badge` (null), `cover_image_url` (null),
+`featured_image_url` (null, added `2026_11_04_000004_add_featured_image_url_to_books_table.php`),
+`price` (decimal(10,2), null), `currency` (string 8, default `BDT`), `features` (json, null),
+`buy_url` (null), `sample_url` (null), `is_featured` (bool, false), `is_published` (bool, true),
 `sort_order` (int, 0), timestamps. Index `(is_published, sort_order)`.
+
+`cover_image_url` is the books-page thumbnail and detail cover; `featured_image_url` is used by
+the homepage ebook block and falls back to the cover when empty.
 
 ## `pages` — `2026_11_04_000001_create_pages_table.php`
 `id`, `slug` (unique), `title`, `meta_description` (text, null), `blocks` (json, null),

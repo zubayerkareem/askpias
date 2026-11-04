@@ -11,14 +11,18 @@ export function Ebook() {
   const subtitle = book?.subtitle ?? "Understand the science behind better ads.";
   const price = book?.price ?? 298;
   const badge = book?.badge ?? "Featured ebook";
+  const image = book?.featured_image_url ?? book?.cover_image_url ?? null;
 
   return (
-    <section id="books" className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+    <section
+      id="books"
+      className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20"
+    >
       <div className="grid grid-cols-[104px_minmax(0,1fr)] gap-x-3 gap-y-3.5 rounded-xl border border-brand/20 bg-brand-soft p-3.5 sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-x-5 sm:p-5 lg:grid-cols-[210px_minmax(0,1fr)] lg:items-center lg:gap-x-10 lg:gap-y-6 lg:p-8">
         <div className="relative col-start-1 row-start-1 h-full lg:row-span-2 lg:h-auto lg:aspect-[3/4] lg:self-center">
-          {book?.cover_image_url ? (
+          {image ? (
             <img
-              src={book.cover_image_url}
+              src={image}
               alt={title}
               className="absolute inset-0 h-full w-full rounded-md object-cover shadow-[0_18px_34px_-20px_rgba(0,0,0,0.5)]"
             />
