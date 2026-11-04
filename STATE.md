@@ -22,7 +22,7 @@ PENDING   -> pending         (never downgrades an already paid lead)
 anything  -> failed          (never downgrades an already paid lead)
 ```
 
-## 2. Payment-return page states (`src/routes/notes/download.tsx`)
+## 2. Payment-return page states (`src/routes/notes/download.tsx`, `src/routes/books/download.tsx`)
 Selected in this order:
 1. `cancelled` — `result === "cancel"` or no `invoice_id` (no API call).
 2. `confirming` — query pending.

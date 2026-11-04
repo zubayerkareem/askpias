@@ -13,7 +13,11 @@
       <td style="padding:8px 28px 0;font-size:15px;line-height:1.6;color:#3c3c46;">
         <p style="margin:12px 0;">Hi {{ $recipientName }},</p>
         <p style="margin:12px 0;">
-          Thanks for requesting {{ $noteTitle ? '“'.$noteTitle.'”' : 'the guide' }}. You can download it here:
+          @if ($productKind === 'book')
+            Thanks for buying {{ $noteTitle ? '“'.$noteTitle.'”' : 'the book' }}. Your copy is ready to download:
+          @else
+            Thanks for requesting {{ $noteTitle ? '“'.$noteTitle.'”' : 'the guide' }}. You can download it here:
+          @endif
         </p>
         <p style="margin:20px 0;">
           <a href="{{ $downloadUrl }}" style="display:inline-block;background:#0141c5;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 20px;border-radius:8px;">Download now</a>

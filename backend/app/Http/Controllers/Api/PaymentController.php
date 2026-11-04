@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use Throwable;
 
 class PaymentController extends Controller
@@ -40,8 +41,8 @@ class PaymentController extends Controller
         $leadId = $result['metadata']['lead_id'] ?? null;
 
         $lead = $leadId
-            ? Lead::query()->with('note')->find($leadId)
-            : Lead::query()->with('note')->where('invoice_id', $invoiceId)->first();
+            ? Lead::query()->with(['note', 'book'])->find($leadId)
+            : Lead::query()->with(['note', 'book'])->where('invoice_id', $invoiceId)->first();
 
         if (! $lead) {
             return response()->json([
@@ -68,14 +69,25 @@ class PaymentController extends Controller
         }
 
         $note = $lead->note;
+        $book = $lead->book;
+        $bookFileUrl = $book && filled($book->file_url)
+            ? Storage::disk('public')->url($book->file_url)
+            : null;
 
-        if (! $wasPaid && $lead->isPaid() && $note?->lead_magnet_file_url && $lead->email) {
+        $fileUrl = $bookFileUrl ?? $note?->lead_magnet_file_url;
+
+        if (! $wasPaid && $lead->isPaid() && $fileUrl && $lead->email) {
             try {
                 Mail::to($lead->email)->send(
-                    new LeadMagnetReady($lead->name, $note->lead_magnet_file_url, $note->title),
+                    new LeadMagnetReady(
+                        $lead->name,
+                        $fileUrl,
+                        $book?->title ?? $note?->title,
+                        $book ? 'book' : null,
+                    ),
                 );
             } catch (Throwable $exception) {
-                Log::warning('Paid lead magnet email failed', ['error' => $exception->getMessage()]);
+                Log::warning('Paid download email failed', ['error' => $exception->getMessage()]);
             }
         }
 
@@ -83,7 +95,9 @@ class PaymentController extends Controller
             'status' => $lead->status,
             'note_slug' => $note?->slug,
             'note_title' => $note?->title,
-            'download_url' => $lead->isPaid() ? $note?->lead_magnet_file_url : null,
+            'book_slug' => $book?->slug,
+            'book_title' => $book?->title,
+            'download_url' => $lead->isPaid() ? $fileUrl : null,
             'amount' => $lead->amount !== null ? (float) $lead->amount : null,
             'currency' => $lead->currency,
         ]);

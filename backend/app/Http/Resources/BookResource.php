@@ -26,6 +26,7 @@ class BookResource extends JsonResource
             'buy_url' => $this->buy_url,
             'sample_url' => $this->sample_url,
             'is_featured' => (bool) $this->is_featured,
+            'purchasable' => filled($this->file_url) && $this->price !== null && (float) $this->price > 0,
             'sort_order' => (int) $this->sort_order,
         ];
     }

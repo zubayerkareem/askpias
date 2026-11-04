@@ -9,6 +9,7 @@ class Lead extends Model
 {
     protected $fillable = [
         'note_id',
+        'book_id',
         'invoice_id',
         'amount',
         'currency',
@@ -32,6 +33,11 @@ class Lead extends Model
     public function note(): BelongsTo
     {
         return $this->belongsTo(Note::class);
+    }
+
+    public function book(): BelongsTo
+    {
+        return $this->belongsTo(Book::class);
     }
 
     public function isPaid(): bool

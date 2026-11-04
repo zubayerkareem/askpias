@@ -12,6 +12,8 @@ export type PaymentVerification = {
   status: "paid" | "pending" | "failed" | "free" | "error";
   note_slug: string | null;
   note_title: string | null;
+  book_slug: string | null;
+  book_title: string | null;
   download_url: string | null;
   amount: number | null;
   currency: string | null;
@@ -23,6 +25,14 @@ export function useCheckoutLead() {
   return useMutation({
     mutationFn: (input: CheckoutInput) =>
       api.post<{ payment_url: string; lead_id: number }>("/leads/checkout", input),
+  });
+}
+
+/** Starts a UddoktaPay charge for an ebook. */
+export function useCheckoutBook() {
+  return useMutation({
+    mutationFn: (input: CheckoutInput) =>
+      api.post<{ payment_url: string; lead_id: number }>("/books/checkout", input),
   });
 }
 

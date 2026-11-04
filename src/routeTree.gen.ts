@@ -19,6 +19,7 @@ import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as BooksIndexRouteImport } from './routes/books/index'
 import { Route as BooksSlugRouteImport } from './routes/books/$slug'
+import { Route as BooksDownloadRouteImport } from './routes/books/download'
 import { Route as CaseStudiesIndexRouteImport } from './routes/case-studies/index'
 import { Route as CaseStudiesSlugRouteImport } from './routes/case-studies/$slug'
 import { Route as NotesIndexRouteImport } from './routes/notes/index'
@@ -76,6 +77,11 @@ const BooksSlugRoute = BooksSlugRouteImport.update({
   path: '/books/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BooksDownloadRoute = BooksDownloadRouteImport.update({
+  id: '/books/download',
+  path: '/books/download',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CaseStudiesIndexRoute = CaseStudiesIndexRouteImport.update({
   id: '/case-studies/',
   path: '/case-studies/',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/books/$slug': typeof BooksSlugRoute
+  '/books/download': typeof BooksDownloadRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/notes/download': typeof NotesDownloadRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/books/$slug': typeof BooksSlugRoute
+  '/books/download': typeof BooksDownloadRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/notes/download': typeof NotesDownloadRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/books/$slug': typeof BooksSlugRoute
+  '/books/download': typeof BooksDownloadRoute
   '/case-studies/$slug': typeof CaseStudiesSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/notes/download': typeof NotesDownloadRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/books/$slug'
+    | '/books/download'
     | '/case-studies/$slug'
     | '/notes/$slug'
     | '/notes/download'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/books/$slug'
+    | '/books/download'
     | '/case-studies/$slug'
     | '/notes/$slug'
     | '/notes/download'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/robots.txt'
     | '/sitemap.xml'
     | '/books/$slug'
+    | '/books/download'
     | '/case-studies/$slug'
     | '/notes/$slug'
     | '/notes/download'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   BooksSlugRoute: typeof BooksSlugRoute
+  BooksDownloadRoute: typeof BooksDownloadRoute
   CaseStudiesSlugRoute: typeof CaseStudiesSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
   NotesDownloadRoute: typeof NotesDownloadRoute
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BooksSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/books/download': {
+      id: '/books/download'
+      path: '/books/download'
+      fullPath: '/books/download'
+      preLoaderRoute: typeof BooksDownloadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/case-studies/': {
       id: '/case-studies/'
       path: '/case-studies'
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   BooksSlugRoute: BooksSlugRoute,
+  BooksDownloadRoute: BooksDownloadRoute,
   CaseStudiesSlugRoute: CaseStudiesSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
   NotesDownloadRoute: NotesDownloadRoute,

@@ -2,6 +2,7 @@ import { createFileRoute, notFound, Link } from "@tanstack/react-router";
 import { Check } from "lucide-react";
 import { PageShell } from "@/components/site/PageShell";
 import { SiteFooter } from "@/components/site/SiteFooter";
+import { BookPurchase } from "@/components/site/BookPurchase";
 import { bookBySlugQueryOptions } from "@/hooks/use-books";
 import { enrichContentHtml } from "@/lib/video";
 
@@ -105,15 +106,19 @@ function BookDetail() {
             )}
 
             <div className="mt-7 grid gap-3 sm:grid-cols-2 lg:flex">
-              <a
-                href={buyUrl}
-                className="inline-flex w-full items-center justify-center rounded-lg bg-brand px-5 py-3 text-sm font-bold text-brand-foreground transition-colors hover:bg-brand/90 lg:w-auto"
-              >
-                Buy the book
-              </a>
+              {book.purchasable && book.price !== null ? (
+                <BookPurchase slug={book.slug} title={book.title} price={book.price} />
+              ) : (
+                <a
+                  href={buyUrl}
+                  className="inline-flex h-11 w-full items-center justify-center rounded-lg bg-brand px-5 text-sm font-bold text-brand-foreground transition-colors hover:bg-brand/90 lg:w-auto"
+                >
+                  Buy the book
+                </a>
+              )}
               <a
                 href={book.sample_url ?? "/booking"}
-                className="inline-flex w-full items-center justify-center rounded-lg border border-line bg-page px-5 py-3 text-sm font-bold transition-colors hover:bg-surface lg:w-auto"
+                className="inline-flex h-11 w-full items-center justify-center rounded-lg border border-line bg-page px-5 text-sm font-bold transition-colors hover:bg-surface lg:w-auto"
               >
                 Read a sample
               </a>

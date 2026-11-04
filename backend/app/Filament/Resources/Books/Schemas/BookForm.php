@@ -88,10 +88,19 @@ class BookForm
                         ->maxLength(60),
                     TextInput::make('buy_url')
                         ->label('Buy URL')
-                        ->url(),
+                        ->url()
+                        ->helperText('Used when no book file is uploaded.'),
                     TextInput::make('sample_url')
                         ->label('Sample URL')
                         ->url(),
+                    FileUpload::make('file_url')
+                        ->label('Book file (delivered after payment)')
+                        ->disk('public')
+                        ->directory('books/files')
+                        ->acceptedFileTypes(['application/pdf', 'application/epub+zip', 'application/zip'])
+                        ->maxSize(51200)
+                        ->helperText('Upload the ebook here. The download link is revealed only after a successful UddoktaPay payment.')
+                        ->columnSpanFull(),
                     TagsInput::make('features')
                         ->label('What’s included')
                         ->helperText('One bullet per item.')

@@ -30,6 +30,10 @@ class LeadsTable
                     ->label('Note')
                     ->limit(40)
                     ->placeholder('—'),
+                TextColumn::make('book.title')
+                    ->label('Book')
+                    ->limit(40)
+                    ->placeholder('—'),
                 TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (string $state) => ucfirst($state))

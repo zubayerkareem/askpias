@@ -16,6 +16,7 @@ export type Book = {
   buy_url: string | null;
   sample_url: string | null;
   is_featured: boolean;
+  purchasable: boolean;
   sort_order: number;
 };
 

@@ -15,6 +15,7 @@ class Book extends Model
         'badge',
         'cover_image_url',
         'featured_image_url',
+        'file_url',
         'price',
         'currency',
         'features',

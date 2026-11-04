@@ -16,6 +16,7 @@ class LeadMagnetReady extends Mailable
         public string $recipientName,
         public string $downloadUrl,
         public ?string $noteTitle = null,
+        public ?string $productKind = null,
     ) {}
 
     public function envelope(): Envelope

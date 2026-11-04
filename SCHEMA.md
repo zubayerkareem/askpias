@@ -47,6 +47,7 @@ timestamps. Index `is_read`. No relation to users or notes.
 | --- | --- |
 | `id` | bigint PK |
 | `note_id` | FK → `notes.id`, nullable, `nullOnDelete` |
+| `book_id` | FK → `books.id`, nullable, `nullOnDelete` (added `2026_11_04_000007_add_book_id_to_leads_table.php`) |
 | `invoice_id` | string, nullable, unique |
 | `amount` | decimal(10,2), nullable |
 | `currency` | string(8), nullable |
@@ -88,12 +89,14 @@ GTM id, contact email, tagline, `seo_site_url`, `robots_txt`, `sitemap_enabled`
 `id`, `slug` (unique), `title`, `subtitle` (string 500, null), `description` (longtext, null),
 `badge` (null), `cover_image_url` (null),
 `featured_image_url` (null, added `2026_11_04_000004_add_featured_image_url_to_books_table.php`),
+`file_url` (null, added `2026_11_04_000006_add_file_url_to_books_table.php`),
 `price` (decimal(10,2), null), `currency` (string 8, default `BDT`), `features` (json, null),
 `buy_url` (null), `sample_url` (null), `is_featured` (bool, false), `is_published` (bool, true),
 `sort_order` (int, 0), timestamps. Index `(is_published, sort_order)`.
 
 `cover_image_url` is the books-page thumbnail and detail cover; `featured_image_url` is used by
-the homepage ebook block and falls back to the cover when empty.
+the homepage ebook block and falls back to the cover when empty. `file_url` is the uploaded
+ebook, never returned by the public API — it is handed out only after a paid UddoktaPay lead.
 
 ## `pages` — `2026_11_04_000001_create_pages_table.php`
 `id`, `slug` (unique), `title`, `meta_description` (text, null), `blocks` (json, null),

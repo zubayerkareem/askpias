@@ -31,6 +31,7 @@ Route::get('/projects/{slug}', [ProjectController::class, 'show']);
 
 Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/{slug}', [BookController::class, 'show']);
+Route::post('/books/checkout', [BookController::class, 'checkout'])->middleware('throttle:10,1');
 
 Route::get('/settings', [SiteSettingController::class, 'show']);
 
