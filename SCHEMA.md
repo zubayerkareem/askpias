@@ -87,6 +87,16 @@ timestamps. Index `(is_published, sort_order)`.
 `sample_url` (null), `is_featured` (bool, false), `is_published` (bool, true),
 `sort_order` (int, 0), timestamps. Index `(is_published, sort_order)`.
 
+## `pages` — `2026_11_04_000001_create_pages_table.php`
+`id`, `slug` (unique), `title`, `meta_description` (text, null), `blocks` (json, null),
+`is_published` (bool, true), timestamps.
+
+`blocks` is a list of `{type, data}` objects built in Filament (`PageForm`):
+`hero`, `story`, `practice`, `stats`, `cta`. Uploaded block images live on the `public`
+disk under `pages/`. The About page row is inserted by
+`2026_11_04_000002_seed_about_page.php` (production never seeds) and is read by the site
+through `GET /api/pages/{slug}` (`PageController`, `PageResource`).
+
 ## Framework tables (unmodified Laravel)
 - `users` (`name`, `email` unique, `password`, `remember_token`), `password_reset_tokens`,
   `sessions` — `0001_01_01_000000_create_users_table.php`.

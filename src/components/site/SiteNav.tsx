@@ -4,8 +4,6 @@ import { useState } from "react";
 import { ThemeToggle } from "@/components/site/ThemeToggle";
 import { SiteAvatar } from "@/components/site/SiteAvatar";
 
-const hashLinks = [{ href: "/#home", label: "Home" }];
-
 const routeLinks = [
   { to: "/about", label: "About" },
   { to: "/case-studies", label: "Clients" },
@@ -34,11 +32,6 @@ export function SiteNav() {
         </Link>
 
         <div className="hidden items-center md:flex">
-          {hashLinks.map((l) => (
-            <a key={l.href} href={l.href} className={navLink}>
-              {l.label}
-            </a>
-          ))}
           {routeLinks.map((l) => (
             <Link
               key={l.to}
@@ -76,19 +69,16 @@ export function SiteNav() {
 
       {open && (
         <nav className="glass mx-auto mt-2 max-w-[1280px] rounded-3xl p-3 md:hidden">
-          {[...hashLinks, ...routeLinks].map((l) => {
-            const href = "href" in l ? l.href : l.to;
-            return (
-              <a
-                key={href}
-                href={href}
-                onClick={() => setOpen(false)}
-                className="block rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
-              >
-                {l.label}
-              </a>
-            );
-          })}
+          {routeLinks.map((l) => (
+            <a
+              key={l.to}
+              href={l.to}
+              onClick={() => setOpen(false)}
+              className="block rounded-xl px-3 py-2.5 text-sm text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground"
+            >
+              {l.label}
+            </a>
+          ))}
           <a
             href="/booking"
             onClick={() => setOpen(false)}

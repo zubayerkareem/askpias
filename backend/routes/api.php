@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\CaseStudyController;
 use App\Http\Controllers\Api\LeadController;
 use App\Http\Controllers\Api\MessageController;
 use App\Http\Controllers\Api\NoteController;
+use App\Http\Controllers\Api\PageController;
 use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\ProjectController;
 use App\Http\Controllers\Api\SiteSettingController;
@@ -32,6 +33,8 @@ Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/{slug}', [BookController::class, 'show']);
 
 Route::get('/settings', [SiteSettingController::class, 'show']);
+
+Route::get('/pages/{slug}', [PageController::class, 'show']);
 
 Route::post('/messages', [MessageController::class, 'store'])->middleware('throttle:10,1');
 Route::post('/leads', [LeadController::class, 'store'])->middleware('throttle:10,1');
