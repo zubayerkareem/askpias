@@ -35,7 +35,7 @@ export function Hero() {
             {playing && embed ? (
               <iframe
                 src={`${embed}&autoplay=1`}
-                title="A quick hello from Pias"
+                title="Pias Ahmed"
                 className="absolute inset-0 h-full w-full border-0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowFullScreen
@@ -45,7 +45,7 @@ export function Hero() {
                 {poster && (
                   <img
                     src={poster}
-                    alt="A quick hello from Pias"
+                    alt="Pias Ahmed"
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 )}
@@ -68,8 +68,7 @@ export function Hero() {
           </div>
 
           <figcaption className="border-t border-line px-4 py-3">
-            <p className="font-display text-sm font-semibold">A quick hello from Pias</p>
-            <p className="text-xs text-muted-foreground">Founder, AskPias</p>
+            <p className="font-display text-sm font-semibold">Pias Ahmed</p>
           </figcaption>
         </figure>
       )}

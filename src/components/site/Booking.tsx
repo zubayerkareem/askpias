@@ -3,7 +3,7 @@ import { CalBooking } from "@/components/site/CalBooking";
 import { useContactEmail } from "@/hooks/use-site-settings";
 
 const perks = [
-  { icon: Video, title: "30-minute call", body: "A one-on-one Google Meet session" },
+  { icon: Video, title: "30-minute call", body: "Online session" },
   { icon: Lightbulb, title: "Business diagnosis", body: "We find your real growth opportunities" },
   { icon: ListChecks, title: "Actionable plan", body: "You leave with clear next steps" },
 ];
