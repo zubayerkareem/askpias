@@ -1,6 +1,6 @@
 import { useSiteSettings } from "@/hooks/use-site-settings";
 
-const FALLBACK_SRC = "/pias-islam.jpg";
+const FALLBACK_SRC = "/pias-ahmed.jpg";
 
 /**
  * Shared portrait/logo image — used in the Hero, nav, and footer. Reads the

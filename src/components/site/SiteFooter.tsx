@@ -2,9 +2,9 @@ import { Facebook, Linkedin, Youtube } from "lucide-react";
 import { SiteAvatar } from "@/components/site/SiteAvatar";
 
 const socials = [
-  { icon: Linkedin, label: "LinkedIn", href: "#" },
-  { icon: Youtube, label: "YouTube", href: "#" },
-  { icon: Facebook, label: "Facebook", href: "#" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/pias-ahmed-info" },
+  { icon: Youtube, label: "YouTube", href: "https://www.youtube.com/@askpias" },
+  { icon: Facebook, label: "Facebook", href: "https://www.facebook.com/askpias" },
 ];
 
 export function SiteFooter() {
@@ -29,6 +29,8 @@ export function SiteFooter() {
               key={s.label}
               href={s.href}
               aria-label={s.label}
+              target="_blank"
+              rel="noopener noreferrer"
               className="transition-colors hover:text-foreground"
             >
               <s.icon className="size-4" aria-hidden />
