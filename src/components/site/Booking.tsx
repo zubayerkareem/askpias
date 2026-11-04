@@ -1,5 +1,6 @@
 import { Clock, Globe, Lightbulb, ListChecks, Video } from "lucide-react";
 import { CalBooking } from "@/components/site/CalBooking";
+import { useContactEmail } from "@/hooks/use-site-settings";
 
 const perks = [
   { icon: Video, title: "30-minute call", body: "A one-on-one Google Meet session" },
@@ -14,8 +15,13 @@ const details = [
 ];
 
 export function Booking() {
+  const email = useContactEmail();
+
   return (
-    <section id="booking" className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
+    <section
+      id="booking"
+      className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20"
+    >
       <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-stretch lg:gap-10">
         <div className="flex flex-col">
           <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
@@ -58,10 +64,10 @@ export function Booking() {
           <p className="border-t border-line px-4 py-3 text-xs text-muted-foreground">
             Trouble loading the calendar? Email{" "}
             <a
-              href="mailto:pias@askpias.com"
+              href={`mailto:${email}`}
               className="font-semibold text-brand underline decoration-brand/30 underline-offset-2"
             >
-              pias@askpias.com
+              {email}
             </a>
           </p>
         </div>

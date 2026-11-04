@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/site/PageHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { Booking } from "@/components/site/Booking";
 import { Testimonials } from "@/components/site/Testimonials";
+import { useContactEmail } from "@/hooks/use-site-settings";
 
 const title = "Book a Meeting — Pias Ahmed";
 const description =
@@ -31,6 +32,8 @@ const facts = [
 ];
 
 function BookingPage() {
+  const email = useContactEmail();
+
   return (
     <PageShell>
       <PageHeader label="Booking" title="Let's build your growth plan together">
@@ -62,7 +65,7 @@ function BookingPage() {
             Can&apos;t find a slot that works? Email me directly — I reply within 24 hours.
           </p>
           <a
-            href="mailto:pias@askpias.com"
+            href={`mailto:${email}`}
             className="inline-flex shrink-0 items-center rounded-lg border border-line px-5 py-3 text-sm font-bold transition-colors hover:bg-surface"
           >
             Send an email

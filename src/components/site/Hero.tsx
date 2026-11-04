@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Award, CalendarDays, Play, Users } from "lucide-react";
-import { SiteAvatar } from "@/components/site/SiteAvatar";
 import { useSiteSettings } from "@/hooks/use-site-settings";
 import { youtubeEmbedUrl, youtubeId } from "@/lib/video";
 import { analytics } from "@/lib/analytics";
@@ -12,11 +11,16 @@ export function Hero() {
   const embed = youtubeEmbedUrl(settings?.intro_video_url);
   const videoId = youtubeId(settings?.intro_video_url);
   const poster = videoId ? `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg` : null;
+  const hasVideo = Boolean(embed);
 
   return (
-    <section className="grid gap-8 border-b border-line px-6 py-10 sm:px-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-x-12 lg:px-16 lg:py-14 xl:px-20">
+    <section
+      className={`grid gap-8 border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20 ${
+        hasVideo ? "lg:grid-cols-[1.05fr_0.95fr] lg:gap-x-12" : ""
+      }`}
+    >
       {/* Headline — first on every screen */}
-      <div className="lg:col-start-1 lg:row-start-1 lg:self-end">
+      <div className={hasVideo ? "lg:col-start-1 lg:row-start-1 lg:self-end" : ""}>
         <h1 className="font-display text-[clamp(2.2rem,3.6vw,3.5rem)] leading-[1.02] font-extrabold tracking-[-0.04em]">
           Building businesses.
           <br />
@@ -24,35 +28,28 @@ export function Hero() {
         </h1>
       </div>
 
-      {/* Video — under the headline on mobile, beside the text on desktop */}
-      <figure className="overflow-hidden rounded-xl border border-line bg-page lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
-        <div className="relative aspect-video bg-black">
-          {playing && embed ? (
-            <iframe
-              src={`${embed}&autoplay=1`}
-              title="A quick hello from Pias"
-              className="absolute inset-0 h-full w-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          ) : (
-            <>
-              {poster ? (
-                <img
-                  src={poster}
-                  alt="A quick hello from Pias"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              ) : (
-                <SiteAvatar
-                  alt="Pias Ahmed"
-                  width={960}
-                  height={540}
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              )}
+      {/* Video — only when a YouTube URL is configured in site settings */}
+      {hasVideo && (
+        <figure className="overflow-hidden rounded-xl border border-line bg-page lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-center">
+          <div className="relative aspect-video bg-black">
+            {playing && embed ? (
+              <iframe
+                src={`${embed}&autoplay=1`}
+                title="A quick hello from Pias"
+                className="absolute inset-0 h-full w-full border-0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <>
+                {poster && (
+                  <img
+                    src={poster}
+                    alt="A quick hello from Pias"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
 
-              {embed && (
                 <button
                   type="button"
                   onClick={() => {
@@ -66,19 +63,19 @@ export function Hero() {
                     <Play className="ml-0.5 size-6 fill-current" aria-hidden />
                   </span>
                 </button>
-              )}
-            </>
-          )}
-        </div>
+              </>
+            )}
+          </div>
 
-        <figcaption className="border-t border-line px-4 py-3">
-          <p className="font-display text-sm font-semibold">A quick hello from Pias</p>
-          <p className="text-xs text-muted-foreground">Founder, AskPias</p>
-        </figcaption>
-      </figure>
+          <figcaption className="border-t border-line px-4 py-3">
+            <p className="font-display text-sm font-semibold">A quick hello from Pias</p>
+            <p className="text-xs text-muted-foreground">Founder, AskPias</p>
+          </figcaption>
+        </figure>
+      )}
 
       {/* Intro copy, CTAs and stats */}
-      <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
+      <div className={hasVideo ? "lg:col-start-1 lg:row-start-2 lg:self-start" : ""}>
         <p className="max-w-[48ch] text-[1.0625rem] leading-relaxed text-muted-foreground">
           I&apos;m Pias — a founder and marketer with 5 years of experience helping brands grow. I
           build digital products and share what I learn along the way.
@@ -104,8 +101,7 @@ export function Hero() {
 
         <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
           <span className="inline-flex items-center gap-2">
-            <Award className="size-4" aria-hidden />
-            5 Years in Marketing
+            <Award className="size-4" aria-hidden />5 Years in Marketing
           </span>
           <span aria-hidden className="hidden h-4 w-px bg-line sm:block" />
           <span className="inline-flex items-center gap-2">

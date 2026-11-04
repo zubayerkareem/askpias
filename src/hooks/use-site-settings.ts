@@ -12,10 +12,19 @@ export type SiteSettings = {
 
 const SITE_SETTINGS_KEY = ["site-settings"] as const;
 
+/** Used until a contact email is set in the admin (Site settings → Contact). */
+export const FALLBACK_CONTACT_EMAIL = "pias@askpias.com";
+
 export function useSiteSettings() {
   return useQuery({
     queryKey: SITE_SETTINGS_KEY,
     queryFn: () => api.get<SiteSettings>("/settings"),
     staleTime: 60_000,
   });
+}
+
+/** The contact email configured in the admin, used across the site. */
+export function useContactEmail(): string {
+  const { data } = useSiteSettings();
+  return data?.contact_email?.trim() || FALLBACK_CONTACT_EMAIL;
 }

@@ -4,6 +4,7 @@ import { CheckCircle2, Clock, Download, Loader2, XCircle } from "lucide-react";
 import { PageShell } from "@/components/site/PageShell";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { useVerifyPayment } from "@/hooks/use-payments";
+import { useContactEmail } from "@/hooks/use-site-settings";
 import { analytics } from "@/lib/analytics";
 
 type DownloadSearch = {
@@ -27,6 +28,7 @@ export const Route = createFileRoute("/notes/download")({
 function PaymentReturn() {
   const { slug, invoice_id, result } = Route.useSearch();
   const cancelled = result === "cancel" || !invoice_id;
+  const email = useContactEmail();
 
   const verify = useVerifyPayment(cancelled ? null : invoice_id);
   const data = verify.data;
@@ -34,18 +36,14 @@ function PaymentReturn() {
   useEffect(() => {
     if (data?.status !== "paid") return;
 
-    analytics.purchase(
-      invoice_id ?? "",
-      data.amount ?? 0,
-      [
-        {
-          item_id: data.note_slug ?? "lead-magnet",
-          item_name: data.note_title ?? "Lead magnet",
-          item_category: "lead_magnet",
-          price: data.amount ?? 0,
-        },
-      ],
-    );
+    analytics.purchase(invoice_id ?? "", data.amount ?? 0, [
+      {
+        item_id: data.note_slug ?? "lead-magnet",
+        item_name: data.note_title ?? "Lead magnet",
+        item_category: "lead_magnet",
+        price: data.amount ?? 0,
+      },
+    ]);
   }, [data?.status, invoice_id, data?.amount, data?.note_slug, data?.note_title]);
 
   const backHref = slug ? `/notes/${slug}` : "/notes";
@@ -133,10 +131,10 @@ function PaymentReturn() {
               <p className="mt-2 text-sm text-muted-foreground">
                 If money left your account, email{" "}
                 <a
-                  href="mailto:pias@askpias.com"
+                  href={`mailto:${email}`}
                   className="font-semibold text-brand underline underline-offset-2"
                 >
-                  pias@askpias.com
+                  {email}
                 </a>{" "}
                 with the invoice id and I&apos;ll sort it out.
               </p>

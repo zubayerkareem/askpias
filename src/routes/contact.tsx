@@ -4,6 +4,7 @@ import { PageShell } from "@/components/site/PageShell";
 import { PageHeader } from "@/components/site/PageHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { ContactForm } from "@/components/site/ContactForm";
+import { useContactEmail } from "@/hooks/use-site-settings";
 
 const title = "Contact Pias Ahmed — Marketing Consultant";
 const description =
@@ -24,6 +25,8 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const email = useContactEmail();
+
   return (
     <PageShell>
       <PageHeader label="Contact" title="Tell me what you're stuck on">
@@ -42,10 +45,10 @@ function ContactPage() {
                 <Mail className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
                 <span>
                   <a
-                    href="mailto:pias@askpias.com"
+                    href={`mailto:${email}`}
                     className="font-semibold text-foreground underline decoration-line underline-offset-4 hover:decoration-brand"
                   >
-                    pias@askpias.com
+                    {email}
                   </a>
                   <span className="mt-1 block text-muted-foreground">Replies within 24 hours.</span>
                 </span>
@@ -53,7 +56,10 @@ function ContactPage() {
               <li className="flex items-start gap-3">
                 <MessageCircle className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
                 <span>
-                  <a href="/booking" className="font-semibold text-foreground underline decoration-line underline-offset-4 hover:decoration-brand">
+                  <a
+                    href="/booking"
+                    className="font-semibold text-foreground underline decoration-line underline-offset-4 hover:decoration-brand"
+                  >
                     Book a 30-minute call
                   </a>
                   <span className="mt-1 block text-muted-foreground">

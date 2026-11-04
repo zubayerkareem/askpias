@@ -16,7 +16,7 @@ export function BlogSection() {
     <section className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <h2 className="font-display text-2xl font-extrabold tracking-tight sm:text-3xl">
-          From the blog
+          From the notes
         </h2>
         <Link
           to="/notes"

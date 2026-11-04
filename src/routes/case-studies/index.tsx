@@ -7,7 +7,6 @@ import { Testimonials } from "@/components/site/Testimonials";
 import { CaseStudyCard } from "@/components/site/CaseStudyCard";
 import { Reveal } from "@/components/site/Reveal";
 import { useCaseStudies } from "@/hooks/use-case-studies";
-import { useSiteSettings } from "@/hooks/use-site-settings";
 
 const title = "Case Studies — Pias Ahmed | Marketing Consultant";
 const description =
@@ -29,7 +28,6 @@ export const Route = createFileRoute("/case-studies/")({
 
 function CaseStudies() {
   const { data } = useCaseStudies();
-  const { data: settings } = useSiteSettings();
   const cases = data ?? [];
 
   return (
@@ -38,21 +36,6 @@ function CaseStudies() {
         A few brand stories — what the problem was, the system I built, and the results that
         followed.
       </PageHeader>
-
-      {settings?.case_studies_iframe_url && (
-        <section className="border-b border-line px-6 py-6 sm:px-10 lg:px-16 xl:px-20">
-          <div className="mx-auto max-w-[640px] overflow-hidden rounded-xl border border-line">
-            <iframe
-              src={settings.case_studies_iframe_url}
-              className="aspect-video w-full"
-              style={{ border: "none" }}
-              allowFullScreen
-              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-              title="Pias Ahmed — featured video"
-            />
-          </div>
-        </section>
-      )}
 
       <section className="border-b border-line px-6 py-10 sm:px-10 lg:px-16 lg:py-14 xl:px-20">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

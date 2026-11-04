@@ -6,7 +6,7 @@ import { SiteAvatar } from "@/components/site/SiteAvatar";
 
 const routeLinks = [
   { to: "/about", label: "About" },
-  { to: "/case-studies", label: "Clients" },
+  { to: "/case-studies", label: "Case Studies" },
   { to: "/notes", label: "Notes" },
   { to: "/books", label: "Books" },
   { to: "/contact", label: "Contact" },
